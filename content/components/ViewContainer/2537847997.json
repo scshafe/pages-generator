@@ -1,0 +1,16 @@
+{
+  "comp_id": 2537847997,
+  "config": {
+    "browser_title": "about",
+    "child_node_id": 2308567631,
+    "description": "yeeeeeet",
+    "name": "about",
+    "order": 0,
+    "path": "/about",
+    "title": "about"
+  },
+  "created_at": "2026-01-30T01:48:13.093214Z",
+  "reference_count": 1,
+  "type": "ViewContainer",
+  "updated_at": "2026-01-30T01:48:13.093225Z"
+}

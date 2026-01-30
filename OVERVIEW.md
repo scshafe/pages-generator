@@ -104,7 +104,6 @@ See `docs/ENTITY_UML_SCHEMA.md` for the complete UML diagram and `docs/ID_NAMING
 ```
 ├── app/                      # Next.js App Router pages
 │   ├── [[...viewPath]]/      # Dynamic catch-all route for views
-│   ├── posts/[slug]/         # Individual blog post pages
 │   └── settings/             # Author-only settings page
 ├── components/               # React components
 │   ├── views/                # View system components
@@ -112,7 +111,6 @@ See `docs/ENTITY_UML_SCHEMA.md` for the complete UML diagram and `docs/ID_NAMING
 │   │   ├── ViewComponentRenderer.tsx
 │   │   ├── ViewPageClient.tsx
 │   │   └── [Type]Component.tsx
-│   ├── posts/                # Blog post components
 │   ├── settings/             # Settings page UI components
 │   ├── ui/                   # Shared UI (Header, Footer, ThemeProvider)
 │   └── author/               # Author mode components
@@ -137,7 +135,6 @@ See `docs/ENTITY_UML_SCHEMA.md` for the complete UML diagram and `docs/ID_NAMING
 │   │   ├── home.py           # Home button configuration
 │   │   ├── navigation.py     # Header/footer navigation
 │   │   ├── themes.py         # Theme management
-│   │   ├── posts.py          # Blog post operations
 │   │   ├── media.py          # Image/PDF handling
 │   │   ├── metadata.py       # Full metadata operations
 │   │   └── debug.py          # Debug endpoints
@@ -165,7 +162,6 @@ See `docs/ENTITY_UML_SCHEMA.md` for the complete UML diagram and `docs/ID_NAMING
 │   │   └── themes/
 │   │       ├── config.json   # Active theme, color scheme
 │   │       └── custom/{theme_id}.json # Custom theme definitions
-│   ├── posts/*.md            # Blog post markdown files
 │   └── metadata.json         # Generated at build time only
 ├── lib/
 │   ├── api/
@@ -174,7 +170,6 @@ See `docs/ENTITY_UML_SCHEMA.md` for the complete UML diagram and `docs/ID_NAMING
 │   │   ├── components.ts     # Component type definitions (renamed from views.ts)
 │   │   ├── types.ts          # Shared TypeScript types with branded IDs
 │   │   ├── views.server.ts   # Server-side view loading
-│   │   ├── posts.ts          # Post loading utilities
 │   │   ├── navigation.ts     # Navigation config loading
 │   │   ├── themes.ts         # Theme definitions
 │   │   └── themes.server.ts  # Server-side theme loading
@@ -218,7 +213,6 @@ During development, data is stored in individual JSON files:
 | Menu | `content/settings/menu/{menu_id}.json` | `menu_id` | Header menu items (right side) |
 | Footer | `content/settings/footer/{footer_id}.json` | `footer_id` | Footer navigation items |
 | Themes | `content/settings/themes/custom/{theme_id}.json` | `theme_id` | Custom theme definitions |
-| Posts | `content/posts/*.md` | (slug) | Blog post markdown |
 
 **Views are ViewContainer components** - no separate views directory.
 
@@ -246,6 +240,26 @@ During development, data is stored in individual JSON files:
 - Containers display an "Add component" affordance after their current children.
 - Clicking "Add component" shows the next-level derived class options; this selection flow is recursive for multi-level inheritance.
 - "No Page Found" is a built-in view.
+
+### Author Mode Quick Check
+
+1. Start author mode: `npm run author`
+2. Run author API smoke test: `npm run smoke:author`
+3. Run view flow smoke test: `npm run smoke:views`
+4. Export and build: `npm run export:metadata` then `npm run build`
+
+### Recent Updates
+
+- Added mirror/detach workflows for shared views.
+- Added drag-and-drop reordering for views and components.
+- Added media manager with asset usage indicators.
+
+### Shared Content (Mirrors)
+
+- A "Mirror" creates a new Node + Reference pointing to the same ViewContainer component.
+- Editing the shared content in one view updates all mirrored views.
+- Each mirror has its own per-view overrides (path/title/description).
+- Use "Detach" to split a mirror into an independent copy.
 
 ### ID Generation
 
@@ -289,14 +303,6 @@ All endpoints use prefixed ID field names (`node_id`, `ref_id`, `comp_id`, etc.)
 | `/footer/<footer_id>` | PUT, DELETE | Individual footer item |
 | `/themes` | GET, PUT | Theme configuration |
 | `/themes/<theme_id>` | GET, PUT, DELETE | Individual theme |
-
-### Content APIs
-
-| Endpoint | Methods | Description |
-|----------|---------|-------------|
-| `/posts` | GET | Posts listing |
-| `/post` | POST | Create post |
-| `/post/<slug>` | PUT, DELETE | Individual post |
 
 ### Utility APIs
 
@@ -426,7 +432,6 @@ Key viewSlice async thunks:
 These paths cannot be used for views:
 - `/` - Alias for default home view
 - `/settings` - Settings page
-- `/posts/[slug]` - Individual blog posts
 - `/feed.xml` - RSS feed
 - `/api` - Reserved for future API routes
 

@@ -1,0 +1,42 @@
+{
+  "name": "blog-app",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "author": "concurrently -k -n next,api -c \"blue,green\" \"PORT=4000 next dev\" \"AUTHOR_PORT=4001 python3 -m backend.server\"",
+    "author:server": "AUTHOR_PORT=4001 python3 -m backend.server",
+    "build": "npm run export:metadata && next build",
+    "preview": "serve -s out",
+    "export:metadata": "python3 -m backend.export_metadata",
+    "smoke:author": "node scripts/smoke-author.mjs",
+    "smoke:export": "node scripts/smoke-export.mjs",
+    "smoke:views": "node scripts/smoke-views.mjs",
+    "data:reset": "python3 -m backend.reset_and_seed",
+    "data:reset-data": "python3 -m backend.reset_and_seed --data-only",
+    "data:reset-settings": "python3 -m backend.reset_and_seed --settings-only",
+    "data:reset-interactive": "python3 -m backend.reset_and_seed --interactive",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "@radix-ui/react-switch": "^1.1.2",
+    "marked": "^14.0.0",
+    "next": "14.2.5",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-markdown": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "concurrently": "^9.0.1",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "14.2.5",
+    "serve": "^14.2.1",
+    "shadcn": "^3.7.0",
+    "typescript": "^5.6.3"
+  }
+}
