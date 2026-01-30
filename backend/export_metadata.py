@@ -10,6 +10,7 @@ from .database import (
     MENU_DIR,
     NODE_DIR,
     REFERENCE_DIR,
+    SITE_FILE,
     THEME_CONFIG,
     THEME_CUSTOM_DIR,
     list_components,
@@ -26,6 +27,23 @@ def export_metadata() -> dict[str, Any]:
     home = read_json(HOME_FILE, {"label": "Home", "root_view_node_id": None})
     menu = list_json_files(MENU_DIR)
     footer = list_json_files(FOOTER_DIR)
+    site = read_json(
+        SITE_FILE,
+        {
+            "site_name": "",
+            "tagline": "",
+            "site_url": "",
+            "description": "",
+            "keywords": "",
+            "author": "",
+            "language": "en",
+            "theme_color": "#1f3b56",
+            "twitter_handle": "",
+            "social_image_url": "",
+            "robots": "index,follow",
+            "favicon_src": "",
+        },
+    )
     themes = list_json_files(THEME_CUSTOM_DIR)
     theme_config = read_json(THEME_CONFIG, {"active_theme_id": None, "color_scheme": "system"})
     uploads_dir = Path("public") / "uploads"
@@ -48,6 +66,7 @@ def export_metadata() -> dict[str, Any]:
         "components": components,
         "settings": {
             "home": home,
+            "site": site,
             "menu": menu,
             "footer": footer,
             "themes": themes,

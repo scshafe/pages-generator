@@ -3,8 +3,12 @@
 ## Goals
 - Reduce long action rows by grouping controls into left/center/right areas.
 - Make edit/delete buttons smaller and always right-aligned; edit uses yellow/orange.
-- Move up/down controls sit on the far left as icon-only buttons.
-- Enable drag-and-drop via an arrow-style drag handle button.
+- Remove move up/down controls in favor of drag-and-drop.
+- Enable drag-and-drop directly on component cards.
+
+## Status
+
+The current implementation uses icon-only edit/delete controls, card-based drag-and-drop, and container-level add actions with modal create flows. Move up/down controls are removed.
 
 ## Scope
 - Component actions: `components/author/ComponentEditor.tsx`
@@ -49,3 +53,12 @@
   - Edit/delete are right-aligned and compact.
   - Move up/down are icon-only on the far left.
 - Check layout at mobile widths to confirm action groups wrap cleanly.
+
+## Strategy Summary
+- **Reference strategy**: UX controls operate on Nodes/References, so edits apply to the correct instance while shared Components remain reusable. Overrides are stored on References and composed at render time.
+- **Drag-and-drop strategy**: Reordering uses Node linked-list movement and scoped drag behavior, ensuring that abstracted Components can be moved without breaking reuse. The UI highlights scope boundaries and enables level-up/down transitions when dragging across containers.
+
+## Implementation Look
+- Author mode shows component headers (type + edit/delete) aligned in a dedicated header row.
+- Containers show a single Add Component entry point that opens a modal using the same add-component interface.
+- Dragging and reordering operate on structural Nodes while rendering merged Component + override config.

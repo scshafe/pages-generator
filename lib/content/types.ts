@@ -92,17 +92,34 @@ export interface MenuItem extends NavigationItem {
   menu_id: MenuId;
   order?: number;
   position?: "left" | "right";
+  view_node_id?: NodeId | null;
 }
 
 export interface FooterItem extends NavigationItem {
   footer_id: FooterId;
   order?: number;
   position?: "left" | "right";
+  view_node_id?: NodeId | null;
 }
 
 export interface HomeSettings {
   label: string;
   root_view_node_id?: NodeId | null;
+}
+
+export interface SiteSettings {
+  site_name: string;
+  tagline: string;
+  site_url: string;
+  description: string;
+  keywords: string;
+  author: string;
+  language: string;
+  theme_color: string;
+  twitter_handle: string;
+  social_image_url: string;
+  robots: string;
+  favicon_src: string;
 }
 
 export interface ThemeDefinition {

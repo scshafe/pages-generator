@@ -1,5 +1,3 @@
-import { siteConfig } from "./site.config.ts";
-
 const isPublish = process.env.NEXT_PUBLIC_BUILD_MODE === "publish";
 
 const nextConfig = {
@@ -7,8 +5,7 @@ const nextConfig = {
   images: {
     unoptimized: true
   },
-  trailingSlash: true,
-  distDir: siteConfig.outputDir
+  trailingSlash: true
 };
 
 export default nextConfig;

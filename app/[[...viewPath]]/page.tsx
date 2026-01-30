@@ -44,9 +44,17 @@ export async function generateStaticParams() {
     })
     .filter(Boolean) as { path?: string }[];
 
-  return views.map((view) => {
+  const params = views.map((view) => {
     const path = view.path ?? "/";
     const segments = path === "/" ? [] : path.replace(/^\//, "").split("/");
     return { viewPath: segments };
   });
+
+  const home = metadata.settings?.home as { root_view_node_id?: number | null } | undefined;
+  const hasRoot = views.some((view) => view.path === "/");
+  if (home?.root_view_node_id && !hasRoot) {
+    params.push({ viewPath: [] });
+  }
+
+  return params;
 }

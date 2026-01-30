@@ -21,6 +21,7 @@ HOME_FILE = SETTINGS_DIR / "home.json"
 
 MENU_DIR = SETTINGS_DIR / "menu"
 FOOTER_DIR = SETTINGS_DIR / "footer"
+SITE_FILE = SETTINGS_DIR / "site.json"
 
 
 def now_iso() -> str:
@@ -106,6 +107,30 @@ def read_home_settings() -> dict[str, Any]:
 
 def write_home_settings(data: dict[str, Any]) -> None:
     write_json(HOME_FILE, data)
+
+
+def read_site_settings() -> dict[str, Any]:
+    return read_json(
+        SITE_FILE,
+        {
+            "site_name": "",
+            "tagline": "",
+            "site_url": "",
+            "description": "",
+            "keywords": "",
+            "author": "",
+            "language": "en",
+            "theme_color": "#1f3b56",
+            "twitter_handle": "",
+            "social_image_url": "",
+            "robots": "index,follow",
+            "favicon_src": "",
+        },
+    )
+
+
+def write_site_settings(data: dict[str, Any]) -> None:
+    write_json(SITE_FILE, data)
 
 
 def read_theme_config() -> dict[str, Any]:

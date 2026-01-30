@@ -5,6 +5,7 @@ import { apiFetch } from "@/lib/api/client";
 import { siteConfig } from "@/site.config";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/components/ui/ToastProvider";
+import { DeleteIcon, DownloadIcon } from "@/components/ui/icons";
 import Image from "next/image";
 
 interface AssetItem {
@@ -140,10 +141,22 @@ export function MediaPanel() {
                 <button className="button ghost small" type="button" onClick={() => copyUrl(asset.src)}>
                   Copy URL
                 </button>
+                <a className="button ghost small" href={asset.src} download>
+                  <span className="icon-label">
+                    <DownloadIcon size={14} aria-hidden />
+                    Download
+                  </span>
+                </a>
               </div>
               <div className="action-group action-group--right">
-                <button className="button danger small" type="button" onClick={() => setPendingDelete(asset)}>
-                  Delete
+                <button
+                  className="button danger small icon-only"
+                  type="button"
+                  onClick={() => setPendingDelete(asset)}
+                  aria-label="Delete"
+                  title="Delete"
+                >
+                  <DeleteIcon size={20} strokeWidth={2} aria-hidden />
                 </button>
               </div>
             </div>

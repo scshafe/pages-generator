@@ -1,0 +1,5 @@
+{
+  "outputDir": "../scshafe.github.io",
+  "clean": true,
+  "preserve": [".git"]
+}

@@ -4,17 +4,23 @@ import { useState } from "react";
 import { ViewsPanel } from "@/components/settings/ViewsPanel";
 import { NavigationPanel } from "@/components/settings/NavigationPanel";
 import { MediaPanel } from "@/components/settings/MediaPanel";
+import { SitePanel } from "@/components/settings/SitePanel";
 
 const tabs = [
+  { id: "site", label: "Site" },
   { id: "views", label: "Views" },
   { id: "navigation", label: "Navigation" },
-  { id: "media", label: "Media" }
+  { id: "media", label: "Media" },
+  { id: "ai", label: "AI" },
+  { id: "theme", label: "Theme" },
+  { id: "structure", label: "Structure" },
+  { id: "knowledge", label: "Knowledge Base" }
 ] as const;
 
 type TabId = (typeof tabs)[number]["id"];
 
 export function SettingsTabs() {
-  const [activeTab, setActiveTab] = useState<TabId>("views");
+  const [activeTab, setActiveTab] = useState<TabId>("site");
 
   return (
     <section className="surface hero">
@@ -35,9 +41,14 @@ export function SettingsTabs() {
         ))}
       </div>
       <div className="section">
+        {activeTab === "site" ? <SitePanel /> : null}
         {activeTab === "views" ? <ViewsPanel /> : null}
         {activeTab === "navigation" ? <NavigationPanel /> : null}
         {activeTab === "media" ? <MediaPanel /> : null}
+        {activeTab === "ai" ? null : null}
+        {activeTab === "theme" ? null : null}
+        {activeTab === "structure" ? null : null}
+        {activeTab === "knowledge" ? null : null}
       </div>
     </section>
   );

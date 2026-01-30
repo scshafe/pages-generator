@@ -1,19 +1,173 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { apiFetch } from "@/lib/api/client";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/components/ui/ToastProvider";
 import { EditableList } from "@/components/settings/EditableList";
 import type { FooterItem, MenuItem } from "@/lib/content/types";
 
+type NavItemType = "" | "internal" | "external" | "special";
+
+type ViewOption = {
+  node_id: number | null;
+  config: { path?: string; title?: string; name?: string };
+};
+
+const specialOptions = [
+  { value: "home", label: "Home", href: "/" },
+  { value: "settings", label: "Settings", href: "/settings" },
+  { value: "feed", label: "RSS Feed", href: "/feed.xml" }
+];
+
+function getViewLabel(view: ViewOption) {
+  return view.config.title ?? view.config.name ?? view.config.path ?? "Untitled";
+}
+
+function NavItemCreator({
+  title,
+  onCreate,
+  views,
+  ensureViews,
+  viewsLoading
+}: {
+  title: string;
+  onCreate: (item: { label: string; href: string; view_node_id?: number | null }) => Promise<void>;
+  views: ViewOption[];
+  ensureViews: () => void;
+  viewsLoading: boolean;
+}) {
+  const [type, setType] = useState<NavItemType>("");
+  const [label, setLabel] = useState("");
+  const [href, setHref] = useState("");
+  const [selectedViewId, setSelectedViewId] = useState<number | null>(null);
+  const [specialKey, setSpecialKey] = useState("");
+
+  useEffect(() => {
+    if (type === "internal") {
+      ensureViews();
+    }
+  }, [type, ensureViews]);
+
+  const resolvedView = useMemo(() => {
+    if (!selectedViewId) return null;
+    return views.find((view) => view.node_id === selectedViewId) ?? null;
+  }, [selectedViewId, views]);
+
+  const resolvedSpecial = useMemo(() => {
+    return specialOptions.find((option) => option.value === specialKey) ?? null;
+  }, [specialKey]);
+
+  const canSave =
+    (type === "internal" && Boolean(resolvedView)) ||
+    (type === "external" && Boolean(label.trim() && href.trim())) ||
+    (type === "special" && Boolean(resolvedSpecial));
+
+  const handleSave = useCallback(async () => {
+    if (!canSave) return;
+    if (type === "internal" && resolvedView) {
+      await onCreate({
+        label: getViewLabel(resolvedView),
+        href: resolvedView.config.path ?? "/",
+        view_node_id: resolvedView.node_id
+      });
+    }
+    if (type === "external") {
+      await onCreate({ label: label.trim(), href: href.trim() });
+    }
+    if (type === "special" && resolvedSpecial) {
+      await onCreate({ label: resolvedSpecial.label, href: resolvedSpecial.href });
+    }
+    setType("");
+    setLabel("");
+    setHref("");
+    setSelectedViewId(null);
+    setSpecialKey("");
+  }, [canSave, type, resolvedView, resolvedSpecial, onCreate, label, href]);
+
+  return (
+    <div className="section-card">
+      <h3>{title}</h3>
+      <div className="form-grid">
+        <select
+          value={type}
+          onChange={(event) => setType(event.target.value as NavItemType)}
+          aria-label={`${title} item type`}
+        >
+          <option value="">Select type</option>
+          <option value="internal">Internal</option>
+          <option value="external">External</option>
+          <option value="special">Special</option>
+        </select>
+
+        {type === "internal" ? (
+          <div className="form-grid">
+            <select
+              value={selectedViewId ?? ""}
+              onChange={(event) => setSelectedViewId(Number(event.target.value))}
+              disabled={viewsLoading || views.length === 0}
+              aria-label={`${title} view`}
+            >
+              <option value="">Select a view</option>
+              {views
+                .filter((view) => view.node_id !== null)
+                .map((view) => (
+                  <option key={view.node_id ?? view.config.path ?? "unknown"} value={view.node_id ?? ""}>
+                    {getViewLabel(view)}
+                  </option>
+                ))}
+            </select>
+            {viewsLoading ? <span className="form-hint">Loading views...</span> : null}
+          </div>
+        ) : null}
+
+        {type === "external" ? (
+          <div className="form-row">
+            <label>
+              <span>Label</span>
+              <input value={label} onChange={(event) => setLabel(event.target.value)} placeholder="Label" />
+            </label>
+            <label>
+              <span>URL</span>
+              <input value={href} onChange={(event) => setHref(event.target.value)} placeholder="https://" />
+            </label>
+          </div>
+        ) : null}
+
+        {type === "special" ? (
+          <select
+            value={specialKey}
+            onChange={(event) => setSpecialKey(event.target.value)}
+            aria-label={`${title} special link`}
+          >
+            <option value="">Select special</option>
+            {specialOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        ) : null}
+
+        {canSave ? (
+          <div className="action-bar">
+            <div className="action-group action-group--right">
+              <button className="button" type="button" onClick={handleSave}>
+                Save
+              </button>
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 export function NavigationPanel() {
   const [menu, setMenu] = useState<MenuItem[]>([]);
   const [footer, setFooter] = useState<FooterItem[]>([]);
-  const [menuLabel, setMenuLabel] = useState("");
-  const [menuHref, setMenuHref] = useState("");
-  const [footerLabel, setFooterLabel] = useState("");
-  const [footerHref, setFooterHref] = useState("");
+  const [views, setViews] = useState<ViewOption[]>([]);
+  const [viewsLoading, setViewsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pendingDelete, setPendingDelete] = useState<
     | { type: "menu"; item: MenuItem }
@@ -37,39 +191,60 @@ export function NavigationPanel() {
     });
   }, []);
 
-  async function addMenu(event: React.FormEvent) {
-    event.preventDefault();
-    if (!menuLabel.trim() || !menuHref.trim()) {
-      setError("Label and href are required.");
-      toast.push("Label and href are required", "error");
-      return;
+  const ensureViews = useCallback(async () => {
+    if (views.length || viewsLoading) return;
+    setViewsLoading(true);
+    try {
+      const response = await apiFetch<ViewOption[]>("/views");
+      setViews(response);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load views");
+    } finally {
+      setViewsLoading(false);
     }
-    const created = await apiFetch<MenuItem>("/menu", {
-      method: "POST",
-      body: JSON.stringify({ label: menuLabel.trim(), href: menuHref.trim() })
-    });
-    setMenu((prev) => [created, ...prev]);
-    setMenuLabel("");
-    setMenuHref("");
-    toast.push("Menu item added", "success");
-  }
+  }, [views.length, viewsLoading]);
 
-  async function addFooter(event: React.FormEvent) {
-    event.preventDefault();
-    if (!footerLabel.trim() || !footerHref.trim()) {
-      setError("Label and href are required.");
-      toast.push("Label and href are required", "error");
-      return;
-    }
-    const created = await apiFetch<FooterItem>("/footer", {
-      method: "POST",
-      body: JSON.stringify({ label: footerLabel.trim(), href: footerHref.trim() })
-    });
-    setFooter((prev) => [created, ...prev]);
-    setFooterLabel("");
-    setFooterHref("");
-    toast.push("Footer item added", "success");
-  }
+  const createMenuItem = useCallback(
+    async (payload: { label: string; href: string; view_node_id?: number | null }) => {
+      try {
+        const created = await apiFetch<MenuItem>("/menu", {
+          method: "POST",
+          body: JSON.stringify({
+            label: payload.label,
+            href: payload.href,
+            view_node_id: payload.view_node_id ?? null
+          })
+        });
+        setMenu((prev) => [created, ...prev]);
+        toast.push("Menu item added", "success");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to add menu item");
+        toast.push("Failed to add menu item", "error");
+      }
+    },
+    [toast]
+  );
+
+  const createFooterItem = useCallback(
+    async (payload: { label: string; href: string; view_node_id?: number | null }) => {
+      try {
+        const created = await apiFetch<FooterItem>("/footer", {
+          method: "POST",
+          body: JSON.stringify({
+            label: payload.label,
+            href: payload.href,
+            view_node_id: payload.view_node_id ?? null
+          })
+        });
+        setFooter((prev) => [created, ...prev]);
+        toast.push("Footer item added", "success");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to add footer item");
+        toast.push("Failed to add footer item", "error");
+      }
+    },
+    [toast]
+  );
 
   async function deleteMenu(menu_id: number) {
     await apiFetch(`/menu/${menu_id}`, { method: "DELETE" });
@@ -93,96 +268,83 @@ export function NavigationPanel() {
       {error ? <div className="alert">{error}</div> : null}
 
       <div className="section">
-        <div className="section-card">
-          <h3>Header Menu</h3>
-          <form className="form-row" onSubmit={addMenu}>
-            <input
-              value={menuLabel}
-              onChange={(event) => setMenuLabel(event.target.value)}
-              placeholder="Label"
+        <div className="navigation-grid">
+          <div className="nav-column">
+            <NavItemCreator
+              title="Header"
+              onCreate={createMenuItem}
+              views={views}
+              ensureViews={ensureViews}
+              viewsLoading={viewsLoading}
             />
-            <input
-              value={menuHref}
-              onChange={(event) => setMenuHref(event.target.value)}
-              placeholder="/about"
+            <EditableList
+              title="Header Items"
+              items={menu.map((item) => ({
+                id: item.menu_id,
+                label: item.label,
+                href: item.href
+              }))}
+              validate={(item) => {
+                if (!item.label.trim() || !item.href.trim()) {
+                  return "Label and href are required.";
+                }
+                return null;
+              }}
+              onSave={async (item) => {
+                await apiFetch(`/menu/${item.id}`, {
+                  method: "PUT",
+                  body: JSON.stringify({ label: item.label, href: item.href })
+                });
+                setMenu((prev) =>
+                  prev.map((entry) =>
+                    entry.menu_id === item.id ? { ...entry, label: item.label, href: item.href } : entry
+                  )
+                );
+                toast.push("Menu item saved", "success");
+              }}
+              onDelete={async (item) => {
+                setPendingDelete({ type: "menu", item: { ...item, menu_id: item.id } as MenuItem });
+              }}
             />
-            <button className="button" type="submit">Add</button>
-          </form>
-          <EditableList
-            title="Header Menu Items"
-            items={menu.map((item) => ({
-              id: item.menu_id,
-              label: item.label,
-              href: item.href
-            }))}
-            validate={(item) => {
-              if (!item.label.trim() || !item.href.trim()) {
-                return "Label and href are required.";
-              }
-              return null;
-            }}
-            onSave={async (item) => {
-              await apiFetch(`/menu/${item.id}`, {
-                method: "PUT",
-                body: JSON.stringify({ label: item.label, href: item.href })
-              });
-              setMenu((prev) =>
-                prev.map((entry) =>
-                  entry.menu_id === item.id ? { ...entry, label: item.label, href: item.href } : entry
-                )
-              );
-              toast.push("Menu item saved", "success");
-            }}
-            onDelete={async (item) => {
-              setPendingDelete({ type: "menu", item: { ...item, menu_id: item.id } as MenuItem });
-            }}
-          />
-        </div>
-
-        <div className="section-card">
-          <h3>Footer</h3>
-          <form className="form-row" onSubmit={addFooter}>
-            <input
-              value={footerLabel}
-              onChange={(event) => setFooterLabel(event.target.value)}
-              placeholder="Label"
+          </div>
+          <div className="nav-column">
+            <NavItemCreator
+              title="Footer"
+              onCreate={createFooterItem}
+              views={views}
+              ensureViews={ensureViews}
+              viewsLoading={viewsLoading}
             />
-            <input
-              value={footerHref}
-              onChange={(event) => setFooterHref(event.target.value)}
-              placeholder="/privacy"
+            <EditableList
+              title="Footer Items"
+              items={footer.map((item) => ({
+                id: item.footer_id,
+                label: item.label,
+                href: item.href
+              }))}
+              validate={(item) => {
+                if (!item.label.trim() || !item.href.trim()) {
+                  return "Label and href are required.";
+                }
+                return null;
+              }}
+              onSave={async (item) => {
+                await apiFetch(`/footer/${item.id}`, {
+                  method: "PUT",
+                  body: JSON.stringify({ label: item.label, href: item.href })
+                });
+                setFooter((prev) =>
+                  prev.map((entry) =>
+                    entry.footer_id === item.id ? { ...entry, label: item.label, href: item.href } : entry
+                  )
+                );
+                toast.push("Footer item saved", "success");
+              }}
+              onDelete={async (item) => {
+                setPendingDelete({ type: "footer", item: { ...item, footer_id: item.id } as FooterItem });
+              }}
             />
-            <button className="button" type="submit">Add</button>
-          </form>
-          <EditableList
-            title="Footer Items"
-            items={footer.map((item) => ({
-              id: item.footer_id,
-              label: item.label,
-              href: item.href
-            }))}
-            validate={(item) => {
-              if (!item.label.trim() || !item.href.trim()) {
-                return "Label and href are required.";
-              }
-              return null;
-            }}
-            onSave={async (item) => {
-              await apiFetch(`/footer/${item.id}`, {
-                method: "PUT",
-                body: JSON.stringify({ label: item.label, href: item.href })
-              });
-              setFooter((prev) =>
-                prev.map((entry) =>
-                  entry.footer_id === item.id ? { ...entry, label: item.label, href: item.href } : entry
-                )
-              );
-              toast.push("Footer item saved", "success");
-            }}
-            onDelete={async (item) => {
-              setPendingDelete({ type: "footer", item: { ...item, footer_id: item.id } as FooterItem });
-            }}
-          />
+          </div>
         </div>
       </div>
       <ConfirmDialog

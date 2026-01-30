@@ -7,6 +7,7 @@ export interface MetadataSnapshot {
   components: Record<string, unknown[]>;
   settings: {
     home: unknown;
+    site?: unknown;
     menu: unknown[];
     footer: unknown[];
     themes: unknown[];

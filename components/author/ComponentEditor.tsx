@@ -8,6 +8,7 @@ import { apiFetch } from "@/lib/api/client";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/components/ui/ToastProvider";
 import { Switch } from "@/components/ui/Switch";
+import { DeleteIcon, EditIcon } from "@/components/ui/icons";
 
 const textTypes = ["SectionUnit", "PlainTextUnit"] as const;
 const contentTypes = ["MarkdownUnit", "AlertUnit"] as const;
@@ -337,12 +338,14 @@ export function ComponentEditor({
           <span className="component-type">{componentType}</span>
           <div className="action-group action-group--right">
             <button
-              className="button danger small"
+              className="button danger small icon-only"
               type="button"
               onClick={() => setConfirmDeleteOpen(true)}
               disabled={isDeleting}
+              aria-label={isDeleting ? "Deleting" : "Delete"}
+              title="Delete"
             >
-              {isDeleting ? "Deleting..." : "Delete"}
+              <DeleteIcon size={20} strokeWidth={2} aria-hidden />
             </button>
           </div>
         </div>
@@ -357,19 +360,23 @@ export function ComponentEditor({
         <span className="component-type">{componentType}</span>
         <div className="action-group action-group--right">
           <button
-            className="button edit small"
+            className="button edit small icon-only"
             type="button"
             onClick={() => setIsEditing((prev) => !prev)}
+            aria-label={isEditing ? "Close edit" : "Edit"}
+            title={isEditing ? "Close" : "Edit"}
           >
-            {isEditing ? "Close" : "Edit"}
+            <EditIcon size={20} strokeWidth={2} aria-hidden />
           </button>
           <button
-            className="button danger small"
+            className="button danger small icon-only"
             type="button"
             onClick={() => setConfirmDeleteOpen(true)}
             disabled={isDeleting}
+            aria-label={isDeleting ? "Deleting" : "Delete"}
+            title="Delete"
           >
-            {isDeleting ? "Deleting..." : "Delete"}
+            <DeleteIcon size={20} strokeWidth={2} aria-hidden />
           </button>
           {isEditing && saveStatus !== "idle" ? (
             <span className={`status-chip status-${saveStatus}`}>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AddComponentForm } from "@/components/author/AddComponentForm";
 import { Modal } from "@/components/ui/Modal";
+import { AddIcon } from "@/components/ui/icons";
 
 export function AddComponentModalButton({
   parentNodeId,
@@ -15,8 +16,14 @@ export function AddComponentModalButton({
 
   return (
     <>
-      <button className="button add-component add-component-bottom" type="button" onClick={() => setOpen(true)}>
-        {buttonLabel}
+      <button
+        className="button add-component add-component-bottom icon-only"
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-label={buttonLabel}
+        title={buttonLabel}
+      >
+        <AddIcon size={26} strokeWidth={2} aria-hidden />
       </button>
       <Modal open={open} onClose={() => setOpen(false)} size="wide">
         <AddComponentForm

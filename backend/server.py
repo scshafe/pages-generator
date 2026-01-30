@@ -20,8 +20,10 @@ try:
         MENU_DIR,
         NODE_DIR,
         REFERENCE_DIR,
+        read_site_settings,
         THEME_CUSTOM_DIR,
         THEME_CONFIG,
+        write_site_settings,
         component_path,
         ensure_dirs,
         generate_id,
@@ -48,8 +50,10 @@ except ImportError:
         MENU_DIR,
         NODE_DIR,
         REFERENCE_DIR,
+        read_site_settings,
         THEME_CUSTOM_DIR,
         THEME_CONFIG,
+        write_site_settings,
         component_path,
         ensure_dirs,
         generate_id,
@@ -1205,6 +1209,20 @@ def update_home() -> tuple[Any, int]:
     return jsonify(home), 200
 
 
+@app.get("/site")
+def get_site() -> tuple[Any, int]:
+    return jsonify(read_site_settings()), 200
+
+
+@app.put("/site")
+def update_site() -> tuple[Any, int]:
+    payload = request.get_json(force=True) or {}
+    site = read_site_settings()
+    site.update(payload)
+    write_site_settings(site)
+    return jsonify(site), 200
+
+
 @app.get("/home/root-view")
 def get_root_view() -> tuple[Any, int]:
     home = read_home_settings()
@@ -1242,6 +1260,7 @@ def create_menu_item() -> tuple[Any, int]:
         "href": payload.get("href", "/"),
         "order": payload.get("order", 0),
         "position": payload.get("position", "right"),
+        "view_node_id": payload.get("view_node_id"),
     }
     write_json(MENU_DIR / f"{menu_id}.json", item)
     return jsonify(item), 201
@@ -1279,6 +1298,7 @@ def create_footer_item() -> tuple[Any, int]:
         "href": payload.get("href", "/"),
         "order": payload.get("order", 0),
         "position": payload.get("position", "left"),
+        "view_node_id": payload.get("view_node_id"),
     }
     write_json(FOOTER_DIR / f"{footer_id}.json", item)
     return jsonify(item), 201

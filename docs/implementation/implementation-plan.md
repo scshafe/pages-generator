@@ -2,6 +2,10 @@
 
 This plan implements a single-app authoring experience that builds to a fully static output with `index.html` at the root. The same codebase runs in author mode locally and in static mode after build.
 
+## Status
+
+The current implementation uses **Next.js App Router + Flask** (author API) with static export in publish mode. Some of the stack choices below (Vite + Node API) are historical planning notes rather than the active architecture.
+
 ## Objectives
 
 - Author mode runs locally with read/write data access.

@@ -1,13 +1,106 @@
 {
-  "assets": [],
+  "assets": [
+    {
+      "name": "1377814627_professional-photo.jpg",
+      "size": 208665,
+      "src": "/uploads/1377814627_professional-photo.jpg"
+    },
+    {
+      "name": "1776936889_ChatGPT_Image_Jan_30_2026_from_Photo_Dimensions_and_Crops.png",
+      "size": 1843786,
+      "src": "/uploads/1776936889_ChatGPT_Image_Jan_30_2026_from_Photo_Dimensions_and_Crops.png"
+    },
+    {
+      "name": "1855031139_professional-photo.jpg",
+      "size": 208665,
+      "src": "/uploads/1855031139_professional-photo.jpg"
+    },
+    {
+      "name": "2503701495_professional-photo-webiste.png",
+      "size": 285408,
+      "src": "/uploads/2503701495_professional-photo-webiste.png"
+    },
+    {
+      "name": "2142070919_multicolor-personal-favicon.png",
+      "size": 3737,
+      "src": "/uploads/2142070919_multicolor-personal-favicon.png"
+    }
+  ],
   "components": {
     "AlertUnit": [],
     "ExperienceComponent": [],
     "ImageMedia": [],
     "InlineContainer": [],
-    "LinkUnit": [],
+    "LinkUnit": [
+      {
+        "comp_id": 3291949151,
+        "config": {
+          "label": "Link",
+          "url": "/hello"
+        },
+        "created_at": "2026-01-30T01:50:25.859110Z",
+        "reference_count": 1,
+        "type": "LinkUnit",
+        "updated_at": "2026-01-30T01:50:25.859122Z"
+      },
+      {
+        "comp_id": 3676288799,
+        "config": {
+          "label": "About",
+          "url": "/about"
+        },
+        "created_at": "2026-01-30T02:41:48.191446Z",
+        "reference_count": 1,
+        "type": "LinkUnit",
+        "updated_at": "2026-01-30T02:41:48.191468Z"
+      },
+      {
+        "comp_id": 1493086539,
+        "config": {
+          "label": "Home",
+          "url": "/index"
+        },
+        "created_at": "2026-01-30T02:42:32.597325Z",
+        "reference_count": 1,
+        "type": "LinkUnit",
+        "updated_at": "2026-01-30T02:43:10.437690Z"
+      },
+      {
+        "comp_id": 371395553,
+        "config": {
+          "label": "Hello",
+          "url": "/hello"
+        },
+        "created_at": "2026-01-30T02:42:01.529679Z",
+        "reference_count": 1,
+        "type": "LinkUnit",
+        "updated_at": "2026-01-30T02:42:01.529686Z"
+      },
+      {
+        "comp_id": 1997016273,
+        "config": {
+          "label": "Hello",
+          "url": "/hello"
+        },
+        "created_at": "2026-01-30T02:42:56.507102Z",
+        "reference_count": 1,
+        "type": "LinkUnit",
+        "updated_at": "2026-01-30T02:43:29.637643Z"
+      }
+    ],
     "ListContainer": [],
-    "MarkdownUnit": [],
+    "MarkdownUnit": [
+      {
+        "comp_id": 1298748398,
+        "config": {
+          "content": "ayo\n\n## sup"
+        },
+        "created_at": "2026-01-30T01:49:51.965097Z",
+        "reference_count": 1,
+        "type": "MarkdownUnit",
+        "updated_at": "2026-01-30T01:49:51.965112Z"
+      }
+    ],
     "PDFMedia": [],
     "PlainTextUnit": [
       {
@@ -23,12 +116,22 @@
       {
         "comp_id": 970583074,
         "config": {
-          "text": "woohoo"
+          "text": "woohoo monie"
         },
         "created_at": "2026-01-30T01:00:59.663647Z",
+        "reference_count": 2,
+        "type": "PlainTextUnit",
+        "updated_at": "2026-01-30T01:52:08.533193Z"
+      },
+      {
+        "comp_id": 3907725880,
+        "config": {
+          "text": "like woah"
+        },
+        "created_at": "2026-01-30T01:49:22.414121Z",
         "reference_count": 1,
         "type": "PlainTextUnit",
-        "updated_at": "2026-01-30T01:00:59.663658Z"
+        "updated_at": "2026-01-30T01:49:22.414141Z"
       }
     ],
     "SectionUnit": [
@@ -42,6 +145,17 @@
         "reference_count": 1,
         "type": "SectionUnit",
         "updated_at": "2026-01-30T01:00:10.941858Z"
+      },
+      {
+        "comp_id": 122846078,
+        "config": {
+          "level": "h2",
+          "text": "ello"
+        },
+        "created_at": "2026-01-30T01:48:55.174597Z",
+        "reference_count": 1,
+        "type": "SectionUnit",
+        "updated_at": "2026-01-30T01:48:55.174605Z"
       },
       {
         "comp_id": 44278079,
@@ -67,6 +181,28 @@
       }
     ],
     "StyleContainer": [
+      {
+        "comp_id": 1572676853,
+        "config": {
+          "child_node_id": 1419869066,
+          "isTransparent": false
+        },
+        "created_at": "2026-01-30T01:48:47.907397Z",
+        "reference_count": 1,
+        "type": "StyleContainer",
+        "updated_at": "2026-01-30T01:48:47.907405Z"
+      },
+      {
+        "comp_id": 140674376,
+        "config": {
+          "child_node_id": 3286560027,
+          "isTransparent": false
+        },
+        "created_at": "2026-01-30T01:49:06.937345Z",
+        "reference_count": 1,
+        "type": "StyleContainer",
+        "updated_at": "2026-01-30T01:49:06.937352Z"
+      },
       {
         "comp_id": 1636252688,
         "config": {
@@ -104,6 +240,22 @@
     "VideoMedia": [],
     "ViewContainer": [
       {
+        "comp_id": 912305642,
+        "config": {
+          "browser_title": "Home",
+          "child_node_id": 3596773860,
+          "description": "woord",
+          "name": "Home",
+          "order": 0,
+          "path": "/index",
+          "title": "Home"
+        },
+        "created_at": "2026-01-30T02:39:48.728289Z",
+        "reference_count": 1,
+        "type": "ViewContainer",
+        "updated_at": "2026-01-30T02:39:48.728298Z"
+      },
+      {
         "comp_id": 2278940502,
         "config": {
           "browser_title": "Hello",
@@ -118,6 +270,22 @@
         "reference_count": 1,
         "type": "ViewContainer",
         "updated_at": "2026-01-29T19:51:15.680072Z"
+      },
+      {
+        "comp_id": 2537847997,
+        "config": {
+          "browser_title": "about",
+          "child_node_id": 2308567631,
+          "description": "yeeeeeet",
+          "name": "about",
+          "order": 0,
+          "path": "/about",
+          "title": "about"
+        },
+        "created_at": "2026-01-30T01:48:13.093214Z",
+        "reference_count": 1,
+        "type": "ViewContainer",
+        "updated_at": "2026-01-30T01:48:13.093225Z"
       }
     ]
   },
@@ -141,6 +309,15 @@
       "updated_at": "2026-01-29T19:51:15.677038Z"
     },
     {
+      "created_at": "2026-01-30T01:49:51.966094Z",
+      "next_node_id": null,
+      "node_id": 1419869066,
+      "parent_node_id": 2308567631,
+      "previous_node_id": null,
+      "ref_id": 2168968704,
+      "updated_at": "2026-01-30T01:49:51.966103Z"
+    },
+    {
       "created_at": "2026-01-29T19:50:43.622820Z",
       "next_node_id": null,
       "node_id": 1597550209,
@@ -148,6 +325,33 @@
       "previous_node_id": 556460077,
       "ref_id": 3684057095,
       "updated_at": "2026-01-29T19:50:43.622824Z"
+    },
+    {
+      "created_at": "2026-01-30T02:42:56.508181Z",
+      "next_node_id": null,
+      "node_id": 693710902,
+      "parent_node_id": 3097612021,
+      "previous_node_id": 1595881426,
+      "ref_id": 2234904412,
+      "updated_at": "2026-01-30T02:42:56.508189Z"
+    },
+    {
+      "created_at": "2026-01-30T02:42:01.530330Z",
+      "next_node_id": null,
+      "node_id": 2322273157,
+      "parent_node_id": 3832412309,
+      "previous_node_id": 3596773860,
+      "ref_id": 744722318,
+      "updated_at": "2026-01-30T02:42:01.530337Z"
+    },
+    {
+      "created_at": "2026-01-30T01:51:48.625000Z",
+      "next_node_id": 1595881426,
+      "node_id": 951479840,
+      "parent_node_id": 3097612021,
+      "previous_node_id": 2110438267,
+      "ref_id": 1432212312,
+      "updated_at": "2026-01-30T02:42:32.598648Z"
     },
     {
       "created_at": "2026-01-30T01:01:11.271165Z",
@@ -159,6 +363,15 @@
       "updated_at": "2026-01-30T01:01:23.642258Z"
     },
     {
+      "created_at": "2026-01-30T02:42:32.597851Z",
+      "next_node_id": 693710902,
+      "node_id": 1595881426,
+      "parent_node_id": 3097612021,
+      "previous_node_id": 951479840,
+      "ref_id": 818655869,
+      "updated_at": "2026-01-30T02:42:56.509590Z"
+    },
+    {
       "created_at": "2026-01-29T19:37:22.414213Z",
       "next_node_id": null,
       "node_id": 2924221211,
@@ -166,6 +379,42 @@
       "previous_node_id": null,
       "ref_id": 784214156,
       "updated_at": "2026-01-29T19:37:22.414221Z"
+    },
+    {
+      "created_at": "2026-01-30T01:49:22.415558Z",
+      "next_node_id": null,
+      "node_id": 3286560027,
+      "parent_node_id": 2985725644,
+      "previous_node_id": null,
+      "ref_id": 3883967440,
+      "updated_at": "2026-01-30T01:49:22.415566Z"
+    },
+    {
+      "created_at": "2026-01-30T02:39:48.728816Z",
+      "next_node_id": null,
+      "node_id": 3832412309,
+      "parent_node_id": null,
+      "previous_node_id": null,
+      "ref_id": 2250178062,
+      "updated_at": "2026-01-30T02:39:48.728820Z"
+    },
+    {
+      "created_at": "2026-01-30T01:48:13.093876Z",
+      "next_node_id": null,
+      "node_id": 3097612021,
+      "parent_node_id": null,
+      "previous_node_id": null,
+      "ref_id": 4229434537,
+      "updated_at": "2026-01-30T01:48:13.093880Z"
+    },
+    {
+      "created_at": "2026-01-30T01:49:06.937905Z",
+      "next_node_id": 2110438267,
+      "node_id": 2985725644,
+      "parent_node_id": 3097612021,
+      "previous_node_id": 2308567631,
+      "ref_id": 195174037,
+      "updated_at": "2026-01-30T01:50:25.861362Z"
     },
     {
       "created_at": "2026-01-30T01:00:59.664306Z",
@@ -186,6 +435,24 @@
       "updated_at": "2026-01-30T01:01:23.641614Z"
     },
     {
+      "created_at": "2026-01-30T01:50:25.860129Z",
+      "next_node_id": 951479840,
+      "node_id": 2110438267,
+      "parent_node_id": 3097612021,
+      "previous_node_id": 2985725644,
+      "ref_id": 3000555623,
+      "updated_at": "2026-01-30T01:51:48.626171Z"
+    },
+    {
+      "created_at": "2026-01-30T01:48:47.908044Z",
+      "next_node_id": 2985725644,
+      "node_id": 2308567631,
+      "parent_node_id": 3097612021,
+      "previous_node_id": null,
+      "ref_id": 3319150164,
+      "updated_at": "2026-01-30T01:49:06.938587Z"
+    },
+    {
       "created_at": "2026-01-30T01:00:36.373809Z",
       "next_node_id": null,
       "node_id": 1471098845,
@@ -193,9 +460,50 @@
       "previous_node_id": 2817953266,
       "ref_id": 691312134,
       "updated_at": "2026-01-30T01:00:36.373817Z"
+    },
+    {
+      "created_at": "2026-01-30T02:41:48.192853Z",
+      "next_node_id": 2322273157,
+      "node_id": 3596773860,
+      "parent_node_id": 3832412309,
+      "previous_node_id": null,
+      "ref_id": 1654534613,
+      "updated_at": "2026-01-30T02:42:01.531087Z"
     }
   ],
   "references": [
+    {
+      "comp_id": 140674376,
+      "created_at": "2026-01-30T01:49:06.937699Z",
+      "node_id": 2985725644,
+      "overrides": null,
+      "ref_id": 195174037,
+      "updated_at": "2026-01-30T01:49:06.937703Z"
+    },
+    {
+      "comp_id": 3907725880,
+      "created_at": "2026-01-30T01:49:22.415046Z",
+      "node_id": 3286560027,
+      "overrides": null,
+      "ref_id": 3883967440,
+      "updated_at": "2026-01-30T01:49:22.415058Z"
+    },
+    {
+      "comp_id": 371395553,
+      "created_at": "2026-01-30T02:42:01.530043Z",
+      "node_id": 2322273157,
+      "overrides": null,
+      "ref_id": 744722318,
+      "updated_at": "2026-01-30T02:42:01.530052Z"
+    },
+    {
+      "comp_id": 912305642,
+      "created_at": "2026-01-30T02:39:48.728631Z",
+      "node_id": 3832412309,
+      "overrides": null,
+      "ref_id": 2250178062,
+      "updated_at": "2026-01-30T02:39:48.728635Z"
+    },
     {
       "comp_id": 2278940502,
       "created_at": "2026-01-29T19:37:22.413649Z",
@@ -213,12 +521,44 @@
       "updated_at": "2026-01-30T01:00:10.942675Z"
     },
     {
+      "comp_id": 1493086539,
+      "created_at": "2026-01-30T02:42:32.597651Z",
+      "node_id": 1595881426,
+      "overrides": null,
+      "ref_id": 818655869,
+      "updated_at": "2026-01-30T02:42:32.597655Z"
+    },
+    {
+      "comp_id": 970583074,
+      "created_at": "2026-01-30T01:51:48.624564Z",
+      "node_id": 951479840,
+      "overrides": null,
+      "ref_id": 1432212312,
+      "updated_at": "2026-01-30T01:51:48.624576Z"
+    },
+    {
       "comp_id": 1962119606,
       "created_at": "2026-01-30T01:00:33.598902Z",
       "node_id": 2817953266,
       "overrides": null,
       "ref_id": 1030323420,
       "updated_at": "2026-01-30T01:00:33.598910Z"
+    },
+    {
+      "comp_id": 2537847997,
+      "created_at": "2026-01-30T01:48:13.093645Z",
+      "node_id": 3097612021,
+      "overrides": null,
+      "ref_id": 4229434537,
+      "updated_at": "2026-01-30T01:48:13.093654Z"
+    },
+    {
+      "comp_id": 1572676853,
+      "created_at": "2026-01-30T01:48:47.907743Z",
+      "node_id": 2308567631,
+      "overrides": null,
+      "ref_id": 3319150164,
+      "updated_at": "2026-01-30T01:48:47.907775Z"
     },
     {
       "comp_id": 1636252688,
@@ -229,12 +569,36 @@
       "updated_at": "2026-01-29T19:50:43.622553Z"
     },
     {
+      "comp_id": 1997016273,
+      "created_at": "2026-01-30T02:42:56.507693Z",
+      "node_id": 693710902,
+      "overrides": null,
+      "ref_id": 2234904412,
+      "updated_at": "2026-01-30T02:42:56.507703Z"
+    },
+    {
       "comp_id": 44278079,
       "created_at": "2026-01-30T01:00:36.373339Z",
       "node_id": 1471098845,
       "overrides": null,
       "ref_id": 691312134,
       "updated_at": "2026-01-30T01:00:36.373347Z"
+    },
+    {
+      "comp_id": 3291949151,
+      "created_at": "2026-01-30T01:50:25.859809Z",
+      "node_id": 2110438267,
+      "overrides": null,
+      "ref_id": 3000555623,
+      "updated_at": "2026-01-30T01:50:25.859817Z"
+    },
+    {
+      "comp_id": 1298748398,
+      "created_at": "2026-01-30T01:49:51.965723Z",
+      "node_id": 1419869066,
+      "overrides": null,
+      "ref_id": 2168968704,
+      "updated_at": "2026-01-30T01:49:51.965730Z"
     },
     {
       "comp_id": 2450549735,
@@ -259,15 +623,61 @@
       "overrides": null,
       "ref_id": 478054559,
       "updated_at": "2026-01-30T01:00:59.664073Z"
+    },
+    {
+      "comp_id": 3676288799,
+      "created_at": "2026-01-30T02:41:48.192347Z",
+      "node_id": 3596773860,
+      "overrides": null,
+      "ref_id": 1654534613,
+      "updated_at": "2026-01-30T02:41:48.192357Z"
     }
   ],
   "settings": {
-    "footer": [],
+    "footer": [
+      {
+        "footer_id": 622469449,
+        "href": "https://github.com/scshafe",
+        "label": "Github",
+        "order": 0,
+        "position": "left",
+        "view_node_id": null
+      }
+    ],
     "home": {
       "label": "Home",
       "root_view_node_id": 2924221211
     },
-    "menu": [],
+    "menu": [
+      {
+        "href": "/hello",
+        "label": "Hello",
+        "menu_id": 1387701115,
+        "order": 0,
+        "position": "right"
+      },
+      {
+        "href": "/about",
+        "label": "about",
+        "menu_id": 1076179615,
+        "order": 0,
+        "position": "right"
+      }
+    ],
+    "site": {
+      "author": "Cole",
+      "description": "ai|linux|physics",
+      "favicon_src": "/uploads/2142070919_multicolor-personal-favicon.png",
+      "keywords": "AI,software,physics,linux",
+      "language": "en",
+      "robots": "noindex,nofollow",
+      "site_name": "hi, i'm cole",
+      "site_url": "https://scshafe.github.io",
+      "social_image_url": "/uploads/1776936889_ChatGPT_Image_Jan_30_2026_from_Photo_Dimensions_and_Crops.png",
+      "tagline": "hi, i'm cole.",
+      "theme_color": "#cce8b5",
+      "twitter_handle": ""
+    },
     "themeConfig": {
       "active_theme_id": null,
       "color_scheme": "system"

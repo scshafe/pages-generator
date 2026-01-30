@@ -10,6 +10,7 @@ from .database import (
     MENU_DIR,
     NODE_DIR,
     REFERENCE_DIR,
+    SITE_FILE,
     THEME_CONFIG,
     THEME_CUSTOM_DIR,
     ensure_dirs,
@@ -35,6 +36,23 @@ def clear_components() -> None:
 
 def reset_settings() -> None:
     write_json(HOME_FILE, {"label": "Home", "root_view_node_id": None})
+    write_json(
+        SITE_FILE,
+        {
+            "site_name": "",
+            "tagline": "",
+            "site_url": "",
+            "description": "",
+            "keywords": "",
+            "author": "",
+            "language": "en",
+            "theme_color": "#1f3b56",
+            "twitter_handle": "",
+            "social_image_url": "",
+            "robots": "index,follow",
+            "favicon_src": "",
+        },
+    )
     write_json(THEME_CONFIG, {"active_theme_id": None, "color_scheme": "system"})
     clear_directory(MENU_DIR)
     clear_directory(FOOTER_DIR)

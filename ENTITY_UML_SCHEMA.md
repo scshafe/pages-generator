@@ -18,6 +18,7 @@ Node ←──1:1──► Reference ──*:1──► Component
 | Menu | `menu_id` | MenuId | `settings/menu/{id}.json` |
 | Footer | `footer_id` | FooterId | `settings/footer/{id}.json` |
 | Theme | `theme_id` | ThemeId | `settings/themes/{id}.json` |
+| Site | (singleton) | - | `settings/site.json` |
 
 ### Class Definition Styles
 | Style | Color | Meaning |
@@ -116,6 +117,7 @@ classDiagram
     class ExternalLink
     class Settings:::isInstance
     class Home:::isInstance
+    class Site:::isInstance
     class Menu:::hasId
     class Footer:::hasId
     class Theme:::hasId
@@ -294,6 +296,21 @@ classDiagram
 
     Home "1" o-- "0..1" InternalLink : root_link_id
 
+    %% ============ SITE ============
+
+    Site : +site_name string
+    Site : +tagline string
+    Site : +site_url string
+    Site : +description string
+    Site : +keywords string
+    Site : +author string
+    Site : +language string
+    Site : +theme_color string
+    Site : +twitter_handle string
+    Site : +social_image_url string
+    Site : +robots string
+    Site : +favicon_src string
+
     %% ============ MENU ============
 
     Menu : +position Position
@@ -319,6 +336,7 @@ classDiagram
     Settings "1" o-- "0..1" Theme : active_theme_id
     Settings "1" o-- "0..*" Node : view_node_ids
     Settings "1" *-- "1" Home : home
+    Settings "1" *-- "1" Site : site
     Settings "1" o-- "0..*" Menu : menu_ids
     Settings "1" o-- "0..*" Footer : footer_ids
 

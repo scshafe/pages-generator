@@ -100,7 +100,7 @@ function ScopeArrow({
   );
 }
 
-function SortableChildren({
+export function SortableChildren({
   nodes,
   enabled,
   containerNodeId,

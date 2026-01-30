@@ -2,8 +2,10 @@ import type { ResolvedNode } from "@/lib/content/types";
 import { ViewComponentRenderer } from "@/components/views/ViewComponentRenderer";
 import { AddComponentModalButton } from "@/components/author/AddComponentModalButton";
 import { DragScopeProvider } from "@/components/views/DragScopeProvider";
+import { ViewChildrenSortable } from "@/components/views/ViewChildrenSortable";
 
 export function ViewRenderer({ view }: { view: ResolvedNode }) {
+  const isAuthor = process.env.NEXT_PUBLIC_BUILD_MODE === "author";
   return (
     <section className="surface hero">
       <header>
@@ -14,13 +16,19 @@ export function ViewRenderer({ view }: { view: ResolvedNode }) {
       </header>
       <DragScopeProvider>
         <div className="section">
-          {view.children.map((child) => (
-            <ViewComponentRenderer key={child.node.node_id} node={child} />
-          ))}
+          {isAuthor ? (
+            <ViewChildrenSortable
+              nodes={view.children}
+              containerNodeId={view.node.node_id}
+              containerConfig={view.config as Record<string, unknown>}
+            />
+          ) : (
+            view.children.map((child) => (
+              <ViewComponentRenderer key={child.node.node_id} node={child} />
+            ))
+          )}
         </div>
-        {process.env.NEXT_PUBLIC_BUILD_MODE === "author" ? (
-          <AddComponentModalButton parentNodeId={view.node.node_id} />
-        ) : null}
+        {isAuthor ? <AddComponentModalButton parentNodeId={view.node.node_id} /> : null}
       </DragScopeProvider>
     </section>
   );
