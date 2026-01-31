@@ -57,6 +57,7 @@ The current implementation uses icon-only edit/delete controls, card-based drag-
 ## Strategy Summary
 - **Reference strategy**: UX controls operate on Nodes/References, so edits apply to the correct instance while shared Components remain reusable. Overrides are stored on References and composed at render time.
 - **Drag-and-drop strategy**: Reordering uses Node linked-list movement and scoped drag behavior, ensuring that abstracted Components can be moved without breaking reuse. The UI highlights scope boundaries and enables level-up/down transitions when dragging across containers.
+- **Rich preview strategy**: Site metadata is edited in the Site tab and exported at build time; optional social image borders are generated and used for Open Graph previews.
 
 ## Implementation Look
 - Author mode shows component headers (type + edit/delete) aligned in a dedicated header row.

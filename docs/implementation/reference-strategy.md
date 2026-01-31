@@ -68,6 +68,10 @@ Result:
 
 Menu and footer items can store `view_node_id` to reference a view directly. At runtime, the navigation resolver maps that node to a ViewContainer config and replaces label/href with the current view metadata.
 
+## Social image border
+
+Site settings include optional social image border fields (enabled, color, width, radius). During export, the build step generates a bordered version under `public/og/` and updates the snapshot to reference the bordered image.
+
 ## Files and code touchpoints
 - Entity model: `ENTITY_UML_SCHEMA.md`
 - View resolution: `lib/content/views.server.ts`

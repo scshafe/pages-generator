@@ -218,6 +218,28 @@ main {
   gap: 16px;
 }
 
+.section-divider {
+  height: 1px;
+  width: 100%;
+  background: var(--border);
+  margin: 12px 0 4px;
+}
+
+.section-header {
+  display: grid;
+  gap: 4px;
+}
+
+.section-header h4 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.section-header p {
+  margin: 0;
+  color: var(--muted);
+}
+
 .navigation-grid {
   display: grid;
   gap: 24px;
@@ -922,6 +944,18 @@ select {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.footer-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.footer-brand:hover {
+  color: var(--text);
 }
 
 .view-item {

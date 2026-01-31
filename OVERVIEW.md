@@ -99,12 +99,15 @@ See `ENTITY_UML_SCHEMA.md` for the full UML diagram.
 │   └── content/              # View + metadata resolution
 ├── scripts/
 │   ├── export-build.mjs       # Export /out to external repo
+│   ├── add-build-timestamp.mjs # Insert build timestamp into home view
+│   ├── publish-with-timestamp.mjs # Timestamp + build + export + git push
 │   └── smoke-*.mjs            # Smoke tests
 ├── docs/                     # Documentation
 ├── public/                   # Static assets
 ├── build-output.config.json  # External build output config
 ├── next.config.mjs
-└── out/                      # Static build output
+├── out/                      # Next.js export output (source)
+└── .static-out/              # Isolated static build output
 ```
 
 ## Data Flow
@@ -133,6 +136,6 @@ During development, data is stored in individual JSON files:
 
 ## Build and Export
 
-1. `npm run build` runs `backend.export_metadata` then `next build` to generate `out/`.
+1. `npm run build` runs `backend.export_metadata` then `next build` to generate `out/`, then copies it to `.static-out/`.
 2. `npm run build:export` copies `out/` into an external repo directory configured in `build-output.config.json`.
 3. The export script preserves the destination `.git` directory and prevents copying into the app repo.

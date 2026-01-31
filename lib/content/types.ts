@@ -118,6 +118,10 @@ export interface SiteSettings {
   theme_color: string;
   twitter_handle: string;
   social_image_url: string;
+  social_image_border_enabled: boolean;
+  social_image_border_color: string;
+  social_image_border_width: number;
+  social_image_border_radius: number;
   robots: string;
   favicon_src: string;
 }

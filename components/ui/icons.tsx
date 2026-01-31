@@ -107,3 +107,23 @@ export function CopyrightIcon(props: IconProps) {
     </IconBase>
   );
 }
+
+export function GitHubIcon({ title, size = 20, ...props }: IconProps) {
+  const ariaLabel = props["aria-label"];
+  const hasLabel = Boolean(title || ariaLabel);
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      role={hasLabel ? "img" : "presentation"}
+      aria-hidden={hasLabel ? undefined : true}
+      focusable="false"
+      {...props}
+    >
+      {title ? <title>{title}</title> : null}
+      <path d="M12 .5C5.73.5.5 5.74.5 12.21c0 5.18 3.44 9.58 8.2 11.13.6.11.82-.27.82-.6v-2.21c-3.34.74-4.04-1.45-4.04-1.45-.55-1.41-1.34-1.78-1.34-1.78-1.09-.76.08-.75.08-.75 1.2.09 1.83 1.26 1.83 1.26 1.07 1.86 2.8 1.32 3.48 1 .11-.79.42-1.32.76-1.62-2.66-.31-5.46-1.37-5.46-6.08 0-1.35.46-2.46 1.23-3.33-.12-.31-.53-1.58.12-3.29 0 0 1.01-.33 3.3 1.27.96-.27 1.99-.41 3.02-.41 1.03 0 2.06.14 3.02.41 2.29-1.6 3.3-1.27 3.3-1.27.65 1.71.24 2.98.12 3.29.77.87 1.23 1.98 1.23 3.33 0 4.72-2.8 5.77-5.47 6.08.43.38.82 1.11.82 2.25v3.33c0 .33.22.72.83.6 4.76-1.55 8.2-5.95 8.2-11.13C23.5 5.74 18.27.5 12 .5z" />
+    </svg>
+  );
+}

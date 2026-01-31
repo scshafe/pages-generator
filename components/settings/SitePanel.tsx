@@ -18,6 +18,10 @@ const defaultSiteSettings: SiteSettings = {
   theme_color: "#1f3b56",
   twitter_handle: "",
   social_image_url: "",
+  social_image_border_enabled: false,
+  social_image_border_color: "#0f172a",
+  social_image_border_width: 16,
+  social_image_border_radius: 24,
   robots: "index,follow",
   favicon_src: ""
 };
@@ -180,6 +184,30 @@ export function SitePanel() {
             />
           </label>
           <label>
+            <span>Default Language</span>
+            <input
+              value={form.language}
+              onChange={(event) => setForm((prev) => ({ ...prev, language: event.target.value }))}
+              placeholder="en"
+            />
+          </label>
+          <label>
+            <span>Favicon</span>
+            <input type="file" accept="image/*" onChange={handleFaviconUpload} />
+            <span className="form-hint">PNG or SVG, 32x32 recommended.</span>
+          </label>
+          {isUploading ? <span className="form-hint">Uploading favicon...</span> : null}
+          {faviconUrl ? (
+            <div className="image-preview favicon-preview">
+              <Image src={faviconUrl} alt="Favicon preview" width={64} height={64} unoptimized />
+            </div>
+          ) : null}
+          <div className="section-divider" />
+          <div className="section-header">
+            <h4>Rich Preview Settings</h4>
+            <p>Controls link preview metadata for social sharing.</p>
+          </div>
+          <label>
             <span>Meta Description</span>
             <textarea
               value={form.description}
@@ -201,14 +229,6 @@ export function SitePanel() {
               value={form.author}
               onChange={(event) => setForm((prev) => ({ ...prev, author: event.target.value }))}
               placeholder="Your name or studio"
-            />
-          </label>
-          <label>
-            <span>Default Language</span>
-            <input
-              value={form.language}
-              onChange={(event) => setForm((prev) => ({ ...prev, language: event.target.value }))}
-              placeholder="en"
             />
           </label>
           <label>
@@ -241,6 +261,55 @@ export function SitePanel() {
             <span className="form-hint">Recommended 1200x630 for link previews.</span>
           </label>
           <label>
+            <span>Border Social Image</span>
+            <input
+              type="checkbox"
+              checked={form.social_image_border_enabled}
+              onChange={(event) =>
+                setForm((prev) => ({ ...prev, social_image_border_enabled: event.target.checked }))
+              }
+            />
+            <span className="form-hint">Applied at build time for Open Graph previews.</span>
+          </label>
+          <label>
+            <span>Border Color</span>
+            <input
+              type="color"
+              value={form.social_image_border_color}
+              onChange={(event) =>
+                setForm((prev) => ({ ...prev, social_image_border_color: event.target.value }))
+              }
+            />
+          </label>
+          <label>
+            <span>Border Width (px)</span>
+            <input
+              type="number"
+              min={0}
+              value={form.social_image_border_width}
+              onChange={(event) =>
+                setForm((prev) => ({
+                  ...prev,
+                  social_image_border_width: Number(event.target.value)
+                }))
+              }
+            />
+          </label>
+          <label>
+            <span>Border Radius (px)</span>
+            <input
+              type="number"
+              min={0}
+              value={form.social_image_border_radius}
+              onChange={(event) =>
+                setForm((prev) => ({
+                  ...prev,
+                  social_image_border_radius: Number(event.target.value)
+                }))
+              }
+            />
+          </label>
+          <label>
             <span>Robots</span>
             <select
               value={form.robots}
@@ -252,17 +321,6 @@ export function SitePanel() {
               <option value="noindex,nofollow">noindex,nofollow</option>
             </select>
           </label>
-          <label>
-            <span>Favicon</span>
-            <input type="file" accept="image/*" onChange={handleFaviconUpload} />
-            <span className="form-hint">PNG or SVG, 32x32 recommended.</span>
-          </label>
-          {isUploading ? <span className="form-hint">Uploading favicon...</span> : null}
-          {faviconUrl ? (
-            <div className="image-preview favicon-preview">
-              <Image src={faviconUrl} alt="Favicon preview" width={64} height={64} unoptimized />
-            </div>
-          ) : null}
           {form.social_image_url ? (
             <div className="image-preview">
               <Image

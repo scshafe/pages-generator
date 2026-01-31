@@ -308,6 +308,10 @@ classDiagram
     Site : +theme_color string
     Site : +twitter_handle string
     Site : +social_image_url string
+    Site : +social_image_border_enabled boolean
+    Site : +social_image_border_color string
+    Site : +social_image_border_width number
+    Site : +social_image_border_radius number
     Site : +robots string
     Site : +favicon_src string
 

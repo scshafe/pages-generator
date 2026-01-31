@@ -35,13 +35,18 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
       url: site.site_url || undefined,
       images: site.social_image_url ? [site.social_image_url] : undefined,
+      siteName: site.site_name || undefined,
       type: "website"
     },
     twitter: {
+      card: "summary_large_image",
       title,
       description,
       images: site.social_image_url ? [site.social_image_url] : undefined
-    }
+    },
+    keywords: site.keywords || undefined,
+    authors: site.author ? [{ name: site.author }] : undefined,
+    themeColor: site.theme_color || undefined
   };
 }
 

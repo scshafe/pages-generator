@@ -45,14 +45,25 @@ async function copyDir(src, dest, exclude) {
   }
 }
 
+async function ensureNoJekyll(targetDir) {
+  const filePath = path.join(targetDir, ".nojekyll");
+  try {
+    await fs.writeFile(filePath, "");
+  } catch {
+    // Ignore write failures; export still succeeds.
+  }
+}
+
 async function main() {
   const config = await loadConfig();
   const outputDirRaw = config.outputDir;
+  const staticDirRaw = config.staticDir;
   if (!outputDirRaw || typeof outputDirRaw !== "string") {
     throw new Error("build-output.config.json must include an outputDir string");
   }
 
   const outputDir = path.resolve(repoRoot, outputDirRaw);
+  const staticDir = staticDirRaw ? path.resolve(repoRoot, staticDirRaw) : null;
   if (isSubpath(repoRoot, outputDir)) {
     throw new Error("outputDir must be outside the repo to avoid destructive deletes");
   }
@@ -61,17 +72,30 @@ async function main() {
   const clean = config.clean !== false;
 
   await ensureDir(outputDir);
-  try {
-    await fs.access(outDir);
-  } catch {
-    throw new Error("Missing build output in /out. Run `npm run build` first.");
+  let sourceDir = outDir;
+  if (staticDir) {
+    try {
+      await fs.access(staticDir);
+      sourceDir = staticDir;
+    } catch {
+      sourceDir = outDir;
+    }
   }
+
+  try {
+    await fs.access(sourceDir);
+  } catch {
+    throw new Error("Missing build output. Run `npm run build` first.");
+  }
+
+  await ensureNoJekyll(sourceDir);
 
   if (clean) {
     await cleanDir(outputDir, preserve);
   }
 
-  await copyDir(outDir, outputDir, preserve);
+  await copyDir(sourceDir, outputDir, preserve);
+  await ensureNoJekyll(outputDir);
   console.info(`Exported static build to ${outputDir}`);
 }
 

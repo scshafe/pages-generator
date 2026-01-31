@@ -33,6 +33,7 @@ Publish mode is static and read-only.
 - `lib/content/views.server.ts` resolves views locally from the snapshot.
 - No API calls or write operations are used.
 - Site metadata (favicon, social image, language) is read from `settings.site` in the snapshot.
+- When social image border is enabled, export creates a bordered image under `public/og/` using the configured width and radius, and the snapshot uses it.
 
 **Routing**
 - The catch-all view route pre-generates static pages using `generateStaticParams`.
@@ -58,10 +59,10 @@ Publish mode is static and read-only.
 2. **Next.js static export**
    - `npm run build` runs `next build` with `output: "export"`.
    - The catch-all view route is pre-rendered using metadata.
-   - Static HTML, JS, and assets are written to `out/`.
+   - Static HTML, JS, and assets are written to `out/` then copied into `.static-out/`.
 
 3. **Serving**
-   - `out/` is deployable to any static host.
+   - `.static-out/` is the isolated static output used for preview and deployment.
    - New content requires a rebuild to update the snapshot and static pages.
 
 ## External Build Output
@@ -71,6 +72,14 @@ For a separate deploy repo, use the export script:
 1. Configure `build-output.config.json` with `outputDir` pointing to the external repo.
 2. Run `npm run build:export` to copy `out/` into that directory.
 3. The script preserves the destination `.git` directory and refuses to copy into this repo.
+
+## Automated Timestamp Publish
+
+Use the timestamp publish script to insert a build timestamp into the root view, build, export, commit, and push:
+
+- `npm run publish:timestamp`
+
+This uses `scripts/add-build-timestamp.mjs` to update the root view’s child list with a `PlainTextUnit` showing the build time.
 
 ## Key Files
 - Author UI and routing: `app/[[...viewPath]]/page.tsx`, `app/settings/page.tsx`
