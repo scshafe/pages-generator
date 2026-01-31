@@ -21,6 +21,12 @@ bun-debug.log*
 # Content (author data + snapshots)
 content/
 
+# User uploads / generated assets
+public/uploads/
+
+# Build-time generated social previews
+public/og/
+
 # Python
 __pycache__/
 *.py[cod]
