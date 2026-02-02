@@ -1,12 +1,12 @@
 import type { ResolvedNode } from "@/lib/content/types";
 import { ViewComponentRenderer } from "@/components/views/ViewComponentRenderer";
 import { DragScopeProvider } from "@/components/views/DragScopeProvider";
-import { ViewChildrenSortable } from "@/components/views/ViewChildrenSortable";
+import { SortableChildren } from "@/components/views/ViewComponentRenderer";
 import { ContainerFocusProvider } from "@/components/author/ContainerFocusProvider";
 import { ConfigurationPanel } from "@/components/author/ConfigurationPanel";
 import { AuthorShortcuts } from "@/components/views/AuthorShortcuts";
 import { EditableViewTitle } from "@/components/views/EditableViewTitle";
-import { ViewEdgeComposer } from "@/components/views/ViewEdgeComposer";
+import { EdgeMarker } from "@/components/views/EdgeMarker";
 
 export function ViewRenderer({ view }: { view: ResolvedNode }) {
   const isAuthor = process.env.NEXT_PUBLIC_BUILD_MODE === "author";
@@ -24,18 +24,31 @@ export function ViewRenderer({ view }: { view: ResolvedNode }) {
           <div className="section">
             {isAuthor ? (
               <>
-                <ViewEdgeComposer
-                  viewNodeId={view.node.node_id}
+                <EdgeMarker
+                  scopeId={view.node.node_id}
+                  scopeType="view"
                   position="start"
                   beforeNodeId={view.children[0]?.node.node_id ?? null}
                 />
-                <ViewChildrenSortable
+                <SortableChildren
                   nodes={view.children}
+                  enabled={isAuthor}
                   containerNodeId={view.node.node_id}
+                  containerType="Container"
                   containerConfig={view.config as Record<string, unknown>}
+                  isCompatible={() => true}
+                  renderNode={(child: ResolvedNode, index: number, siblings: ResolvedNode[]) => (
+                    <ViewComponentRenderer
+                      key={child.node.node_id}
+                      node={child}
+                      parentType="Container"
+                      previousSiblingType={siblings[index - 1]?.component.type ?? null}
+                      nextSiblingType={siblings[index + 1]?.component.type ?? null}
+                    />
+                  )}
                 />
                 {view.children.length > 0 ? (
-                  <ViewEdgeComposer viewNodeId={view.node.node_id} position="end" />
+                  <EdgeMarker scopeId={view.node.node_id} scopeType="view" position="end" />
                 ) : null}
               </>
             ) : (

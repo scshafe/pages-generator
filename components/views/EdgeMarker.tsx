@@ -2,17 +2,21 @@
 
 import { useCallback, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { apiFetch } from "@/lib/api/client";
 import { useToast } from "@/components/ui/ToastProvider";
 import { useContainerFocus } from "@/components/author/ContainerFocusProvider";
+import { createChildNode, reparentNode } from "@/components/views/contentOps";
 import type { NodeRecord } from "@/lib/content/types";
 
-export function ViewEdgeComposer({
-  viewNodeId,
+type ScopeType = "group" | "view";
+
+export function EdgeMarker({
+  scopeId,
+  scopeType,
   position,
   beforeNodeId
 }: {
-  viewNodeId: number;
+  scopeId: number;
+  scopeType: ScopeType;
   position: "start" | "end";
   beforeNodeId?: number | null;
 }) {
@@ -27,15 +31,9 @@ export function ViewEdgeComposer({
     savingRef.current = true;
     setIsSaving(true);
     try {
-      const textNode = await apiFetch<NodeRecord>(`/nodes/${viewNodeId}/children`, {
-        method: "POST",
-        body: JSON.stringify({ component_type: "PlainTextUnit", config: { text: "" } })
-      });
+      const textNode = await createChildNode(scopeId, "PlainTextUnit", { text: "" });
       if (position === "start" && beforeNodeId) {
-        await apiFetch(`/nodes/${textNode.node_id}/reparent`, {
-          method: "PUT",
-          body: JSON.stringify({ target_parent_node_id: viewNodeId, before_node_id: beforeNodeId })
-        });
+        await reparentNode(textNode.node_id, scopeId, beforeNodeId, { skipIfMissing: true });
       }
       setFocusedNodeId(textNode.node_id);
       setPendingInlineFocusId(textNode.node_id);
@@ -46,22 +44,23 @@ export function ViewEdgeComposer({
       savingRef.current = false;
       setIsSaving(false);
     }
-  }, [beforeNodeId, position, router, setFocusedNodeId, setPendingInlineFocusId, toast, viewNodeId]);
+  }, [beforeNodeId, position, router, scopeId, setFocusedNodeId, setPendingInlineFocusId, toast]);
 
   const wrapClass =
     position === "start"
       ? "group-edge-marker-wrap group-edge-marker-wrap--start"
       : "group-edge-marker-wrap group-edge-marker-wrap--end";
+  const componentType = scopeType === "view" ? "ViewMarker" : "GroupMarker";
 
   return (
     <button
       className={wrapClass}
       type="button"
-      aria-label={position === "start" ? "Add text at start of view" : "Add text at end of view"}
+      aria-label={position === "start" ? "Add text at start" : "Add text at end"}
       data-edge-marker={position}
-      data-parent-id={viewNodeId}
-      data-node-id={viewNodeId}
-      data-component-type="ViewMarker"
+      data-parent-id={scopeId}
+      data-node-id={scopeId}
+      data-component-type={componentType}
       disabled={isSaving}
       onClick={addText}
       onKeyDown={(event) => {

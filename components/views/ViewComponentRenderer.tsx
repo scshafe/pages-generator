@@ -4,14 +4,18 @@ import type { NodeRecord, ResolvedNode } from "@/lib/content/types";
 import ReactMarkdown from "react-markdown";
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { KeyboardEvent, MouseEvent } from "react";
+import type { KeyboardEvent, MouseEvent, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api/client";
 import { useToast } from "@/components/ui/ToastProvider";
 import { useContainerFocus } from "@/components/author/ContainerFocusProvider";
 import { useDragScope } from "@/components/views/DragScopeProvider";
 import { isScopeComponent, resolveGroupKind } from "@/lib/content/containers";
-import { GroupEndComposer } from "@/components/views/GroupEndComposer";
+import { EdgeMarker } from "@/components/views/EdgeMarker";
+import { createChildNode, reparentNode } from "@/components/views/contentOps";
+import { isInteractiveTarget } from "@/components/views/domUtils";
+import { useInlineMenuState } from "@/components/views/useInlineMenuState";
+import { useInlineMenuEvents } from "@/components/views/useInlineMenuEvents";
 
 type MenuType = "container" | "unit" | "style" | null;
 
@@ -190,6 +194,7 @@ function isCaretAtEnd(container: HTMLElement) {
   }
   return offset === 0 && length === 0;
 }
+
 function ArrowInIcon() {
   return (
     <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false">
@@ -205,12 +210,6 @@ function ArrowOutIcon() {
     </svg>
   );
 }
-
-function isInteractiveTarget(target: EventTarget | null) {
-  if (!(target instanceof HTMLElement)) return false;
-  return Boolean(target.closest("button, input, textarea, select, a, [contenteditable='true']"));
-}
-
 function ScopeArrow({
   direction,
   targetScopeId,
@@ -283,7 +282,8 @@ export function SortableChildren({
   containerNodeId,
   containerType,
   containerConfig,
-  isCompatible
+  isCompatible,
+  renderNode
 }: {
   nodes: ResolvedNode[];
   enabled: boolean;
@@ -291,6 +291,7 @@ export function SortableChildren({
   containerType: string;
   containerConfig: Record<string, unknown>;
   isCompatible: (draggedType: string, targetType: string, config: Record<string, unknown>) => boolean;
+  renderNode?: (node: ResolvedNode, index: number, siblings: ResolvedNode[]) => ReactNode;
 }) {
   const [items, setItems] = useState(nodes);
   const [dropTargetId, setDropTargetId] = useState<number | null>(null);
@@ -372,10 +373,7 @@ export function SortableChildren({
         } else if (targetNextId) {
           payload.before_node_id = targetNextId;
         }
-        await apiFetch(`/nodes/${draggedId}/reparent`, {
-          method: "PUT",
-          body: JSON.stringify(payload)
-        });
+        await reparentNode(draggedId, payload.target_parent_node_id, payload.before_node_id ?? null);
         toast.push("Moved into container", "success");
         router.refresh();
       } catch {
@@ -400,6 +398,14 @@ export function SortableChildren({
         const showDownArrow = isActiveScope && isContainer;
         const showDownOutline = isActiveScope && isContainer && isDragging;
         const isDividor = child.component.type === "DividorUnit";
+        const renderItem = renderNode ?? ((nodeItem: ResolvedNode, itemIndex: number, siblings: ResolvedNode[]) => (
+          <ViewComponentRenderer
+            node={nodeItem}
+            parentType={containerType}
+            previousSiblingType={siblings[itemIndex - 1]?.component.type ?? null}
+            nextSiblingType={siblings[itemIndex + 1]?.component.type ?? null}
+          />
+        ));
         return (
         <div
           key={child.node.node_id}
@@ -437,12 +443,7 @@ export function SortableChildren({
           {showDownArrow ? (
             <ScopeArrow direction="down" targetScopeId={child.node.node_id} active={isDragging} />
           ) : null}
-          <ViewComponentRenderer
-            node={child}
-            parentType={containerType}
-            previousSiblingType={items[index - 1]?.component.type ?? null}
-            nextSiblingType={items[index + 1]?.component.type ?? null}
-          />
+          {renderItem(child, index, items)}
         </div>
         );
       })}
@@ -499,11 +500,7 @@ export function ViewComponentRenderer({
   const isInsertingRef = useRef(false);
   const [menuType, setMenuType] = useState<MenuType>(null);
   const [menuSplit, setMenuSplit] = useState<{ before: string; after: string } | null>(null);
-  const [menuQuery, setMenuQuery] = useState("");
-  const [menuIndex, setMenuIndex] = useState(0);
   const [menuCaretIndex, setMenuCaretIndex] = useState<number | null>(null);
-  const menuRef = useRef<HTMLDivElement | null>(null);
-  const menuItemRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const menuOptions = useMemo<MenuOption[]>(() => {
     if (menuType === "container") return containerOptions;
     if (menuType === "unit") return unitOptions;
@@ -591,21 +588,6 @@ export function ViewComponentRenderer({
           );
         }
 
-        const createChild = async (parentId: number, componentType: string, configValue: Record<string, unknown>) => {
-          return apiFetch<NodeRecord>(`/nodes/${parentId}/children`, {
-            method: "POST",
-            body: JSON.stringify({ component_type: componentType, config: configValue })
-          });
-        };
-
-        const reparentNode = async (nodeId: number, parentId: number, beforeNodeId?: number | null) => {
-          if (!beforeNodeId) return;
-          await apiFetch(`/nodes/${nodeId}/reparent`, {
-            method: "PUT",
-            body: JSON.stringify({ target_parent_node_id: parentId, before_node_id: beforeNodeId })
-          });
-        };
-
         let createdNode: NodeRecord | null = null;
         let focusNodeId: number | null = null;
         let afterNodeId: number | null = null;
@@ -619,9 +601,9 @@ export function ViewComponentRenderer({
         if (activeMenuType === "unit") {
           const nextSiblingId = node.node.next_node_id;
           const configText = option.componentType === "PlainTextUnit" && hasAfterText ? afterText : "";
-          createdNode = await createChild(groupId, option.componentType, option.buildConfig(configText));
+          createdNode = await createChildNode(groupId, option.componentType, option.buildConfig(configText));
           if (createdNode) {
-            await reparentNode(createdNode.node_id, groupId, nextSiblingId);
+          await reparentNode(createdNode.node_id, groupId, nextSiblingId, { skipIfMissing: true });
           }
 
           if (createdNode && shouldFocusInline) {
@@ -629,9 +611,9 @@ export function ViewComponentRenderer({
           }
 
           if (hasAfterText && option.componentType !== "PlainTextUnit") {
-            const afterNode = await createChild(groupId, "PlainTextUnit", { text: afterText });
+            const afterNode = await createChildNode(groupId, "PlainTextUnit", { text: afterText });
             if (afterNode) {
-              await reparentNode(afterNode.node_id, groupId, nextSiblingId);
+              await reparentNode(afterNode.node_id, groupId, nextSiblingId, { skipIfMissing: true });
               afterNodeId = afterNode.node_id;
               if (!shouldFocusInline) {
                 focusNodeId = afterNode.node_id;
@@ -645,9 +627,9 @@ export function ViewComponentRenderer({
         }
 
         if (activeMenuType === "container") {
-          createdNode = await createChild(groupId, option.componentType, option.buildConfig(""));
+          createdNode = await createChildNode(groupId, option.componentType, option.buildConfig(""));
           if (createdNode) {
-            const textNode = await createChild(createdNode.node_id, "PlainTextUnit", { text: "" });
+            const textNode = await createChildNode(createdNode.node_id, "PlainTextUnit", { text: "" });
             if (textNode) {
               focusNodeId = textNode.node_id;
               focusInlineNodeId = textNode.node_id;
@@ -658,9 +640,9 @@ export function ViewComponentRenderer({
 
           if (hasAfterText) {
             const nextSiblingId = node.node.next_node_id;
-            const afterNode = await createChild(groupId, "PlainTextUnit", { text: afterText });
+            const afterNode = await createChildNode(groupId, "PlainTextUnit", { text: afterText });
             if (afterNode) {
-              await reparentNode(afterNode.node_id, groupId, nextSiblingId);
+              await reparentNode(afterNode.node_id, groupId, nextSiblingId, { skipIfMissing: true });
               afterNodeId = afterNode.node_id;
             }
           }
@@ -953,27 +935,11 @@ export function ViewComponentRenderer({
         }
 
         const nextSiblingId = node.node.next_node_id;
-        const dividorNode = await apiFetch<NodeRecord>(`/nodes/${parentId}/children`, {
-          method: "POST",
-          body: JSON.stringify({ component_type: "DividorUnit", config: {} })
-        });
-        if (nextSiblingId) {
-          await apiFetch(`/nodes/${dividorNode.node_id}/reparent`, {
-            method: "PUT",
-            body: JSON.stringify({ target_parent_node_id: parentId, before_node_id: nextSiblingId })
-          });
-        }
+        const dividorNode = await createChildNode(parentId, "DividorUnit", {});
+        await reparentNode(dividorNode.node_id, parentId, nextSiblingId, { skipIfMissing: true });
 
-        const textNode = await apiFetch<NodeRecord>(`/nodes/${parentId}/children`, {
-          method: "POST",
-          body: JSON.stringify({ component_type: "PlainTextUnit", config: { text: "" } })
-        });
-        if (nextSiblingId) {
-          await apiFetch(`/nodes/${textNode.node_id}/reparent`, {
-            method: "PUT",
-            body: JSON.stringify({ target_parent_node_id: parentId, before_node_id: nextSiblingId })
-          });
-        }
+        const textNode = await createChildNode(parentId, "PlainTextUnit", { text: "" });
+        await reparentNode(textNode.node_id, parentId, nextSiblingId, { skipIfMissing: true });
         setFocusedNodeId(textNode.node_id);
         setPendingInlineFocusId(textNode.node_id);
         router.refresh();
@@ -993,17 +959,9 @@ export function ViewComponentRenderer({
     if (isInsertingRef.current) return null;
     isInsertingRef.current = true;
     try {
-      const newNode = await apiFetch<NodeRecord>(`/nodes/${parentId}/children`, {
-        method: "POST",
-        body: JSON.stringify({ component_type: "PlainTextUnit", config: { text: "" } })
-      });
+      const newNode = await createChildNode(parentId, "PlainTextUnit", { text: "" });
       const nextSiblingId = node.node.next_node_id;
-      if (nextSiblingId) {
-        await apiFetch(`/nodes/${newNode.node_id}/reparent`, {
-          method: "PUT",
-          body: JSON.stringify({ target_parent_node_id: parentId, before_node_id: nextSiblingId })
-        });
-      }
+      await reparentNode(newNode.node_id, parentId, nextSiblingId, { skipIfMissing: true });
       setFocusedNodeId(newNode.node_id);
       setPendingInlineFocusId(newNode.node_id);
       router.refresh();
@@ -1016,32 +974,6 @@ export function ViewComponentRenderer({
     }
   }, [node.node.next_node_id, node.node.parent_node_id, router, setFocusedNodeId, setPendingInlineFocusId, toast]);
 
-  const insertTextAtGroupStart = useCallback(async () => {
-    if (!isAuthor) return;
-    if (component.type !== "Group") return;
-    if (isInsertingRef.current) return;
-    isInsertingRef.current = true;
-    try {
-      const newNode = await apiFetch<NodeRecord>(`/nodes/${node.node.node_id}/children`, {
-        method: "POST",
-        body: JSON.stringify({ component_type: "PlainTextUnit", config: { text: "" } })
-      });
-      const firstChildId = node.children[0]?.node.node_id ?? null;
-      if (firstChildId) {
-        await apiFetch(`/nodes/${newNode.node_id}/reparent`, {
-          method: "PUT",
-          body: JSON.stringify({ target_parent_node_id: node.node.node_id, before_node_id: firstChildId })
-        });
-      }
-      setFocusedNodeId(newNode.node_id);
-      setPendingInlineFocusId(newNode.node_id);
-      router.refresh();
-    } catch {
-      toast.push("Failed to add text", "error");
-    } finally {
-      isInsertingRef.current = false;
-    }
-  }, [component.type, isAuthor, node.children, node.node.node_id, router, setFocusedNodeId, setPendingInlineFocusId, toast]);
 
   const advanceToNextText = useCallback(
     async (currentValue: string, saveKind: "text" | "code" | "label", currentSaved: string) => {
@@ -1173,10 +1105,7 @@ export function ViewComponentRenderer({
             }
             (async () => {
               try {
-                await apiFetch(`/nodes/${draggedId}/reparent`, {
-                  method: "PUT",
-                  body: JSON.stringify({ target_parent_node_id: node.node.node_id })
-                });
+                    await reparentNode(draggedId, node.node.node_id, null);
                 toast.push("Moved into container", "success");
                 router.refresh();
               } catch {
@@ -1192,23 +1121,12 @@ export function ViewComponentRenderer({
           <ScopeArrow direction="up" targetScopeId={node.node.parent_node_id} active={Boolean(dragScope?.isDragging)} />
         ) : null}
         {isAuthor && isGroupScope && hasChildren && !hasPrevGroupSibling ? (
-          <button
-            className="group-edge-marker-wrap group-edge-marker-wrap--start"
-            type="button"
-            aria-label="Add text at start of group"
-            data-edge-marker="start"
-            data-parent-id={node.node.node_id}
-            data-node-id={node.node.node_id}
-            data-component-type="GroupMarker"
-            onMouseDown={(event) => {
-              if (event.button !== 0) return;
-              if (dragScope?.isDragging) return;
-              event.preventDefault();
-              insertTextAtGroupStart();
-            }}
-          >
-            <span className="group-edge-marker group-edge-marker--start" aria-hidden="true" />
-          </button>
+          <EdgeMarker
+            scopeId={node.node.node_id}
+            scopeType="group"
+            position="start"
+            beforeNodeId={node.children[0]?.node.node_id ?? null}
+          />
         ) : null}
         {isAuthor ? (
           <SortableChildren
@@ -1231,7 +1149,7 @@ export function ViewComponentRenderer({
           ))
         )}
         {isAuthor && isGroupScope ? (
-          <GroupEndComposer groupNodeId={node.node.node_id} />
+          <EdgeMarker scopeId={node.node.node_id} scopeType="group" position="end" />
         ) : null}
       </div>
     );
