@@ -2,10 +2,13 @@ import Link from "next/link";
 import { getNavigation } from "@/lib/content/navigation";
 import { getHomeSettings } from "@/lib/content/navigation";
 import { HomeIcon, SettingsIcon } from "@/components/ui/icons";
+import { AuthorMenu } from "@/components/ui/AuthorMenu";
 
 export async function SiteHeader() {
   const [navigation, home] = await Promise.all([getNavigation(), getHomeSettings()]);
   const isAuthor = process.env.NEXT_PUBLIC_BUILD_MODE === "author";
+  const settingsItem = navigation.menu.find((item) => item.label === "Settings");
+  const navItems = navigation.menu.filter((item) => item.label !== "Settings");
 
   return (
     <header className="header">
@@ -20,18 +23,18 @@ export async function SiteHeader() {
             {isAuthor ? <span className="author-pill">Author Mode</span> : null}
           </div>
           <nav className="nav" aria-label="Main">
-            {navigation.menu.map((item) => (
+            {navItems.map((item) => (
               <Link key={item.menu_id} className="nav-link" href={item.href}>
-                {item.label === "Settings" ? (
-                  <>
-                    <SettingsIcon size={24} strokeWidth={2} aria-hidden />
-                    <span className="sr-only">Settings</span>
-                  </>
-                ) : (
-                  <span>{item.label}</span>
-                )}
+                <span>{item.label}</span>
               </Link>
             ))}
+            {settingsItem ? (
+              <Link key={settingsItem.menu_id} className="nav-link" href={settingsItem.href}>
+                <SettingsIcon size={24} strokeWidth={2} aria-hidden />
+                <span className="sr-only">Settings</span>
+              </Link>
+            ) : null}
+            {isAuthor ? <AuthorMenu /> : null}
           </nav>
         </div>
     </header>

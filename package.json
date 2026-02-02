@@ -18,10 +18,9 @@
     "smoke:author": "node scripts/smoke-author.mjs",
     "smoke:export": "node scripts/smoke-export.mjs",
     "smoke:views": "node scripts/smoke-views.mjs",
-    "data:reset": "python3 -m backend.reset_and_seed",
-    "data:reset-data": "python3 -m backend.reset_and_seed --data-only",
-    "data:reset-settings": "python3 -m backend.reset_and_seed --settings-only",
-    "data:reset-interactive": "python3 -m backend.reset_and_seed --interactive",
+    "data:hard-reset": "python3 -m backend.reset_data hard",
+    "data:reset-minimal": "python3 -m backend.reset_data minimal",
+    "data:reset-example": "python3 -m backend.reset_data example",
     "lint": "next lint"
   },
   "dependencies": {

@@ -125,4 +125,7 @@ npm run push-static     # timestamp + build + export + commit + push
 npm run preview       # serve static output from .static-out/
 npm run smoke:author  # author mode smoke test
 npm run smoke:views   # view resolution smoke test
+npm run data:hard-reset   # clear all data and settings
+npm run data:reset-minimal # hard reset + empty view + nav link
+npm run data:reset-example # hard reset + example seed (currently minimal)
 ```

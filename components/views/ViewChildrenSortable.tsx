@@ -20,7 +20,7 @@ export function ViewChildrenSortable({
       nodes={nodes}
       enabled
       containerNodeId={containerNodeId}
-      containerType="ViewContainer"
+      containerType="Container"
       containerConfig={containerConfig}
       isCompatible={isCompatible}
     />

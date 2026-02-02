@@ -12,7 +12,7 @@
 
 ## Scope Rules
 - **Current scope** is the list of siblings in the container where the drag started.
-- **Level down**: only the *previous* or *next* node encountered that is a container is considered level down.
+- **Level down**: container nodes within the current scope are eligible targets.
 - **Level up**: if the dragged node is a child, the **parent container edges** represent level up.
 
 ## Interaction Model
@@ -73,7 +73,7 @@ Update `SortableChildren` to make the **entire card** draggable:
 ### C) Scope border + arrow rendering
 In the active scope list:
 - Add purple outline to all container cards.
-- Show level-down arrow circles on **adjacent containers** only.
+- Show level-down arrow circles on container nodes.
 
 On the active scope parent container:
 - Add light blue outline.

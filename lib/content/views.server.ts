@@ -1,5 +1,6 @@
 import { apiFetch } from "@/lib/api/client";
 import { loadMetadataSnapshot } from "@/lib/content/metadata";
+import { isViewContainer } from "@/lib/content/containers";
 import type {
   ComponentRecord,
   NodeRecord,
@@ -68,7 +69,10 @@ async function resolveViewByPathStatic(pathname: string): Promise<ResolvedNode |
 
   const matchRef = Array.from(references.values()).find((ref) => {
     const component = components.get(ref.comp_id);
-    if (!component || component.type !== "ViewContainer") {
+    if (!component) {
+      return false;
+    }
+    if (!isViewContainer(component.type, component.config ?? {})) {
       return false;
     }
     const config = mergeConfig(component, ref);

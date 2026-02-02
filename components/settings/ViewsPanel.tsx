@@ -539,7 +539,7 @@ export function ViewsPanel() {
           <div className="legend-card">
             <strong>Shared content</strong>
             <p className="muted">
-              Views with the same content tree share a single ViewContainer component.
+              Views with the same content tree share a single Container (view) component.
               Editing content in one updates all shared views.
             </p>
             <p className="muted">

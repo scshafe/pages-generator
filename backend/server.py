@@ -143,13 +143,30 @@ def _merge_config(component: dict[str, Any], reference: dict[str, Any]) -> dict[
     return merged
 
 
+def _resolve_group_kind(component: dict[str, Any]) -> str | None:
+    comp_type = component.get("type")
+    if comp_type != "Group":
+        return None
+    kind = component.get("config", {}).get("group_kind")
+    if kind in {"list", "inline", "style"}:
+        return kind
+    return "inline"
+
+
+def _is_view_container(component: dict[str, Any]) -> bool:
+    if component.get("type") != "Container":
+        return False
+    path_value = component.get("config", {}).get("path")
+    return isinstance(path_value, str) and len(path_value) > 0
+
+
 def _list_views() -> list[dict[str, Any]]:
     references = list_json_files(REFERENCE_DIR)
     views = []
     for ref in references:
         comp_id = ref.get("comp_id")
         component = find_component(comp_id) if comp_id else None
-        if not component or component.get("type") != "ViewContainer":
+        if not component or not _is_view_container(component):
             continue
         views.append(
             {
@@ -173,7 +190,7 @@ def _resolve_view_path(node_id: int | None, nodes: dict[int, dict[str, Any]], vi
 
 
 def _is_container_component(component: dict[str, Any]) -> bool:
-    return component.get("type") in {"ViewContainer", "ListContainer", "InlineContainer", "StyleContainer"}
+    return component.get("type") in {"Container", "Group"}
 
 
 def _is_list_compatible(list_type: str | None, child_type: str) -> bool:
@@ -281,9 +298,22 @@ def add_child(node_id: int) -> tuple[Any, int]:
     component_type = payload.get("component_type")
     config = payload.get("config", {})
     overrides = payload.get("overrides")
+    use_ai = False
+    if isinstance(config, dict):
+        use_ai_value = config.get("useAI")
+        if isinstance(use_ai_value, str):
+            use_ai = use_ai_value.lower() == "true"
+        else:
+            use_ai = bool(use_ai_value)
 
     if not component_type:
         return jsonify({"error": "component_type is required"}), 400
+
+    if component_type == "Group" and isinstance(config, dict):
+        if not config.get("group_kind"):
+            config["group_kind"] = "inline"
+        if config.get("group_kind") == "style" and "isTransparent" not in config:
+            config["isTransparent"] = False
 
     parent_node = read_json(node_path(node_id))
     if not parent_node:
@@ -308,6 +338,7 @@ def add_child(node_id: int) -> tuple[Any, int]:
         "node_id": None,
         "comp_id": comp_id,
         "overrides": overrides,
+        "useAI": use_ai,
         "created_at": now_iso(),
         "updated_at": now_iso(),
     }
@@ -358,6 +389,7 @@ def add_mirror_child(node_id: int) -> tuple[Any, int]:
     payload = request.get_json(force=True) or {}
     comp_id = payload.get("comp_id")
     overrides = payload.get("overrides")
+    use_ai = payload.get("useAI")
 
     if not comp_id:
         return jsonify({"error": "comp_id is required"}), 400
@@ -376,6 +408,7 @@ def add_mirror_child(node_id: int) -> tuple[Any, int]:
         "node_id": None,
         "comp_id": comp_id,
         "overrides": overrides,
+        "useAI": use_ai,
         "created_at": now_iso(),
         "updated_at": now_iso(),
     }
@@ -460,7 +493,7 @@ def reparent_node(node_id: int) -> tuple[Any, int]:
         return jsonify({"error": "Node component not found"}), 404
 
     target_config = _merge_config(target_comp, target_ref) if target_ref else target_comp.get("config", {})
-    if target_comp.get("type") == "ListContainer":
+    if _resolve_group_kind(target_comp) == "list":
         list_type = target_config.get("listType")
         if not _is_list_compatible(str(list_type) if list_type else None, str(node_comp.get("type"))):
             return jsonify({"error": "Incompatible list item type"}), 400
@@ -658,6 +691,7 @@ def create_reference() -> tuple[Any, int]:
         "node_id": payload.get("node_id"),
         "comp_id": payload.get("comp_id"),
         "overrides": payload.get("overrides"),
+        "useAI": payload.get("useAI"),
         "created_at": now_iso(),
         "updated_at": now_iso(),
     }
@@ -684,7 +718,7 @@ def update_reference(ref_id: int) -> tuple[Any, int]:
     if "overrides" in payload and isinstance(payload.get("overrides"), dict):
         comp_id = reference.get("comp_id")
         component = find_component(comp_id) if comp_id else None
-        if component and component.get("type") == "ViewContainer":
+        if component and _is_view_container(component):
             next_path = payload["overrides"].get("path")
             if next_path:
                 if not str(next_path).startswith("/"):
@@ -754,7 +788,7 @@ def create_view() -> tuple[Any, int]:
     comp_id = generate_id()
     component = {
         "comp_id": comp_id,
-        "type": "ViewContainer",
+        "type": "Container",
         "config": {
             "path": path_value,
             "name": name,
@@ -768,7 +802,7 @@ def create_view() -> tuple[Any, int]:
         "created_at": now_iso(),
         "updated_at": now_iso(),
     }
-    write_json(component_path("ViewContainer", comp_id), component)
+    write_json(component_path("Container", comp_id), component)
 
     ref_id = generate_id()
     reference = {
@@ -846,7 +880,7 @@ def duplicate_view(node_id: int) -> tuple[Any, int]:
     new_comp["config"]["description"] = description
     new_comp["config"]["order"] = max_order + 1
     new_comp["updated_at"] = now_iso()
-    write_json(component_path("ViewContainer", new_comp["comp_id"]), new_comp)
+    write_json(component_path(new_comp["type"], new_comp["comp_id"]), new_comp)
 
     return jsonify({"comp_id": new_comp["comp_id"], "ref_id": new_ref.get("ref_id") if new_ref else None, "node_id": new_node_id, "config": new_comp["config"]}), 201
 
@@ -876,7 +910,7 @@ def mirror_view(node_id: int) -> tuple[Any, int]:
     if not reference:
         return jsonify({"error": "Source reference not found"}), 404
     component = find_component(reference.get("comp_id")) if reference.get("comp_id") else None
-    if not component or component.get("type") != "ViewContainer":
+    if not component or not _is_view_container(component):
         return jsonify({"error": "Source component not found"}), 404
 
     max_order = 0
@@ -900,6 +934,7 @@ def mirror_view(node_id: int) -> tuple[Any, int]:
         "node_id": None,
         "comp_id": component.get("comp_id"),
         "overrides": overrides,
+        "useAI": reference.get("useAI"),
         "created_at": now_iso(),
         "updated_at": now_iso(),
     }
@@ -941,7 +976,7 @@ def detach_view(node_id: int) -> tuple[Any, int]:
     if not reference:
         return jsonify({"error": "Reference not found"}), 404
     component = find_component(reference.get("comp_id")) if reference.get("comp_id") else None
-    if not component or component.get("type") != "ViewContainer":
+    if not component or not _is_view_container(component):
         return jsonify({"error": "View component not found"}), 404
 
     references = list_json_files(REFERENCE_DIR)
@@ -1037,6 +1072,7 @@ def _clone_node_tree(source_node_id: int, parent_node_id: int | None) -> int | N
         "node_id": None,
         "comp_id": new_comp_id,
         "overrides": json.loads(json.dumps(source_ref.get("overrides"))) if source_ref.get("overrides") else None,
+        "useAI": source_ref.get("useAI"),
         "created_at": now_iso(),
         "updated_at": now_iso(),
     }
@@ -1107,7 +1143,7 @@ def delete_view(node_id: int) -> tuple[Any, int]:
         return jsonify({"error": "View reference not found"}), 404
     comp_id = reference.get("comp_id")
     component = find_component(comp_id) if comp_id else None
-    if not component or component.get("type") != "ViewContainer":
+    if not component or not _is_view_container(component):
         return jsonify({"error": "View component not found"}), 404
 
     references = list_json_files(REFERENCE_DIR)
@@ -1134,10 +1170,16 @@ def delete_view(node_id: int) -> tuple[Any, int]:
 def create_component(component_type: str) -> tuple[Any, int]:
     payload = request.get_json(force=True) or {}
     comp_id = payload.get("comp_id") or generate_id()
+    config = payload.get("config", {})
+    if component_type == "Group" and isinstance(config, dict):
+        if not config.get("group_kind"):
+            config["group_kind"] = "inline"
+        if config.get("group_kind") == "style" and "isTransparent" not in config:
+            config["isTransparent"] = False
     component = {
         "comp_id": comp_id,
         "type": component_type,
-        "config": payload.get("config", {}),
+        "config": config,
         "reference_count": payload.get("reference_count", 0),
         "created_at": now_iso(),
         "updated_at": now_iso(),
@@ -1160,7 +1202,7 @@ def update_component(component_type: str, comp_id: int) -> tuple[Any, int]:
     component = read_json(component_path(component_type, comp_id))
     if not component:
         return jsonify({"error": "Component not found"}), 404
-    if component_type == "ViewContainer" and isinstance(payload.get("config"), dict):
+    if component_type == "Container" and isinstance(payload.get("config"), dict):
         next_path = payload["config"].get("path")
         if next_path:
             if not str(next_path).startswith("/"):
@@ -1458,7 +1500,7 @@ def list_asset_usage() -> tuple[Any, int]:
     view_paths: dict[int, str] = {}
     for ref in references:
         comp = comp_map.get(ref.get("comp_id"))
-        if not comp or comp.get("type") != "ViewContainer":
+        if not comp or not _is_view_container(comp):
             continue
         config = _merge_config(comp, ref)
         if ref.get("node_id"):

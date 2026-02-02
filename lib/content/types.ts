@@ -7,15 +7,16 @@ export type FooterId = UniqueId;
 export type ThemeId = UniqueId;
 
 export type ComponentType =
-  | "ViewContainer"
-  | "ListContainer"
-  | "InlineContainer"
-  | "StyleContainer"
-  | "SectionUnit"
+  | "Container"
+  | "Group"
   | "PlainTextUnit"
+  | "DividorUnit"
+  | "CodeUnit"
+  | "CodeBlockUnit"
   | "AlertUnit"
   | "MarkdownUnit"
   | "LinkUnit"
+  | "ButtonUnit"
   | "ImageMedia"
   | "VideoMedia"
   | "PDFMedia"
@@ -23,13 +24,8 @@ export type ComponentType =
   | "HtmlComponent"
   | "JsComponent";
 
-export type ContainerType =
-  | "ViewContainer"
-  | "ListContainer"
-  | "InlineContainer"
-  | "StyleContainer";
+export type GroupKind = "inline" | "list" | "style";
 
-export type HeadingLevel = "h1" | "h2" | "h3";
 export type AlertVariant = "info" | "warning" | "error" | "success";
 export type DisplayMode = "list" | "grid" | "cards";
 export type ColorScheme = "system" | "light" | "dark";
@@ -49,6 +45,7 @@ export interface ReferenceRecord {
   node_id: NodeId;
   comp_id: CompId;
   overrides?: Record<string, unknown> | null;
+  useAI?: boolean | null;
   created_at?: string;
   updated_at?: string;
 }

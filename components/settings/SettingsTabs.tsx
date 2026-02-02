@@ -5,6 +5,8 @@ import { ViewsPanel } from "@/components/settings/ViewsPanel";
 import { NavigationPanel } from "@/components/settings/NavigationPanel";
 import { MediaPanel } from "@/components/settings/MediaPanel";
 import { SitePanel } from "@/components/settings/SitePanel";
+import { CursorPanel } from "@/components/settings/CursorPanel";
+import { ShortcutsPanel } from "@/components/settings/ShortcutsPanel";
 
 const tabs = [
   { id: "site", label: "Site" },
@@ -13,6 +15,8 @@ const tabs = [
   { id: "media", label: "Media" },
   { id: "ai", label: "AI" },
   { id: "theme", label: "Theme" },
+  { id: "cursor", label: "Cursor" },
+  { id: "shortcuts", label: "Shortcuts" },
   { id: "structure", label: "Structure" },
   { id: "knowledge", label: "Knowledge Base" }
 ] as const;
@@ -47,6 +51,8 @@ export function SettingsTabs() {
         {activeTab === "media" ? <MediaPanel /> : null}
         {activeTab === "ai" ? null : null}
         {activeTab === "theme" ? null : null}
+        {activeTab === "cursor" ? <CursorPanel /> : null}
+        {activeTab === "shortcuts" ? <ShortcutsPanel /> : null}
         {activeTab === "structure" ? null : null}
         {activeTab === "knowledge" ? null : null}
       </div>

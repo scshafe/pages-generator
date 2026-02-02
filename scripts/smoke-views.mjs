@@ -30,11 +30,19 @@ async function main() {
     throw new Error("Create view did not return node_id");
   }
 
-  await api(`/nodes/${created.node_id}/children`, {
+  const groupNode = await api(`/nodes/${created.node_id}/children`, {
     method: "POST",
     body: JSON.stringify({
-      component_type: "SectionUnit",
-      config: { text: "Smoke section", level: "h2" }
+      component_type: "Group",
+      config: { group_kind: "inline", child_node_id: null }
+    })
+  });
+
+  await api(`/nodes/${groupNode.node_id}/children`, {
+    method: "POST",
+    body: JSON.stringify({
+      component_type: "PlainTextUnit",
+      config: { text: "Smoke text" }
     })
   });
 

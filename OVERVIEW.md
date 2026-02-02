@@ -51,7 +51,7 @@ The system uses a three-layer entity architecture for content management:
 Node → ref_id → Reference → comp_id → Component
 ```
 
-**Views are ViewContainer components** — a View is represented as a Node pointing to a Reference pointing to a ViewContainer component.
+**Views are Container components** — a View is represented as a Node pointing to a Reference pointing to a Container with `config.path`.
 
 ### Resolution Flow
 
@@ -59,12 +59,26 @@ When displaying a view, the system resolves entities in this order:
 
 1. Load the root node by `node_id`
 2. Load the reference via `ref_id`
-3. Load the component (ViewContainer) via `comp_id`
+3. Load the component (Container with `config.path`) via `comp_id`
 4. For container components, walk the linked list via `child_node_id` and `next_node_id`
 5. Merge component `config` with reference `overrides`
 6. Recursively resolve children
 
 See `ENTITY_UML_SCHEMA.md` for the full UML diagram.
+See `docs/implementation/view-layout.md` for the visual layout model and how Containers, Groups, Units, and group markers interact.
+
+## Authoring UX (Author Mode)
+
+- Click any text unit to edit inline.
+- Use shortcuts to add content (Hyper+G creates a sub group; Hyper+U/P opens the unit menu).
+- Views show edge markers at start/end; when empty, a single marker adds the first unit.
+- View titles are inline editable in author mode.
+- Text is editable in place; clearing all text removes that unit automatically.
+- Press Enter in a text unit to add a Dividor and a new text unit.
+- The Configuration panel can be toggled into a compact view that shows only type and name.
+- Configuration inputs are only in the Configuration panel (the canvas has no config controls).
+- The floating Configuration panel at the bottom shows editable settings for the most recently focused component.
+- Components support a `useAI` toggle with an optional prompt; references can also enable `useAI` for flexible placement.
 
 ## Directory Structure
 
@@ -76,7 +90,7 @@ See `ENTITY_UML_SCHEMA.md` for the full UML diagram.
 │   ├── server.py             # API endpoints
 │   ├── database.py           # JSON storage helpers
 │   ├── export_metadata.py    # Exports metadata.json snapshot
-│   └── reset_and_seed.py     # Reset data/settings
+│   └── reset_data.py         # Reset and seed data
 ├── components/
 │   ├── author/               # Author-only UI (edit/add components)
 │   ├── settings/             # Settings panels

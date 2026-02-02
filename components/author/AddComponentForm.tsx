@@ -9,43 +9,66 @@ import { Switch } from "@/components/ui/Switch";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api/client";
 import { siteConfig } from "@/site.config";
+import { resolveGroupKind } from "@/lib/content/containers";
 
 const componentOptions = [
-  { value: "SectionUnit", label: "Section" },
-  { value: "PlainTextUnit", label: "Plain Text" },
-  { value: "MarkdownUnit", label: "Markdown" },
-  { value: "AlertUnit", label: "Alert" },
+  { value: "PlainTextUnit", label: "Text" },
+  { value: "DividorUnit", label: "Dividor" },
+  { value: "CodeUnit", label: "Code" },
+  { value: "CodeBlockUnit", label: "Code Block" },
   { value: "LinkUnit", label: "Link" },
+  { value: "ButtonUnit", label: "Button" },
   { value: "ImageMedia", label: "Image" },
   { value: "VideoMedia", label: "Video" },
+  { value: "MarkdownUnit", label: "Markdown" },
+  { value: "AlertUnit", label: "Alert" },
   { value: "PDFMedia", label: "PDF" },
   { value: "ExperienceComponent", label: "Experience" },
-  { value: "StyleContainer", label: "Style Container" },
+  { value: "Container", label: "Container" },
+  { value: "Group", label: "Group" },
   { value: "Mirror", label: "Mirror Existing" }
 ] as const;
 
 type ComponentType = (typeof componentOptions)[number]["value"];
 
 function buildConfig(type: ComponentType, values: Record<string, string>) {
+  let config: Record<string, unknown> = {};
   switch (type) {
-    case "SectionUnit":
-      return { text: values.text ?? "New section", level: "h2" };
     case "PlainTextUnit":
-      return { text: values.text ?? "" };
+      config = { text: values.text ?? "" };
+      break;
+    case "DividorUnit":
+      config = {};
+      break;
+    case "CodeUnit":
+      config = { code: values.code ?? "" };
+      break;
+    case "CodeBlockUnit":
+      config = { code: values.code ?? "" };
+      break;
     case "MarkdownUnit":
-      return { content: values.content ?? "" };
+      config = { content: values.content ?? "" };
+      break;
     case "AlertUnit":
-      return { content: values.content ?? "", variant: "info" };
+      config = { content: values.content ?? "", variant: "info" };
+      break;
     case "LinkUnit":
-      return { label: values.label ?? "Link", url: values.url ?? "/" };
+      config = { label: values.label ?? "Link", url: values.url ?? "/" };
+      break;
+    case "ButtonUnit":
+      config = { label: values.label ?? "Button", url: values.url ?? "/" };
+      break;
     case "ImageMedia":
-      return { src: values.src ?? "", alt: values.alt ?? "" };
+      config = { src: values.src ?? "", alt: values.alt ?? "" };
+      break;
     case "VideoMedia":
-      return { src: values.src ?? "", autoplay: values.autoplay === "true" };
+      config = { src: values.src ?? "", autoplay: values.autoplay === "true" };
+      break;
     case "PDFMedia":
-      return { src: values.src ?? "", title: values.title ?? "" };
+      config = { src: values.src ?? "", title: values.title ?? "" };
+      break;
     case "ExperienceComponent":
-      return {
+      config = {
         position: values.position ?? "",
         company: values.company ?? "",
         start_date: values.start_date ?? "",
@@ -53,16 +76,42 @@ function buildConfig(type: ComponentType, values: Record<string, string>) {
         image: values.image ?? "",
         content: values.content ?? ""
       };
-    case "StyleContainer":
-      return {
-        isTransparent: values.isTransparent === "true",
+      break;
+    case "Container":
+      config = { child_node_id: null, name: values.name ?? "" };
+      break;
+    case "Group": {
+      const kind = values.group_kind ?? "inline";
+      config = {
+        group_kind: kind,
         child_node_id: null
       };
+      if (kind === "style") {
+        config.isTransparent = values.isTransparent === "true";
+      }
+      if (kind === "list") {
+        config.listType = values.listType ?? "View";
+        config.displayMode = values.displayMode ?? "list";
+        if (values.name) {
+          config.name = values.name;
+        }
+      }
+      break;
+    }
     case "Mirror":
-      return {};
+      config = {};
+      break;
     default:
-      return {};
+      config = {};
   }
+
+  const useAI = values.useAI === "true";
+  if (useAI) {
+    config.useAI = true;
+    config.aiPrompt = values.aiPrompt ?? "";
+  }
+
+  return config;
 }
 
 export function AddComponentForm({
@@ -77,7 +126,7 @@ export function AddComponentForm({
   onAdded?: () => void;
 }) {
   const router = useRouter();
-  const [type, setType] = useState<ComponentType>("SectionUnit");
+  const [type, setType] = useState<ComponentType>("PlainTextUnit");
   const [values, setValues] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -87,8 +136,8 @@ export function AddComponentForm({
   const [linkType, setLinkType] = useState<"internal" | "external">("internal");
   const [views, setViews] = useState<{ node_id: number | null; config: { path?: string; title?: string; name?: string } }[]>([]);
   const [selectedViewId, setSelectedViewId] = useState<number | null>(null);
-  const [sections, setSections] = useState<{ node_id: number; title: string }[]>([]);
-  const [selectedSectionId, setSelectedSectionId] = useState<number | null>(null);
+  const [anchors, setAnchors] = useState<{ hash: string; title: string }[]>([]);
+  const [selectedAnchorHash, setSelectedAnchorHash] = useState<string | null>(null);
   const [showMarkdownPreview, setShowMarkdownPreview] = useState(false);
   const [mirrorViews, setMirrorViews] = useState<
     { node_id: number | null; config: { path?: string; title?: string; name?: string } }[]
@@ -100,15 +149,22 @@ export function AddComponentForm({
   const [mirrorType, setMirrorType] = useState<string>("");
   const [mirrorItemId, setMirrorItemId] = useState<number | null>(null);
   const toast = useToast();
+  const aiEnabled = values.useAI === "true";
+  const showAiControls = type !== "Mirror";
+  const groupKind = values.group_kind || "inline";
 
   const fields = useMemo(() => {
     switch (type) {
-      case "SectionUnit":
       case "PlainTextUnit":
         return [{ key: "text", label: "Text", placeholder: "Content" }];
+      case "DividorUnit":
+        return [];
       case "MarkdownUnit":
       case "AlertUnit":
         return [{ key: "content", label: "Content", placeholder: "Markdown or alert content" }];
+      case "CodeUnit":
+      case "CodeBlockUnit":
+        return [{ key: "code", label: "Code", placeholder: "// your code" }];
       case "VideoMedia":
         return [
           { key: "src", label: "Video URL", placeholder: "/videos/demo.mp4" },
@@ -128,10 +184,9 @@ export function AddComponentForm({
           { key: "image", label: "Image", placeholder: "/images/logo.png" },
           { key: "content", label: "Summary", placeholder: "Role summary" }
         ];
-      case "StyleContainer":
-        return [
-          { key: "isTransparent", label: "Transparent", placeholder: "" }
-        ];
+      case "Container":
+      case "Group":
+        return [];
       case "Mirror":
         return [];
       default:
@@ -139,69 +194,126 @@ export function AddComponentForm({
     }
   }, [type]);
 
-  const loadSections = useCallback(async (viewNodeId: number) => {
+  const isLinkableComponent = useCallback((componentType: string) => {
+    return componentType !== "Container" && componentType !== "Group";
+  }, []);
+
+  const getAnchorLabel = useCallback((componentType: string, config: Record<string, unknown>) => {
+    switch (componentType) {
+      case "PlainTextUnit":
+        return String(config.text ?? "Text");
+      case "DividorUnit":
+        return "Dividor";
+      case "MarkdownUnit":
+        return String(config.content ?? "Markdown").slice(0, 60);
+      case "AlertUnit":
+        return String(config.content ?? "Alert").slice(0, 60);
+      case "CodeUnit":
+        return String(config.code ?? "Code").slice(0, 60);
+      case "CodeBlockUnit":
+        return String(config.code ?? "Code block").slice(0, 60);
+      case "LinkUnit":
+        return String(config.label ?? "Link");
+      case "ButtonUnit":
+        return String(config.label ?? "Button");
+      case "ImageMedia":
+      case "VideoMedia":
+      case "PDFMedia":
+        return String(config.src ?? "Media");
+      case "ExperienceComponent":
+        return String(config.position ?? "Role");
+      default:
+        return componentType;
+    }
+  }, []);
+
+  const loadAnchors = useCallback(async (viewNodeId: number) => {
     try {
       const resolved = await apiFetch<{ component: { type: string }; config: Record<string, unknown>; node: { node_id: number }; children: any[] }>(
         `/nodes/${viewNodeId}/resolved`
       );
-      const found: { node_id: number; title: string }[] = [];
+      const found: { hash: string; title: string }[] = [];
       const stack = [resolved];
       while (stack.length) {
         const current = stack.pop();
         if (!current) continue;
-        if (current.component?.type === "SectionUnit") {
-          const title = String(current.config?.text ?? "Section");
-          found.push({ node_id: current.node.node_id, title });
+        const type = current.component?.type;
+        if (type === "Container") {
+          const label = String(current.config?.name ?? current.config?.title ?? "Container");
+          const firstChild = current.children?.[0];
+          if (firstChild) {
+            const childType = firstChild.component?.type;
+            const hash = childType === "Group"
+              ? `group-${firstChild.node.node_id}`
+              : `unit-${firstChild.node.node_id}`;
+            found.push({ hash, title: label });
+          }
+        } else if (type === "Group") {
+          const kind = resolveGroupKind(type, current.config ?? {}) || "inline";
+          const label = String(current.config?.name ?? `Group (${kind})`);
+          found.push({ hash: `group-${current.node.node_id}`, title: label });
+        } else if (type && isLinkableComponent(type)) {
+          const title = getAnchorLabel(type, current.config ?? {});
+          found.push({ hash: `unit-${current.node.node_id}`, title });
         }
         if (current.children?.length) {
           stack.push(...current.children);
         }
       }
-      setSections(found);
-      setSelectedSectionId(null);
+      setAnchors(found);
+      setSelectedAnchorHash(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load sections");
+      setError(err instanceof Error ? err.message : "Failed to load anchors");
     }
-  }, []);
+  }, [getAnchorLabel, isLinkableComponent]);
 
   const loadViews = useCallback(async () => {
     try {
       const response = await apiFetch<{ node_id: number | null; config: { path?: string; title?: string; name?: string } }[]>("/views");
       setViews(response);
-      if (!selectedViewId) {
-        const first = response.find((view) => view.node_id !== null);
-        setSelectedViewId(first?.node_id ?? null);
-        if (first?.node_id) {
-          loadSections(first.node_id);
+        if (!selectedViewId) {
+          const first = response.find((view) => view.node_id !== null);
+          setSelectedViewId(first?.node_id ?? null);
+          if (first?.node_id) {
+            loadAnchors(first.node_id);
+          }
         }
-      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load views");
     }
-  }, [selectedViewId, loadSections]);
+  }, [selectedViewId, loadAnchors]);
 
   const extractMirrorLabel = useCallback((componentType: string, config: Record<string, unknown>) => {
+    if (componentType === "Group") {
+      const kind = resolveGroupKind(componentType, config) || "inline";
+      return `Group (${kind})`;
+    }
+    if (componentType === "Container") {
+      return String((config as { name?: string; title?: string }).name ?? (config as { title?: string }).title ?? "Container");
+    }
     switch (componentType) {
-      case "SectionUnit":
-        return String(config.text ?? "Section");
       case "PlainTextUnit":
         return String(config.text ?? "Text");
+      case "DividorUnit":
+        return "Dividor";
+      case "CodeUnit":
+        return String(config.code ?? "Code").slice(0, 60);
+      case "CodeBlockUnit":
+        return String(config.code ?? "Code block").slice(0, 60);
       case "MarkdownUnit":
         return String(config.content ?? "Markdown").slice(0, 60);
       case "AlertUnit":
         return String(config.content ?? "Alert").slice(0, 60);
       case "LinkUnit":
         return String(config.label ?? "Link");
+      case "ButtonUnit":
+        return String(config.label ?? "Button");
       case "ImageMedia":
       case "VideoMedia":
       case "PDFMedia":
         return String(config.src ?? "Media");
       case "ExperienceComponent":
         return `${String(config.position ?? "Role")} @ ${String(config.company ?? "")}`.trim();
-      case "ListContainer":
-      case "InlineContainer":
-      case "StyleContainer":
-        return componentType;
       default:
         return componentType;
     }
@@ -209,14 +321,23 @@ export function AddComponentForm({
 
   const extractMirrorPreview = useCallback(
     (componentType: string, config: Record<string, unknown>, childCount: number) => {
+      if (componentType === "Container" || componentType === "Group") {
+        return `${childCount} child component${childCount === 1 ? "" : "s"}`;
+      }
       switch (componentType) {
-        case "SectionUnit":
         case "PlainTextUnit":
           return String(config.text ?? "").slice(0, 120);
+        case "DividorUnit":
+          return "Dividor";
         case "MarkdownUnit":
         case "AlertUnit":
           return String(config.content ?? "").slice(0, 120);
+        case "CodeUnit":
+        case "CodeBlockUnit":
+          return String(config.code ?? "").slice(0, 120);
         case "LinkUnit":
+          return String(config.url ?? "");
+        case "ButtonUnit":
           return String(config.url ?? "");
         case "ImageMedia":
         case "VideoMedia":
@@ -224,10 +345,6 @@ export function AddComponentForm({
           return String(config.src ?? "");
         case "ExperienceComponent":
           return String(config.content ?? "").slice(0, 120);
-        case "ListContainer":
-        case "InlineContainer":
-        case "StyleContainer":
-          return `${childCount} child component${childCount === 1 ? "" : "s"}`;
         default:
           return "";
       }
@@ -250,14 +367,17 @@ export function AddComponentForm({
         const current = stack.pop();
         if (!current) continue;
         const type = current.component?.type;
-        if (type && type !== "ViewContainer") {
+        if (type && type !== "Container") {
           const childCount = current.children?.length ?? 0;
           const preview = extractMirrorPreview(type, current.config ?? {}, childCount);
           const previewSrc = type === "ImageMedia" ? String(current.config?.src ?? "") : undefined;
+          const displayType = type === "Group"
+            ? `Group:${resolveGroupKind(type, current.config ?? {}) || "inline"}`
+            : type;
           items.push({
             ref_id: current.reference?.ref_id ?? current.node.node_id,
             comp_id: current.component.comp_id,
-            type,
+            type: displayType,
             label: extractMirrorLabel(type, current.config ?? {}),
             node_id: current.node.node_id,
             preview,
@@ -298,16 +418,16 @@ export function AddComponentForm({
   }, [mirrorViewId, loadMirrorComponents]);
 
   useEffect(() => {
-    if (type === "LinkUnit" && linkType === "internal" && views.length === 0) {
+    if ((type === "LinkUnit" || type === "ButtonUnit") && linkType === "internal" && views.length === 0) {
       loadViews();
     }
     if (type === "Mirror" && mirrorViews.length === 0) {
       loadMirrorViews();
     }
-    if (type !== "LinkUnit") {
+    if (type !== "LinkUnit" && type !== "ButtonUnit") {
       setLinkType("internal");
       setExternalUrl("");
-      setSelectedSectionId(null);
+      setSelectedAnchorHash(null);
     }
   }, [type, linkType, loadViews, views.length, mirrorViews.length, loadMirrorViews]);
 
@@ -362,13 +482,13 @@ export function AddComponentForm({
           throw new Error("No components match that type");
         }
       }
-      if (type === "LinkUnit") {
+      if (type === "LinkUnit" || type === "ButtonUnit") {
         if (linkType === "external") {
           nextValues.url = externalUrl.trim();
         } else {
           const view = views.find((item) => item.node_id === selectedViewId);
           const basePath = view?.config.path ?? "/";
-          const hash = selectedSectionId ? `#section-${selectedSectionId}` : "";
+          const hash = selectedAnchorHash ? `#${selectedAnchorHash}` : "";
           nextValues.url = `${basePath}${hash}`;
         }
       }
@@ -501,6 +621,15 @@ export function AddComponentForm({
                   }
                   placeholder={field.placeholder}
                 />
+              ) : (type === "CodeUnit" || type === "CodeBlockUnit") && field.key === "code" ? (
+                <textarea
+                  className="code-input"
+                  value={values[field.key] ?? ""}
+                  onChange={(event) =>
+                    setValues((prev) => ({ ...prev, [field.key]: event.target.value }))
+                  }
+                  placeholder={field.placeholder}
+                />
               ) : (
                 <input
                   value={values[field.key] ?? ""}
@@ -513,6 +642,96 @@ export function AddComponentForm({
             </label>
           );
         })}
+        {type === "Group" ? (
+          <div className="form-grid">
+            <label>
+              <span>Group type</span>
+              <select
+                value={groupKind}
+                onChange={(event) =>
+                  setValues((prev) => ({
+                    ...prev,
+                    group_kind: event.target.value
+                  }))
+                }
+              >
+                <option value="style">Style</option>
+                <option value="inline">Inline</option>
+                <option value="list">List</option>
+              </select>
+            </label>
+            {groupKind === "style" ? (
+              <div className="toggle-row">
+                <span>Transparent</span>
+                <Switch
+                  checked={values.isTransparent === "true"}
+                  onCheckedChange={(checked) =>
+                    setValues((prev) => ({
+                      ...prev,
+                      isTransparent: checked ? "true" : "false"
+                    }))
+                  }
+                  aria-label="Transparent"
+                />
+              </div>
+            ) : null}
+            {groupKind === "list" ? (
+              <>
+                <label>
+                  <span>List type</span>
+                  <select
+                    value={values.listType ?? "View"}
+                    onChange={(event) =>
+                      setValues((prev) => ({
+                        ...prev,
+                        listType: event.target.value
+                      }))
+                    }
+                  >
+                    <option value="View">View</option>
+                    <option value="">Any</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Display mode</span>
+                  <select
+                    value={values.displayMode ?? "list"}
+                    onChange={(event) =>
+                      setValues((prev) => ({
+                        ...prev,
+                        displayMode: event.target.value
+                      }))
+                    }
+                  >
+                    <option value="list">List</option>
+                    <option value="grid">Grid</option>
+                    <option value="cards">Cards</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Name</span>
+                  <input
+                    value={values.name ?? ""}
+                    onChange={(event) =>
+                      setValues((prev) => ({ ...prev, name: event.target.value }))
+                    }
+                    placeholder="Optional list name"
+                  />
+                </label>
+              </>
+            ) : null}
+          </div>
+        ) : null}
+        {type === "Container" ? (
+          <label>
+            <span>Name</span>
+            <input
+              value={values.name ?? ""}
+              onChange={(event) => setValues((prev) => ({ ...prev, name: event.target.value }))}
+              placeholder="Optional container name"
+            />
+          </label>
+        ) : null}
         {type === "Mirror" ? (
           <div className="form-grid">
             <label>
@@ -624,7 +843,7 @@ export function AddComponentForm({
             ) : null}
           </div>
         ) : null}
-        {type === "LinkUnit" ? (
+        {type === "LinkUnit" || type === "ButtonUnit" ? (
           <div className="link-editor">
             <label>
               <span>Label</span>
@@ -676,7 +895,7 @@ export function AddComponentForm({
                     onChange={(event) => {
                       const next = Number(event.target.value);
                       setSelectedViewId(next);
-                      loadSections(next);
+                      loadAnchors(next);
                     }}
                     onFocus={() => {
                       if (views.length === 0) {
@@ -691,20 +910,20 @@ export function AddComponentForm({
                     ))}
                   </select>
                 </label>
-                {sections.length ? (
+                {anchors.length ? (
                   <label>
-                    <span>Section</span>
+                    <span>Anchor</span>
                     <select
-                      value={selectedSectionId ?? ""}
+                      value={selectedAnchorHash ?? ""}
                       onChange={(event) => {
                         const value = event.target.value;
-                        setSelectedSectionId(value ? Number(value) : null);
+                        setSelectedAnchorHash(value || null);
                       }}
                     >
                       <option value="">None</option>
-                      {sections.map((section) => (
-                        <option key={section.node_id} value={section.node_id}>
-                          {section.title}
+                      {anchors.map((anchor) => (
+                        <option key={anchor.hash} value={anchor.hash}>
+                          {anchor.title}
                         </option>
                       ))}
                     </select>
@@ -793,6 +1012,35 @@ export function AddComponentForm({
               allowedPrefixes={["application/pdf"]}
               onSelect={(src) => setValues((prev) => ({ ...prev, src }))}
             />
+          </div>
+        ) : null}
+        {showAiControls ? (
+          <div className="ai-controls">
+            <div className="toggle-row">
+              <span>Use AI</span>
+              <Switch
+                checked={aiEnabled}
+                onCheckedChange={(checked) =>
+                  setValues((prev) => ({
+                    ...prev,
+                    useAI: checked ? "true" : "false"
+                  }))
+                }
+                aria-label="Use AI"
+              />
+            </div>
+            {aiEnabled ? (
+              <label>
+                <span>Prompt</span>
+                <textarea
+                  value={values.aiPrompt ?? ""}
+                  onChange={(event) =>
+                    setValues((prev) => ({ ...prev, aiPrompt: event.target.value }))
+                  }
+                  placeholder="Describe the content to generate"
+                />
+              </label>
+            ) : null}
           </div>
         ) : null}
       </div>

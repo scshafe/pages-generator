@@ -1,5 +1,6 @@
 import { apiFetch } from "@/lib/api/client";
 import { loadMetadataSnapshot } from "@/lib/content/metadata";
+import { isViewContainer } from "@/lib/content/containers";
 import type {
   ComponentRecord,
   FooterItem,
@@ -60,7 +61,8 @@ function buildViewMapFromMetadata(metadata: {
     const ref = references.get(node.ref_id);
     if (!ref) continue;
     const comp = components.get(ref.comp_id);
-    if (!comp || comp.type !== "ViewContainer") continue;
+    if (!comp) continue;
+    if (!isViewContainer(comp.type, comp.config ?? {})) continue;
     const config = { ...comp.config, ...(ref.overrides ?? {}) } as {
       title?: string;
       name?: string;

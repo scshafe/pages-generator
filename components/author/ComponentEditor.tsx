@@ -5,13 +5,13 @@ import ReactMarkdown from "react-markdown";
 import { AssetPicker } from "@/components/author/AssetPicker";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api/client";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/components/ui/ToastProvider";
 import { Switch } from "@/components/ui/Switch";
-import { DeleteIcon, EditIcon } from "@/components/ui/icons";
+import { resolveGroupKind } from "@/lib/content/containers";
 
-const textTypes = ["SectionUnit", "PlainTextUnit"] as const;
+const textTypes = ["PlainTextUnit"] as const;
 const contentTypes = ["MarkdownUnit", "AlertUnit"] as const;
+const codeTypes = ["CodeUnit", "CodeBlockUnit"] as const;
 
 export function ComponentEditor({
   nodeId,
@@ -25,11 +25,9 @@ export function ComponentEditor({
   config: Record<string, unknown>;
 }) {
   const router = useRouter();
-  const [isEditing, setIsEditing] = useState(false);
+  const isEditing = true;
   const [isSaving, setIsSaving] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const toast = useToast();
   const [saveStatus, setSaveStatus] = useState<
     "idle" | "dirty" | "saving" | "saved" | "error"
@@ -38,6 +36,9 @@ export function ComponentEditor({
   const [formValues, setFormValues] = useState<Record<string, string>>({
     text: String(config.text ?? ""),
     content: String(config.content ?? ""),
+    useAI: String(Boolean((config as { useAI?: boolean }).useAI)),
+    aiPrompt: String((config as { aiPrompt?: string }).aiPrompt ?? ""),
+    code: String((config as { code?: string }).code ?? ""),
     label: String(config.label ?? ""),
     url: String(config.url ?? ""),
     src: String(config.src ?? ""),
@@ -51,7 +52,10 @@ export function ComponentEditor({
     image: String(config.image ?? ""),
     isTransparent: String(config.isTransparent ?? "false"),
     variant: String(config.variant ?? "info"),
-    level: String(config.level ?? "h2")
+    group_kind: String((config as { group_kind?: string }).group_kind ?? ""),
+    listType: String((config as { listType?: string }).listType ?? ""),
+    displayMode: String((config as { displayMode?: string }).displayMode ?? "list"),
+    name: String((config as { name?: string }).name ?? "")
   });
   const [showMarkdownPreview, setShowMarkdownPreview] = useState(false);
   const [linkType, setLinkType] = useState<"internal" | "external">("internal");
@@ -60,8 +64,12 @@ export function ComponentEditor({
     { node_id: number | null; config: { path?: string; title?: string; name?: string } }[]
   >([]);
   const [selectedViewId, setSelectedViewId] = useState<number | null>(null);
-  const [sections, setSections] = useState<{ node_id: number; title: string }[]>([]);
-  const [selectedSectionId, setSelectedSectionId] = useState<number | null>(null);
+  const [anchors, setAnchors] = useState<{ hash: string; title: string }[]>([]);
+  const [selectedAnchorHash, setSelectedAnchorHash] = useState<string | null>(null);
+
+
+  const groupKind = formValues.group_kind || resolveGroupKind(componentType, config);
+  const isGroup = componentType === "Group";
 
   const fields = useMemo(() => {
     if ((textTypes as readonly string[]).includes(componentType)) {
@@ -69,6 +77,9 @@ export function ComponentEditor({
     }
     if ((contentTypes as readonly string[]).includes(componentType)) {
       return [{ key: "content", label: "Content" }];
+    }
+    if ((codeTypes as readonly string[]).includes(componentType)) {
+      return [{ key: "code", label: "Code" }];
     }
     if (componentType === "ImageMedia") {
       return [
@@ -98,33 +109,33 @@ export function ComponentEditor({
         { key: "content", label: "Summary" }
       ];
     }
-    if (componentType === "StyleContainer") {
-      return [
-        { key: "isTransparent", label: "Transparent" }
-      ];
-    }
     return [];
   }, [componentType]);
 
   const hasAdvanced =
-    componentType === "AlertUnit" || componentType === "SectionUnit" || componentType === "LinkUnit";
+    componentType === "AlertUnit" ||
+    componentType === "LinkUnit" ||
+    componentType === "ButtonUnit";
 
   const isLinkReady =
-    componentType !== "LinkUnit" ||
+    (componentType !== "LinkUnit" && componentType !== "ButtonUnit") ||
     linkType === "external" ||
     (linkType === "internal" && selectedViewId && views.length > 0);
+
+  const aiEnabled = formValues.useAI === "true";
+  const componentLabel = isGroup ? `Group (${groupKind || "inline"})` : componentType;
 
   const buildUpdatedConfig = useCallback(() => {
     const updatedConfig = { ...config } as Record<string, unknown>;
 
-    if (componentType === "LinkUnit") {
+    if (componentType === "LinkUnit" || componentType === "ButtonUnit") {
       updatedConfig.label = formValues.label ?? "";
       if (linkType === "external") {
         updatedConfig.url = externalUrl.trim();
       } else {
         const view = views.find((item) => item.node_id === selectedViewId);
         const basePath = view?.config.path ?? "/";
-        const hash = selectedSectionId ? `#section-${selectedSectionId}` : "";
+        const hash = selectedAnchorHash ? `#${selectedAnchorHash}` : "";
         updatedConfig.url = `${basePath}${hash}`;
       }
     }
@@ -136,25 +147,36 @@ export function ComponentEditor({
     if (componentType === "AlertUnit") {
       updatedConfig.variant = formValues.variant || "info";
     }
-    if (componentType === "SectionUnit") {
-      updatedConfig.level = formValues.level || "h2";
-    }
     if (componentType === "VideoMedia") {
       updatedConfig.autoplay = formValues.autoplay === "true";
     }
-    if (componentType === "StyleContainer") {
-      updatedConfig.isTransparent = formValues.isTransparent === "true";
+    if (isGroup) {
+      updatedConfig.group_kind = groupKind;
+      if (groupKind === "style") {
+        updatedConfig.isTransparent = formValues.isTransparent === "true";
+      }
+      if (groupKind === "list") {
+        updatedConfig.listType = formValues.listType ?? "";
+        updatedConfig.displayMode = formValues.displayMode ?? "list";
+        updatedConfig.name = formValues.name ?? "";
+      }
     }
+
+    const useAI = formValues.useAI === "true";
+    updatedConfig.useAI = useAI;
+    updatedConfig.aiPrompt = useAI ? formValues.aiPrompt ?? "" : "";
 
     return updatedConfig;
   }, [
     componentType,
     config,
+    groupKind,
     externalUrl,
     fields,
     formValues,
+    isGroup,
     linkType,
-    selectedSectionId,
+    selectedAnchorHash,
     selectedViewId,
     views
   ]);
@@ -167,7 +189,40 @@ export function ComponentEditor({
     return response;
   }, []);
 
-  const loadSections = useCallback(async (viewNodeId: number, presetSectionId?: number | null) => {
+  const isLinkableComponent = useCallback((componentType: string) => {
+    return componentType !== "Container" && componentType !== "Group";
+  }, []);
+
+  const getAnchorLabel = useCallback((componentType: string, config: Record<string, unknown>) => {
+    switch (componentType) {
+      case "PlainTextUnit":
+        return String(config.text ?? "Text");
+      case "DividorUnit":
+        return "Dividor";
+      case "MarkdownUnit":
+        return String(config.content ?? "Markdown").slice(0, 60);
+      case "AlertUnit":
+        return String(config.content ?? "Alert").slice(0, 60);
+      case "CodeUnit":
+        return String(config.code ?? "Code").slice(0, 60);
+      case "CodeBlockUnit":
+        return String(config.code ?? "Code block").slice(0, 60);
+      case "LinkUnit":
+        return String(config.label ?? "Link");
+      case "ButtonUnit":
+        return String(config.label ?? "Button");
+      case "ImageMedia":
+      case "VideoMedia":
+      case "PDFMedia":
+        return String(config.src ?? "Media");
+      case "ExperienceComponent":
+        return String(config.position ?? "Role");
+      default:
+        return componentType;
+    }
+  }, []);
+
+  const loadAnchors = useCallback(async (viewNodeId: number, presetAnchorHash?: string | null) => {
     const resolved = await apiFetch<{
       component: { type: string };
       config: Record<string, unknown>;
@@ -175,30 +230,45 @@ export function ComponentEditor({
       children: any[];
     }>(`/nodes/${viewNodeId}/resolved`);
 
-    const found: { node_id: number; title: string }[] = [];
+    const found: { hash: string; title: string }[] = [];
     const stack = [resolved];
     while (stack.length) {
       const current = stack.pop();
       if (!current) continue;
-      if (current.component?.type === "SectionUnit") {
-        const title = String(current.config?.text ?? "Section");
-        found.push({ node_id: current.node.node_id, title });
+      const type = current.component?.type;
+      if (type === "Container") {
+        const label = String(current.config?.name ?? current.config?.title ?? "Container");
+        const firstChild = current.children?.[0];
+        if (firstChild) {
+          const childType = firstChild.component?.type;
+          const hash = childType === "Group"
+            ? `group-${firstChild.node.node_id}`
+            : `unit-${firstChild.node.node_id}`;
+          found.push({ hash, title: label });
+        }
+      } else if (type === "Group") {
+        const kind = resolveGroupKind(type, current.config ?? {}) || "inline";
+        const label = String(current.config?.name ?? `Group (${kind})`);
+        found.push({ hash: `group-${current.node.node_id}`, title: label });
+      } else if (type && isLinkableComponent(type)) {
+        const title = getAnchorLabel(type, current.config ?? {});
+        found.push({ hash: `unit-${current.node.node_id}`, title });
       }
       if (current.children?.length) {
         stack.push(...current.children);
       }
     }
 
-    setSections(found);
-    if (presetSectionId) {
-      setSelectedSectionId(presetSectionId);
+    setAnchors(found);
+    if (presetAnchorHash) {
+      setSelectedAnchorHash(presetAnchorHash);
     } else {
-      setSelectedSectionId(null);
+      setSelectedAnchorHash(null);
     }
-  }, []);
+  }, [getAnchorLabel, isLinkableComponent]);
 
   useEffect(() => {
-    if (componentType !== "LinkUnit" || !isEditing) return;
+    if (componentType !== "LinkUnit" && componentType !== "ButtonUnit") return;
 
     const url = String(config.url ?? "");
     const isExternal = /^https?:\/\//i.test(url);
@@ -213,41 +283,25 @@ export function ComponentEditor({
         const fallback = list.find((view) => view.node_id !== null);
         const chosen = matchedView ?? fallback;
         setSelectedViewId(chosen?.node_id ?? null);
-        const sectionId = hash?.startsWith("section-") ? Number(hash.replace("section-", "")) : null;
+        const anchorHash = hash ? hash : null;
         if (chosen?.node_id) {
-          loadSections(chosen.node_id, sectionId);
+          loadAnchors(chosen.node_id, anchorHash);
         }
       })
       .catch((err) => {
         setError(err instanceof Error ? err.message : "Failed to load views");
       });
-  }, [componentType, isEditing, config.url, loadViews, loadSections]);
+  }, [componentType, config.url, loadViews, loadAnchors]);
 
   useEffect(() => {
-    if (componentType !== "LinkUnit" || !isEditing) return;
+    if (componentType !== "LinkUnit" && componentType !== "ButtonUnit") return;
     if (linkType === "internal" && selectedViewId) {
-      loadSections(selectedViewId, selectedSectionId);
+      loadAnchors(selectedViewId, selectedAnchorHash);
     }
-  }, [componentType, isEditing, linkType, selectedViewId, selectedSectionId, loadSections]);
-
-  async function handleDelete() {
-    setIsDeleting(true);
-    setError(null);
-    try {
-      await apiFetch(`/nodes/${nodeId}`, { method: "DELETE" });
-      router.refresh();
-      toast.push("Component deleted", "success");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete");
-      toast.push("Delete failed", "error");
-    } finally {
-      setIsDeleting(false);
-      setConfirmDeleteOpen(false);
-    }
-  }
+  }, [componentType, linkType, selectedViewId, selectedAnchorHash, loadAnchors]);
 
   const saveConfig = useCallback(
-    async (options?: { closeAfter?: boolean; silent?: boolean }) => {
+    async (options?: { silent?: boolean }) => {
       if (isSaving) return;
       setIsSaving(true);
       setSaveStatus("saving");
@@ -261,9 +315,6 @@ export function ComponentEditor({
         });
         setLastSavedSnapshot(snapshot);
         setSaveStatus("saved");
-        if (options?.closeAfter) {
-          setIsEditing(false);
-        }
         router.refresh();
         if (!options?.silent) {
           toast.push("Component updated", "success");
@@ -286,19 +337,17 @@ export function ComponentEditor({
 
   async function handleSave(event: React.FormEvent) {
     event.preventDefault();
-    await saveConfig({ closeAfter: true });
+    await saveConfig();
   }
 
   useEffect(() => {
-    if (!isEditing) return;
-    if (componentType === "LinkUnit" && !isLinkReady) return;
+    if ((componentType === "LinkUnit" || componentType === "ButtonUnit") && !isLinkReady) return;
     const snapshot = JSON.stringify(buildUpdatedConfig());
     setLastSavedSnapshot(snapshot);
     setSaveStatus("idle");
-  }, [isEditing, componentType, isLinkReady, buildUpdatedConfig]);
+  }, [componentType, isLinkReady, buildUpdatedConfig]);
 
   useEffect(() => {
-    if (!isEditing) return;
     if (!isLinkReady) return;
     const snapshot = JSON.stringify(buildUpdatedConfig());
     if (snapshot === lastSavedSnapshot) {
@@ -315,14 +364,13 @@ export function ComponentEditor({
     }, 900);
     return () => clearTimeout(timer);
   }, [
-    isEditing,
     isLinkReady,
     componentType,
     formValues,
     linkType,
     externalUrl,
     selectedViewId,
-    selectedSectionId,
+    selectedAnchorHash,
     views,
     lastSavedSnapshot,
     buildUpdatedConfig,
@@ -331,62 +379,18 @@ export function ComponentEditor({
     saveStatus
   ]);
 
-  if (!fields.length && !hasAdvanced) {
-    return (
-      <div className="author-actions component-actions">
-        <div className="component-header">
-          <span className="component-type">{componentType}</span>
-          <div className="action-group action-group--right">
-            <button
-              className="button danger small icon-only"
-              type="button"
-              onClick={() => setConfirmDeleteOpen(true)}
-              disabled={isDeleting}
-              aria-label={isDeleting ? "Deleting" : "Delete"}
-              title="Delete"
-            >
-              <DeleteIcon size={20} strokeWidth={2} aria-hidden />
-            </button>
-          </div>
-        </div>
-        {error ? <div className="alert">{error}</div> : null}
-      </div>
-    );
-  }
-
   return (
     <div className="author-actions component-actions">
       <div className="component-header">
-        <span className="component-type">{componentType}</span>
-        <div className="action-group action-group--right">
-          <button
-            className="button edit small icon-only"
-            type="button"
-            onClick={() => setIsEditing((prev) => !prev)}
-            aria-label={isEditing ? "Close edit" : "Edit"}
-            title={isEditing ? "Close" : "Edit"}
-          >
-            <EditIcon size={20} strokeWidth={2} aria-hidden />
-          </button>
-          <button
-            className="button danger small icon-only"
-            type="button"
-            onClick={() => setConfirmDeleteOpen(true)}
-            disabled={isDeleting}
-            aria-label={isDeleting ? "Deleting" : "Delete"}
-            title="Delete"
-          >
-            <DeleteIcon size={20} strokeWidth={2} aria-hidden />
-          </button>
-          {isEditing && saveStatus !== "idle" ? (
-            <span className={`status-chip status-${saveStatus}`}>
-              {saveStatus === "dirty" ? "Unsaved changes" : null}
-              {saveStatus === "saving" ? "Saving..." : null}
-              {saveStatus === "saved" ? "Saved" : null}
-              {saveStatus === "error" ? "Save failed" : null}
-            </span>
-          ) : null}
-        </div>
+        <span className="component-type">{componentLabel}</span>
+        {saveStatus !== "idle" ? (
+          <span className={`status-chip status-${saveStatus}`}>
+            {saveStatus === "dirty" ? "Unsaved changes" : null}
+            {saveStatus === "saving" ? "Saving..." : null}
+            {saveStatus === "saved" ? "Saved" : null}
+            {saveStatus === "error" ? "Save failed" : null}
+          </span>
+        ) : null}
       </div>
 
       {isEditing ? (
@@ -419,6 +423,14 @@ export function ComponentEditor({
                       setFormValues((prev) => ({ ...prev, [field.key]: event.target.value }))
                     }
                   />
+                ) : (codeTypes as readonly string[]).includes(componentType) && field.key === "code" ? (
+                  <textarea
+                    className="code-input"
+                    value={formValues[field.key] ?? ""}
+                    onChange={(event) =>
+                      setFormValues((prev) => ({ ...prev, [field.key]: event.target.value }))
+                    }
+                  />
                 ) : componentType === "ExperienceComponent" && field.key === "content" ? (
                   <textarea
                     value={formValues[field.key] ?? ""}
@@ -437,6 +449,85 @@ export function ComponentEditor({
               </label>
             );
           })}
+          {isGroup ? (
+            <div className="form-grid">
+              <label>
+                <span>Group type</span>
+                <select
+                  value={groupKind}
+                  onChange={(event) =>
+                    setFormValues((prev) => ({
+                      ...prev,
+                      group_kind: event.target.value
+                    }))
+                  }
+                >
+                  <option value="style">Style</option>
+                  <option value="inline">Inline</option>
+                  <option value="list">List</option>
+                </select>
+              </label>
+              {groupKind === "style" ? (
+                <div className="toggle-row">
+                  <span>Transparent</span>
+                  <Switch
+                    checked={formValues.isTransparent === "true"}
+                    onCheckedChange={(checked) =>
+                      setFormValues((prev) => ({
+                        ...prev,
+                        isTransparent: checked ? "true" : "false"
+                      }))
+                    }
+                    aria-label="Transparent"
+                  />
+                </div>
+              ) : null}
+              {groupKind === "list" ? (
+                <>
+                  <label>
+                    <span>List type</span>
+                    <select
+                      value={formValues.listType ?? "View"}
+                      onChange={(event) =>
+                        setFormValues((prev) => ({
+                          ...prev,
+                          listType: event.target.value
+                        }))
+                      }
+                    >
+                      <option value="View">View</option>
+                      <option value="">Any</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Display mode</span>
+                    <select
+                      value={formValues.displayMode ?? "list"}
+                      onChange={(event) =>
+                        setFormValues((prev) => ({
+                          ...prev,
+                          displayMode: event.target.value
+                        }))
+                      }
+                    >
+                      <option value="list">List</option>
+                      <option value="grid">Grid</option>
+                      <option value="cards">Cards</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Name</span>
+                    <input
+                      value={formValues.name ?? ""}
+                      onChange={(event) =>
+                        setFormValues((prev) => ({ ...prev, name: event.target.value }))
+                      }
+                    />
+                  </label>
+                </>
+              ) : null}
+            </div>
+          ) : null}
           {componentType === "ImageMedia" ? (
             <AssetPicker
               label="Choose from library"
@@ -475,7 +566,7 @@ export function ComponentEditor({
               ) : null}
             </div>
           ) : null}
-          {componentType === "LinkUnit" ? (
+          {componentType === "LinkUnit" || componentType === "ButtonUnit" ? (
             <div className="link-editor">
               <label>
                 <span>Label</span>
@@ -527,7 +618,7 @@ export function ComponentEditor({
                       onChange={(event) => {
                         const next = Number(event.target.value);
                         setSelectedViewId(next);
-                        loadSections(next);
+                        loadAnchors(next);
                       }}
                     >
                       {views.map((view) => (
@@ -537,20 +628,20 @@ export function ComponentEditor({
                       ))}
                     </select>
                   </label>
-                  {sections.length ? (
+                  {anchors.length ? (
                     <label>
-                      <span>Section</span>
+                      <span>Anchor</span>
                       <select
-                        value={selectedSectionId ?? ""}
+                        value={selectedAnchorHash ?? ""}
                         onChange={(event) => {
                           const value = event.target.value;
-                          setSelectedSectionId(value ? Number(value) : null);
+                          setSelectedAnchorHash(value || null);
                         }}
                       >
                         <option value="">None</option>
-                        {sections.map((section) => (
-                          <option key={section.node_id} value={section.node_id}>
-                            {section.title}
+                        {anchors.map((anchor) => (
+                          <option key={anchor.hash} value={anchor.hash}>
+                            {anchor.title}
                           </option>
                         ))}
                       </select>
@@ -576,37 +667,39 @@ export function ComponentEditor({
               </select>
             </label>
           ) : null}
-          {componentType === "SectionUnit" ? (
-            <label>
-              <span>Heading level</span>
-              <select
-                value={formValues.level}
-                onChange={(event) =>
-                  setFormValues((prev) => ({ ...prev, level: event.target.value }))
+          <div className="ai-controls">
+            <div className="toggle-row">
+              <span>Use AI</span>
+              <Switch
+                checked={aiEnabled}
+                onCheckedChange={(checked) =>
+                  setFormValues((prev) => ({
+                    ...prev,
+                    useAI: checked ? "true" : "false"
+                  }))
                 }
-              >
-                <option value="h1">H1</option>
-                <option value="h2">H2</option>
-                <option value="h3">H3</option>
-              </select>
-            </label>
-          ) : null}
+                aria-label="Use AI"
+              />
+            </div>
+            {aiEnabled ? (
+              <label>
+                <span>Prompt</span>
+                <textarea
+                  value={formValues.aiPrompt ?? ""}
+                  onChange={(event) =>
+                    setFormValues((prev) => ({ ...prev, aiPrompt: event.target.value }))
+                  }
+                  placeholder="Describe the content to generate"
+                />
+              </label>
+            ) : null}
+          </div>
           <button className="button" type="submit" disabled={isSaving}>
             {isSaving ? "Saving..." : "Save"}
           </button>
         </form>
       ) : null}
       {error ? <div className="alert">{error}</div> : null}
-      <ConfirmDialog
-        open={confirmDeleteOpen}
-        title="Delete component"
-        description="This will remove the component and its data."
-        confirmLabel="Delete"
-        onCancel={() => setConfirmDeleteOpen(false)}
-        onConfirm={handleDelete}
-        danger
-        isBusy={isDeleting}
-      />
     </div>
   );
 }

@@ -49,7 +49,7 @@ This is enough to:
 Because the structure is dynamic and nested, dragging relies on a **scope model**:
 
 - **Active scope**: the sibling list currently being reordered.
-- **Level down**: adjacent container nodes within the active scope.
+- **Level down**: container nodes within the active scope.
 - **Level up**: the parent container of the active scope.
 
 ### Scope shift interaction
@@ -63,14 +63,14 @@ This allows users to move a node into nested or parent containers without droppi
 ## Compatibility gating
 
 When a drag enters a container, compatibility is checked by component type and container rules. Example:
-- `ListContainer` with `listType: View` accepts only `LinkUnit`.
+- `Group` with `group_kind: list` and `listType: View` accepts only `LinkUnit`.
 
 Incompatible drags are rejected with a user-facing toast.
 
 ## UI Structure
 
 - Dragging is attached to the **component card** (not a handle).
-- All component cards are draggable in author mode, **except ViewContainer**.
+- All component cards are draggable in author mode; the root view container is not a draggable item because it is the active scope root.
 - Top-level view children use the same sortable list logic as nested containers.
 
 ## Files and code touchpoints

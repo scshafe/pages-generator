@@ -8,7 +8,7 @@
 
 ## Status
 
-The current implementation uses icon-only edit/delete controls, card-based drag-and-drop, and container-level add actions with modal create flows. Move up/down controls are removed.
+The current implementation uses icon-only edit/delete controls, card-based drag-and-drop, and a floating Configuration panel for the focused component. Text is edited inline with view/group edge markers and shortcut-driven add menus.
 
 ## Scope
 - Component actions: `components/author/ComponentEditor.tsx`
@@ -63,3 +63,14 @@ The current implementation uses icon-only edit/delete controls, card-based drag-
 - Author mode shows component headers (type + edit/delete) aligned in a dedicated header row.
 - Containers show a single Add Component entry point that opens a modal using the same add-component interface.
 - Dragging and reordering operate on structural Nodes while rendering merged Component + override config.
+- Text units are edited in place; use shortcuts to open the add menus.
+- Newly created views start empty and use view edge markers to add the first unit.
+- View edge markers appear at the start and end of the view; groups have start/end markers for adding text.
+- Empty text deletes the unit automatically.
+- Press Enter in a text unit to insert a Dividor and a new text unit.
+- Hyper+G creates a sub group; Hyper+U opens the unit menu; Hyper+P inserts at the caret; Hyper+T toggles the configuration panel.
+- The Configuration panel supports a compact mode that shows only the focused type and name.
+- All configuration inputs live in the Configuration panel (no inline config controls on the canvas).
+- A fixed Configuration panel at the bottom of the viewport shows the most recently focused component's settings.
+- When components are shared, the Configuration panel shows a Reference section above the Original component settings.
+- Configuration includes `useAI` toggles for the component and its reference, plus a prompt field when enabled.

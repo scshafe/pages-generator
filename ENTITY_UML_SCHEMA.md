@@ -41,8 +41,8 @@ Node ←──1:1──► Reference ──*:1──► Component
 A **View** is represented as:
 - A **Node** (the root node for this view)
 - Which has a **Reference**
-- Which points to a **ViewContainer**
-- The ViewContainer's children are accessed via `container.child_node_id`
+- Which points to a **Container** with `config.path`
+- The Container's children are accessed via `config.child_node_id`
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -54,16 +54,16 @@ A **View** is represented as:
 │  ├── ref_id: 2001 ──────► Reference                         │
 │  │                        ├── ref_id: 2001                  │
 │  │                        ├── node_id: 1001                 │
-│  │                        └── comp_id: 3001 ──► ViewContainer│
+│  │                        └── comp_id: 3001 ──► Container    │
 │  │                                              ├── comp_id: 3001
-│  │                                              ├── type: "ViewContainer"
+│  │                                              ├── type: "Container"
 │  │                                              ├── config.path: "/about"
 │  │                                              ├── config.title: "About"
 │  │                                              └── config.child_node_id: 1002
 │  │                                                              │
 │  └───────────────────────────────────────────────────────────────┘
 │                                                                  │
-│  Child linked-list (starts at ViewContainer.child_node_id):      │
+│  Child linked-list (starts at Container.config.child_node_id):   │
 │                                                                  │
 │  Node (Title)                                                    │
 │  ├── node_id: 1002                                               │
@@ -95,16 +95,16 @@ classDiagram
     class Reference:::hasId
     class Component:::hasId
     class Container
-    class ViewContainer
-    class ListContainer
-    class InlineContainer
-    class StyleContainer
+    class Group
     class UnitComponent
-    class SectionUnit
     class PlainTextUnit
+    class DividorUnit
+    class CodeUnit
+    class CodeBlockUnit
     class AlertUnit
     class MarkdownUnit
     class LinkUnit
+    class ButtonUnit
     class MediaUnit
     class ImageMedia
     class VideoMedia
@@ -136,6 +136,7 @@ classDiagram
     %% ============ REFERENCE ============
 
     Reference : +overrides Record?
+    Reference : +useAI boolean?
     Reference : +created_at string
     Reference : +updated_at string
 
@@ -149,47 +150,37 @@ classDiagram
     }
     Component : +type ComponentType
     Component : +reference_count number
+    Component : +useAI boolean?
+    Component : +aiPrompt string?
     Component : +created_at string
     Component : +updated_at string
 
     Component <|-- Container
+    Component <|-- Group
     Component <|-- UnitComponent
     Component <|-- ExperienceComponent
     Component <|-- HtmlComponent
     Component <|-- JsComponent
 
-    %% ============ CONTAINER (ABSTRACT) ============
+    %% ============ CONTAINER ============
 
-    class Container {
-        <<abstract>>
-    }
-    Container : +type ContainerType
+    Container : +path string?
+    Container : +name string?
+    Container : +title string?
+    Container : +browser_title string?
+    Container : +description string?
 
     Container "1" o-- "0..1" Node : child_node_id
-    Container <|-- ViewContainer
-    Container <|-- ListContainer
-    Container <|-- InlineContainer
-    Container <|-- StyleContainer
 
-    %% ============ VIEW CONTAINER ============
+    %% ============ GROUP ============
 
-    ViewContainer : +path string
-    ViewContainer : +name string
-    ViewContainer : +title string
-    ViewContainer : +browser_title string
-    ViewContainer : +description string?
+    Group : +group_kind GroupKind
+    Group : +listType ListItemType?
+    Group : +displayMode DisplayMode?
+    Group : +isTransparent bool?
+    Group : +name string?
 
-    %% ============ LIST CONTAINER ============
-
-    ListContainer : +listType ListItemType
-    ListContainer : +displayMode DisplayMode
-    ListContainer : +name string?
-
-    %% ============ INLINE CONTAINER ============
-
-    %% ============ STYLE CONTAINER ============
-
-    StyleContainer : +isTransparent bool
+    Group "1" o-- "0..1" Node : child_node_id
 
     %% ============ UNIT COMPONENT (ABSTRACT) ============
 
@@ -197,21 +188,31 @@ classDiagram
         <<abstract>>
     }
 
-    UnitComponent <|-- SectionUnit
     UnitComponent <|-- PlainTextUnit
+    UnitComponent <|-- DividorUnit
+    UnitComponent <|-- CodeUnit
+    UnitComponent <|-- CodeBlockUnit
     UnitComponent <|-- AlertUnit
     UnitComponent <|-- MarkdownUnit
     UnitComponent <|-- LinkUnit
+    UnitComponent <|-- ButtonUnit
     UnitComponent <|-- MediaUnit
-
-    %% ============ SECTION UNIT ============
-
-    SectionUnit : +text string
-    SectionUnit : +level HeadingLevel?
 
     %% ============ PLAIN TEXT UNIT ============
 
     PlainTextUnit : +text string
+
+    %% ============ DIVIDOR UNIT ============
+
+    DividorUnit : +config {}?
+
+    %% ============ CODE UNIT ============
+
+    CodeUnit : +code string
+
+    %% ============ CODE BLOCK UNIT ============
+
+    CodeBlockUnit : +code string
 
     %% ============ ALERT UNIT ============
 
@@ -225,6 +226,11 @@ classDiagram
     %% ============ LINK UNIT ============
 
     LinkUnit "1" *-- "1" BasicLink : basic_link
+
+    %% ============ BUTTON UNIT ============
+
+    ButtonUnit : +label string
+    ButtonUnit : +url string
 
     %% ============ MEDIA UNIT (ABSTRACT) ============
 
@@ -364,7 +370,7 @@ When class B inherits from abstract class A:
 ```json
 {
   "comp_id": 12345,
-  "type": "ViewContainer",
+  "type": "Container",
   "config": {
     "path": "/about",
     "title": "About Us"
@@ -428,14 +434,14 @@ All IDs are unsigned 32-bit integers generated randomly.
 ```typescript
 // Component type discriminator
 type ComponentType =
-  | 'ViewContainer' | 'ListContainer' | 'InlineContainer' | 'StyleContainer'  // Containers
-  | 'SectionUnit' | 'PlainTextUnit' | 'AlertUnit' | 'MarkdownUnit' | 'LinkUnit'  // Units
+  | 'Container' | 'Group'  // Containers
+  | 'PlainTextUnit' | 'DividorUnit' | 'CodeUnit' | 'CodeBlockUnit' | 'AlertUnit' | 'MarkdownUnit' | 'LinkUnit' | 'ButtonUnit'  // Units
   | 'ImageMedia' | 'VideoMedia' | 'PDFMedia'  // Media
   | 'ExperienceComponent'  // Leaf
   | 'HtmlComponent' | 'JsComponent';  // Future
 
-// Container type discriminator
-type ContainerType = 'ViewContainer' | 'ListContainer' | 'InlineContainer' | 'StyleContainer';
+// Group kind discriminator
+type GroupKind = 'list' | 'inline' | 'style';
 
 // Link type discriminator
 type LinkType = 'InternalLink' | 'ExternalLink';
@@ -448,13 +454,16 @@ type ListItemType = 'View';
 
 type DisplayMode = 'list' | 'grid' | 'cards';
 
-type HeadingLevel = 'h1' | 'h2' | 'h3';
-
 type AlertVariant = 'info' | 'warning' | 'error' | 'success';
 
 type ColorScheme = 'system' | 'light' | 'dark';
 
 type Position = 'left' | 'right';
+
+type AIConfig = {
+  useAI?: boolean;
+  aiPrompt?: string;
+};
 ```
 
 ---

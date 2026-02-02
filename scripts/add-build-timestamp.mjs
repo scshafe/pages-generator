@@ -6,16 +6,10 @@ const contentDir = path.join(repoRoot, "content");
 const nodesDir = path.join(contentDir, "nodes");
 const referencesDir = path.join(contentDir, "references");
 const componentsDir = path.join(contentDir, "components");
-const viewContainerDir = path.join(componentsDir, "ViewContainer");
 const plainTextDir = path.join(componentsDir, "PlainTextUnit");
 const homeFile = path.join(contentDir, "settings", "home.json");
 
-const containerTypes = new Set([
-  "ViewContainer",
-  "ListContainer",
-  "InlineContainer",
-  "StyleContainer"
-]);
+const containerTypes = new Set(["Container", "Group"]);
 
 function nowIso() {
   return new Date().toISOString();
@@ -174,10 +168,12 @@ async function main() {
 
   const rootNode = await readJson(path.join(nodesDir, `${rootNodeId}.json`));
   const rootRef = await readJson(path.join(referencesDir, `${rootNode.ref_id}.json`));
-  const rootComponentPath = path.join(viewContainerDir, `${rootRef.comp_id}.json`);
-  const rootComponent = await readJson(rootComponentPath);
-
   const componentIndex = await buildComponentIndex();
+  const rootComponentInfo = componentIndex.get(rootRef.comp_id);
+  if (!rootComponentInfo) {
+    throw new Error("Root component not found");
+  }
+  const rootComponent = await readJson(rootComponentInfo.path);
   const { refs, counts } = await readAllReferences();
 
   const state = {
@@ -230,7 +226,7 @@ async function main() {
 
   rootComponent.config = { ...rootComponent.config, child_node_id: nodeId };
   rootComponent.updated_at = nowIso();
-  await writeJson(rootComponentPath, rootComponent);
+  await writeJson(rootComponentInfo.path, rootComponent);
 }
 
 main().catch((error) => {

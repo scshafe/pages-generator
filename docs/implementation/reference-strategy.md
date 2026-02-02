@@ -19,8 +19,8 @@ Node (node_id)
 
 Key properties:
 - **Node** stores placement and hierarchy.
-- **Reference** stores `comp_id` and `overrides`.
-- **Component** stores the canonical `config` for a component type.
+- **Reference** stores `comp_id`, `overrides`, and optional `useAI` guidance.
+- **Component** stores the canonical `config` for a component type, including optional `useAI` prompt fields.
 
 ## Why this layout works
 
@@ -66,7 +66,7 @@ Result:
 
 ## Navigation view references
 
-Menu and footer items can store `view_node_id` to reference a view directly. At runtime, the navigation resolver maps that node to a ViewContainer config and replaces label/href with the current view metadata.
+Menu and footer items can store `view_node_id` to reference a view directly. At runtime, the navigation resolver maps that node to a Container with `config.path` and replaces label/href with the current view metadata.
 
 ## Social image border
 

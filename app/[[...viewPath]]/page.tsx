@@ -1,5 +1,6 @@
 import { getResolvedViewByPath } from "@/lib/content/views.server";
 import { loadMetadataSnapshot } from "@/lib/content/metadata";
+import { isViewContainer } from "@/lib/content/containers";
 import { ViewRenderer } from "@/components/views/ViewRenderer";
 import { NotFoundView } from "@/components/views/NotFoundView";
 
@@ -38,7 +39,8 @@ export async function generateStaticParams() {
   const views = refs
     .map((ref) => {
       const component = components.get(ref.comp_id);
-      if (!component || component.type !== "ViewContainer") return null;
+      if (!component) return null;
+      if (!isViewContainer(component.type, component.config ?? {})) return null;
       const config = { ...component.config, ...(ref.overrides ?? {}) } as { path?: string };
       return config;
     })
