@@ -1,687 +1,630 @@
 {
-  "assets": [
-    {
-      "name": "1377814627_professional-photo.jpg",
-      "size": 208665,
-      "src": "/uploads/1377814627_professional-photo.jpg"
-    },
-    {
-      "name": "1776936889_ChatGPT_Image_Jan_30_2026_from_Photo_Dimensions_and_Crops.png",
-      "size": 1843786,
-      "src": "/uploads/1776936889_ChatGPT_Image_Jan_30_2026_from_Photo_Dimensions_and_Crops.png"
-    },
-    {
-      "name": "1855031139_professional-photo.jpg",
-      "size": 208665,
-      "src": "/uploads/1855031139_professional-photo.jpg"
-    },
-    {
-      "name": "2503701495_professional-photo-webiste.png",
-      "size": 285408,
-      "src": "/uploads/2503701495_professional-photo-webiste.png"
-    },
-    {
-      "name": "2142070919_multicolor-personal-favicon.png",
-      "size": 3737,
-      "src": "/uploads/2142070919_multicolor-personal-favicon.png"
-    }
-  ],
+  "assets": [],
   "components": {
     "AlertUnit": [],
+    "CodeBlockUnit": [],
+    "CodeUnit": [],
+    "Container": [
+      {
+        "comp_id": 2328172934,
+        "config": {
+          "browser_title": "Home",
+          "child_node_id": 3722073337,
+          "description": "",
+          "name": "Home",
+          "order": 0,
+          "path": "/home",
+          "title": "Home"
+        },
+        "created_at": "2026-02-02T04:04:47.521269Z",
+        "reference_count": 1,
+        "type": "Container",
+        "updated_at": "2026-02-02T04:04:51.959223Z"
+      }
+    ],
+    "DividorUnit": [
+      {
+        "comp_id": 1023396213,
+        "config": {},
+        "created_at": "2026-02-02T04:07:19.092360Z",
+        "reference_count": 1,
+        "type": "DividorUnit",
+        "updated_at": "2026-02-02T04:07:19.092367Z"
+      },
+      {
+        "comp_id": 4058164116,
+        "config": {},
+        "created_at": "2026-02-02T04:07:24.211425Z",
+        "reference_count": 1,
+        "type": "DividorUnit",
+        "updated_at": "2026-02-02T04:07:24.211430Z"
+      },
+      {
+        "comp_id": 3607456023,
+        "config": {},
+        "created_at": "2026-02-02T04:07:21.772289Z",
+        "reference_count": 1,
+        "type": "DividorUnit",
+        "updated_at": "2026-02-02T04:07:21.772297Z"
+      },
+      {
+        "comp_id": 3101502962,
+        "config": {},
+        "created_at": "2026-02-02T04:07:15.020625Z",
+        "reference_count": 1,
+        "type": "DividorUnit",
+        "updated_at": "2026-02-02T04:07:15.020632Z"
+      },
+      {
+        "comp_id": 2420800256,
+        "config": {},
+        "created_at": "2026-02-02T04:07:23.140395Z",
+        "reference_count": 1,
+        "type": "DividorUnit",
+        "updated_at": "2026-02-02T04:07:23.140403Z"
+      },
+      {
+        "comp_id": 242208402,
+        "config": {},
+        "created_at": "2026-02-02T04:07:20.370866Z",
+        "reference_count": 1,
+        "type": "DividorUnit",
+        "updated_at": "2026-02-02T04:07:20.370872Z"
+      }
+    ],
     "ExperienceComponent": [],
+    "Group": [
+      {
+        "comp_id": 2062517949,
+        "config": {
+          "child_node_id": 2693518430,
+          "group_kind": "inline"
+        },
+        "created_at": "2026-02-02T04:04:51.936861Z",
+        "reference_count": 1,
+        "type": "Group",
+        "updated_at": "2026-02-02T04:04:54.639577Z"
+      }
+    ],
     "ImageMedia": [],
     "InlineContainer": [],
-    "LinkUnit": [
-      {
-        "comp_id": 3291949151,
-        "config": {
-          "label": "Link",
-          "url": "/hello"
-        },
-        "created_at": "2026-01-30T01:50:25.859110Z",
-        "reference_count": 1,
-        "type": "LinkUnit",
-        "updated_at": "2026-01-30T01:50:25.859122Z"
-      },
-      {
-        "comp_id": 3676288799,
-        "config": {
-          "label": "About",
-          "url": "/about"
-        },
-        "created_at": "2026-01-30T02:41:48.191446Z",
-        "reference_count": 1,
-        "type": "LinkUnit",
-        "updated_at": "2026-01-30T02:41:48.191468Z"
-      },
-      {
-        "comp_id": 1493086539,
-        "config": {
-          "label": "Home",
-          "url": "/index"
-        },
-        "created_at": "2026-01-30T02:42:32.597325Z",
-        "reference_count": 1,
-        "type": "LinkUnit",
-        "updated_at": "2026-01-30T02:43:10.437690Z"
-      },
-      {
-        "comp_id": 371395553,
-        "config": {
-          "label": "Hello",
-          "url": "/hello"
-        },
-        "created_at": "2026-01-30T02:42:01.529679Z",
-        "reference_count": 1,
-        "type": "LinkUnit",
-        "updated_at": "2026-01-30T02:42:01.529686Z"
-      },
-      {
-        "comp_id": 1997016273,
-        "config": {
-          "label": "Hello",
-          "url": "/hello"
-        },
-        "created_at": "2026-01-30T02:42:56.507102Z",
-        "reference_count": 1,
-        "type": "LinkUnit",
-        "updated_at": "2026-01-30T02:43:29.637643Z"
-      }
-    ],
+    "LinkUnit": [],
     "ListContainer": [],
-    "MarkdownUnit": [
-      {
-        "comp_id": 1298748398,
-        "config": {
-          "content": "ayo\n\n## sup"
-        },
-        "created_at": "2026-01-30T01:49:51.965097Z",
-        "reference_count": 1,
-        "type": "MarkdownUnit",
-        "updated_at": "2026-01-30T01:49:51.965112Z"
-      }
-    ],
+    "MarkdownUnit": [],
     "PDFMedia": [],
     "PlainTextUnit": [
       {
-        "comp_id": 857556415,
+        "comp_id": 1175859468,
         "config": {
-          "text": "yay"
+          "text": "jfdkslf"
         },
-        "created_at": "2026-01-29T19:49:31.836121Z",
+        "created_at": "2026-02-02T04:07:19.098973Z",
         "reference_count": 1,
         "type": "PlainTextUnit",
-        "updated_at": "2026-01-29T19:49:31.836137Z"
+        "updated_at": "2026-02-02T04:07:20.365904Z"
       },
       {
-        "comp_id": 970583074,
+        "comp_id": 2996194226,
         "config": {
-          "text": "woohoo monie"
+          "text": ""
         },
-        "created_at": "2026-01-30T01:00:59.663647Z",
-        "reference_count": 2,
-        "type": "PlainTextUnit",
-        "updated_at": "2026-01-30T01:52:08.533193Z"
-      },
-      {
-        "comp_id": 3907725880,
-        "config": {
-          "text": "like woah"
-        },
-        "created_at": "2026-01-30T01:49:22.414121Z",
+        "created_at": "2026-02-02T04:06:44.284335Z",
         "reference_count": 1,
         "type": "PlainTextUnit",
-        "updated_at": "2026-01-30T01:49:22.414141Z"
+        "updated_at": "2026-02-02T04:06:44.284342Z"
+      },
+      {
+        "comp_id": 2785211903,
+        "config": {
+          "text": "fksjdfl"
+        },
+        "created_at": "2026-02-02T04:07:20.382020Z",
+        "reference_count": 1,
+        "type": "PlainTextUnit",
+        "updated_at": "2026-02-02T04:07:21.769096Z"
+      },
+      {
+        "comp_id": 2848056908,
+        "config": {
+          "text": "djfksdl"
+        },
+        "created_at": "2026-02-02T04:04:54.630875Z",
+        "reference_count": 1,
+        "type": "PlainTextUnit",
+        "updated_at": "2026-02-02T04:04:56.984832Z"
+      },
+      {
+        "comp_id": 248942013,
+        "config": {
+          "text": ""
+        },
+        "created_at": "2026-02-02T04:07:11.917263Z",
+        "reference_count": 1,
+        "type": "PlainTextUnit",
+        "updated_at": "2026-02-02T04:07:11.917284Z"
+      },
+      {
+        "comp_id": 3696924750,
+        "config": {
+          "text": "fjkfls"
+        },
+        "created_at": "2026-02-02T04:04:51.945719Z",
+        "reference_count": 1,
+        "type": "PlainTextUnit",
+        "updated_at": "2026-02-02T04:04:54.696791Z"
+      },
+      {
+        "comp_id": 1025514301,
+        "config": {
+          "text": "fjdsklsfj"
+        },
+        "created_at": "2026-02-02T04:07:21.777589Z",
+        "reference_count": 1,
+        "type": "PlainTextUnit",
+        "updated_at": "2026-02-02T04:07:23.137216Z"
+      },
+      {
+        "comp_id": 1871213378,
+        "config": {
+          "text": "jfsdkflds"
+        },
+        "created_at": "2026-02-02T04:07:23.145991Z",
+        "reference_count": 1,
+        "type": "PlainTextUnit",
+        "updated_at": "2026-02-02T04:07:24.207709Z"
+      },
+      {
+        "comp_id": 65484033,
+        "config": {
+          "text": "fjdsk"
+        },
+        "created_at": "2026-02-02T04:07:17.400868Z",
+        "reference_count": 1,
+        "type": "PlainTextUnit",
+        "updated_at": "2026-02-02T04:07:19.088454Z"
+      },
+      {
+        "comp_id": 4118346733,
+        "config": {
+          "text": ""
+        },
+        "created_at": "2026-02-02T04:07:30.753278Z",
+        "reference_count": 1,
+        "type": "PlainTextUnit",
+        "updated_at": "2026-02-02T04:07:30.753286Z"
+      },
+      {
+        "comp_id": 653977868,
+        "config": {
+          "text": ""
+        },
+        "created_at": "2026-02-02T04:07:07.184797Z",
+        "reference_count": 1,
+        "type": "PlainTextUnit",
+        "updated_at": "2026-02-02T04:07:07.184804Z"
+      },
+      {
+        "comp_id": 2855876745,
+        "config": {
+          "text": ""
+        },
+        "created_at": "2026-02-02T04:04:50.834720Z",
+        "reference_count": 1,
+        "type": "PlainTextUnit",
+        "updated_at": "2026-02-02T04:04:50.834728Z"
+      },
+      {
+        "comp_id": 3285199382,
+        "config": {
+          "text": ""
+        },
+        "created_at": "2026-02-02T04:07:24.216476Z",
+        "reference_count": 1,
+        "type": "PlainTextUnit",
+        "updated_at": "2026-02-02T04:07:24.216480Z"
+      },
+      {
+        "comp_id": 3333527212,
+        "config": {
+          "text": ""
+        },
+        "created_at": "2026-02-02T04:07:15.029383Z",
+        "reference_count": 1,
+        "type": "PlainTextUnit",
+        "updated_at": "2026-02-02T04:07:15.029394Z"
       }
     ],
-    "SectionUnit": [
-      {
-        "comp_id": 3545220711,
-        "config": {
-          "level": "h2",
-          "text": "New section"
-        },
-        "created_at": "2026-01-30T01:00:10.941842Z",
-        "reference_count": 1,
-        "type": "SectionUnit",
-        "updated_at": "2026-01-30T01:00:10.941858Z"
-      },
-      {
-        "comp_id": 122846078,
-        "config": {
-          "level": "h2",
-          "text": "ello"
-        },
-        "created_at": "2026-01-30T01:48:55.174597Z",
-        "reference_count": 1,
-        "type": "SectionUnit",
-        "updated_at": "2026-01-30T01:48:55.174605Z"
-      },
-      {
-        "comp_id": 44278079,
-        "config": {
-          "level": "h2",
-          "text": "New section"
-        },
-        "created_at": "2026-01-30T01:00:36.372470Z",
-        "reference_count": 1,
-        "type": "SectionUnit",
-        "updated_at": "2026-01-30T01:00:36.372482Z"
-      },
-      {
-        "comp_id": 1962119606,
-        "config": {
-          "level": "h2",
-          "text": "New section"
-        },
-        "created_at": "2026-01-30T01:00:33.598369Z",
-        "reference_count": 1,
-        "type": "SectionUnit",
-        "updated_at": "2026-01-30T01:00:33.598378Z"
-      }
-    ],
-    "StyleContainer": [
-      {
-        "comp_id": 1572676853,
-        "config": {
-          "child_node_id": 1419869066,
-          "isTransparent": false
-        },
-        "created_at": "2026-01-30T01:48:47.907397Z",
-        "reference_count": 1,
-        "type": "StyleContainer",
-        "updated_at": "2026-01-30T01:48:47.907405Z"
-      },
-      {
-        "comp_id": 140674376,
-        "config": {
-          "child_node_id": 3286560027,
-          "isTransparent": false
-        },
-        "created_at": "2026-01-30T01:49:06.937345Z",
-        "reference_count": 1,
-        "type": "StyleContainer",
-        "updated_at": "2026-01-30T01:49:06.937352Z"
-      },
-      {
-        "comp_id": 1636252688,
-        "config": {
-          "child_node_id": 2729505065,
-          "isTransparent": false
-        },
-        "created_at": "2026-01-29T19:50:43.622093Z",
-        "reference_count": 1,
-        "type": "StyleContainer",
-        "updated_at": "2026-01-30T01:05:30.570206Z"
-      },
-      {
-        "comp_id": 2450549735,
-        "config": {
-          "child_node_id": 2817953266,
-          "isTransparent": false
-        },
-        "created_at": "2026-01-29T19:50:41.658630Z",
-        "reference_count": 1,
-        "type": "StyleContainer",
-        "updated_at": "2026-01-29T20:04:05.484391Z"
-      },
-      {
-        "comp_id": 2901485332,
-        "config": {
-          "child_node_id": 3508932588,
-          "isTransparent": false
-        },
-        "created_at": "2026-01-30T01:01:11.270596Z",
-        "reference_count": 1,
-        "type": "StyleContainer",
-        "updated_at": "2026-01-30T01:01:23.642743Z"
-      }
-    ],
+    "SectionUnit": [],
+    "StyleContainer": [],
     "VideoMedia": [],
-    "ViewContainer": [
-      {
-        "comp_id": 912305642,
-        "config": {
-          "browser_title": "Home",
-          "child_node_id": 3596773860,
-          "description": "woord",
-          "name": "Home",
-          "order": 0,
-          "path": "/index",
-          "title": "Home"
-        },
-        "created_at": "2026-01-30T02:39:48.728289Z",
-        "reference_count": 1,
-        "type": "ViewContainer",
-        "updated_at": "2026-01-30T02:39:48.728298Z"
-      },
-      {
-        "comp_id": 2278940502,
-        "config": {
-          "browser_title": "Hello",
-          "child_node_id": 556460077,
-          "description": "woo",
-          "name": "Hello",
-          "order": 0,
-          "path": "/hello",
-          "title": "Hello"
-        },
-        "created_at": "2026-01-29T19:37:22.412533Z",
-        "reference_count": 1,
-        "type": "ViewContainer",
-        "updated_at": "2026-01-29T19:51:15.680072Z"
-      },
-      {
-        "comp_id": 2537847997,
-        "config": {
-          "browser_title": "about",
-          "child_node_id": 2308567631,
-          "description": "yeeeeeet",
-          "name": "about",
-          "order": 0,
-          "path": "/about",
-          "title": "about"
-        },
-        "created_at": "2026-01-30T01:48:13.093214Z",
-        "reference_count": 1,
-        "type": "ViewContainer",
-        "updated_at": "2026-01-30T01:48:13.093225Z"
-      }
-    ]
+    "ViewContainer": []
   },
   "nodes": [
     {
-      "created_at": "2026-01-30T01:00:33.599272Z",
-      "next_node_id": 1471098845,
-      "node_id": 2817953266,
-      "parent_node_id": 556460077,
+      "created_at": "2026-02-02T04:07:15.021752Z",
+      "next_node_id": 1862770114,
+      "node_id": 3849651321,
+      "parent_node_id": 3722073337,
+      "previous_node_id": 447076437,
+      "ref_id": 1920480763,
+      "updated_at": "2026-02-02T04:07:30.770810Z"
+    },
+    {
+      "created_at": "2026-02-02T04:04:54.631586Z",
+      "next_node_id": 4130304397,
+      "node_id": 2693518430,
+      "parent_node_id": 3722073337,
       "previous_node_id": null,
-      "ref_id": 1030323420,
-      "updated_at": "2026-01-30T01:00:36.375345Z"
+      "ref_id": 1170320415,
+      "updated_at": "2026-02-02T04:04:54.639122Z"
     },
     {
-      "created_at": "2026-01-29T19:50:41.660282Z",
-      "next_node_id": 1597550209,
-      "node_id": 556460077,
-      "parent_node_id": 2924221211,
-      "previous_node_id": null,
-      "ref_id": 1438331919,
-      "updated_at": "2026-01-29T19:51:15.677038Z"
+      "created_at": "2026-02-02T04:07:19.093207Z",
+      "next_node_id": 1351117285,
+      "node_id": 4131018542,
+      "parent_node_id": 3722073337,
+      "previous_node_id": 1862770114,
+      "ref_id": 3089065362,
+      "updated_at": "2026-02-02T04:07:19.109604Z"
     },
     {
-      "created_at": "2026-01-30T01:49:51.966094Z",
+      "created_at": "2026-02-02T04:07:30.754395Z",
+      "next_node_id": 3849651321,
+      "node_id": 447076437,
+      "parent_node_id": 3722073337,
+      "previous_node_id": 4130304397,
+      "ref_id": 2891860344,
+      "updated_at": "2026-02-02T04:07:30.766869Z"
+    },
+    {
+      "created_at": "2026-02-02T04:07:23.146993Z",
+      "next_node_id": 3228613821,
+      "node_id": 1699079620,
+      "parent_node_id": 3722073337,
+      "previous_node_id": 3502079087,
+      "ref_id": 2529816471,
+      "updated_at": "2026-02-02T04:07:24.212703Z"
+    },
+    {
+      "created_at": "2026-02-02T04:04:47.521269Z",
       "next_node_id": null,
-      "node_id": 1419869066,
-      "parent_node_id": 2308567631,
-      "previous_node_id": null,
-      "ref_id": 2168968704,
-      "updated_at": "2026-01-30T01:49:51.966103Z"
-    },
-    {
-      "created_at": "2026-01-29T19:50:43.622820Z",
-      "next_node_id": null,
-      "node_id": 1597550209,
-      "parent_node_id": 2924221211,
-      "previous_node_id": 556460077,
-      "ref_id": 3684057095,
-      "updated_at": "2026-01-29T19:50:43.622824Z"
-    },
-    {
-      "created_at": "2026-01-30T02:42:56.508181Z",
-      "next_node_id": null,
-      "node_id": 693710902,
-      "parent_node_id": 3097612021,
-      "previous_node_id": 1595881426,
-      "ref_id": 2234904412,
-      "updated_at": "2026-01-30T02:42:56.508189Z"
-    },
-    {
-      "created_at": "2026-01-30T02:42:01.530330Z",
-      "next_node_id": null,
-      "node_id": 2322273157,
-      "parent_node_id": 3832412309,
-      "previous_node_id": 3596773860,
-      "ref_id": 744722318,
-      "updated_at": "2026-01-30T02:42:01.530337Z"
-    },
-    {
-      "created_at": "2026-01-30T01:51:48.625000Z",
-      "next_node_id": 1595881426,
-      "node_id": 951479840,
-      "parent_node_id": 3097612021,
-      "previous_node_id": 2110438267,
-      "ref_id": 1432212312,
-      "updated_at": "2026-01-30T02:42:32.598648Z"
-    },
-    {
-      "created_at": "2026-01-30T01:01:11.271165Z",
-      "next_node_id": null,
-      "node_id": 579858192,
-      "parent_node_id": 1597550209,
-      "previous_node_id": 2729505065,
-      "ref_id": 4091889258,
-      "updated_at": "2026-01-30T01:01:23.642258Z"
-    },
-    {
-      "created_at": "2026-01-30T02:42:32.597851Z",
-      "next_node_id": 693710902,
-      "node_id": 1595881426,
-      "parent_node_id": 3097612021,
-      "previous_node_id": 951479840,
-      "ref_id": 818655869,
-      "updated_at": "2026-01-30T02:42:56.509590Z"
-    },
-    {
-      "created_at": "2026-01-29T19:37:22.414213Z",
-      "next_node_id": null,
-      "node_id": 2924221211,
+      "node_id": 1719118832,
       "parent_node_id": null,
       "previous_node_id": null,
-      "ref_id": 784214156,
-      "updated_at": "2026-01-29T19:37:22.414221Z"
+      "ref_id": 1478296366,
+      "updated_at": "2026-02-02T04:04:47.521269Z"
     },
     {
-      "created_at": "2026-01-30T01:49:22.415558Z",
+      "created_at": "2026-02-02T04:07:21.773067Z",
+      "next_node_id": 3738906358,
+      "node_id": 706011803,
+      "parent_node_id": 3722073337,
+      "previous_node_id": 2131250972,
+      "ref_id": 691070213,
+      "updated_at": "2026-02-02T04:07:21.780547Z"
+    },
+    {
+      "created_at": "2026-02-02T04:07:23.141337Z",
+      "next_node_id": 1699079620,
+      "node_id": 3502079087,
+      "parent_node_id": 3722073337,
+      "previous_node_id": 3738906358,
+      "ref_id": 1362497636,
+      "updated_at": "2026-02-02T04:07:23.149258Z"
+    },
+    {
+      "created_at": "2026-02-02T04:07:21.778294Z",
+      "next_node_id": 3502079087,
+      "node_id": 3738906358,
+      "parent_node_id": 3722073337,
+      "previous_node_id": 706011803,
+      "ref_id": 1293353097,
+      "updated_at": "2026-02-02T04:07:23.142421Z"
+    },
+    {
+      "created_at": "2026-02-02T04:07:20.398372Z",
+      "next_node_id": 706011803,
+      "node_id": 2131250972,
+      "parent_node_id": 3722073337,
+      "previous_node_id": 3586468051,
+      "ref_id": 2787291482,
+      "updated_at": "2026-02-02T04:07:21.774400Z"
+    },
+    {
+      "created_at": "2026-02-02T04:07:19.099587Z",
+      "next_node_id": 3586468051,
+      "node_id": 1351117285,
+      "parent_node_id": 3722073337,
+      "previous_node_id": 4131018542,
+      "ref_id": 1246095299,
+      "updated_at": "2026-02-02T04:07:20.374531Z"
+    },
+    {
+      "created_at": "2026-02-02T04:07:17.403048Z",
+      "next_node_id": 4131018542,
+      "node_id": 1862770114,
+      "parent_node_id": 3722073337,
+      "previous_node_id": 3849651321,
+      "ref_id": 3782657289,
+      "updated_at": "2026-02-02T04:07:19.094330Z"
+    },
+    {
+      "created_at": "2026-02-02T04:07:20.371945Z",
+      "next_node_id": 2131250972,
+      "node_id": 3586468051,
+      "parent_node_id": 3722073337,
+      "previous_node_id": 1351117285,
+      "ref_id": 1741934724,
+      "updated_at": "2026-02-02T04:07:20.400390Z"
+    },
+    {
+      "created_at": "2026-02-02T04:07:24.211770Z",
       "next_node_id": null,
-      "node_id": 3286560027,
-      "parent_node_id": 2985725644,
-      "previous_node_id": null,
-      "ref_id": 3883967440,
-      "updated_at": "2026-01-30T01:49:22.415566Z"
+      "node_id": 3228613821,
+      "parent_node_id": 3722073337,
+      "previous_node_id": 1699079620,
+      "ref_id": 212138067,
+      "updated_at": "2026-02-02T04:07:30.766582Z"
     },
     {
-      "created_at": "2026-01-30T02:39:48.728816Z",
+      "created_at": "2026-02-02T04:04:51.937591Z",
       "next_node_id": null,
-      "node_id": 3832412309,
-      "parent_node_id": null,
+      "node_id": 3722073337,
+      "parent_node_id": 1719118832,
       "previous_node_id": null,
-      "ref_id": 2250178062,
-      "updated_at": "2026-01-30T02:39:48.728820Z"
+      "ref_id": 4068458209,
+      "updated_at": "2026-02-02T04:04:51.958280Z"
     },
     {
-      "created_at": "2026-01-30T01:48:13.093876Z",
-      "next_node_id": null,
-      "node_id": 3097612021,
-      "parent_node_id": null,
-      "previous_node_id": null,
-      "ref_id": 4229434537,
-      "updated_at": "2026-01-30T01:48:13.093880Z"
-    },
-    {
-      "created_at": "2026-01-30T01:49:06.937905Z",
-      "next_node_id": 2110438267,
-      "node_id": 2985725644,
-      "parent_node_id": 3097612021,
-      "previous_node_id": 2308567631,
-      "ref_id": 195174037,
-      "updated_at": "2026-01-30T01:50:25.861362Z"
-    },
-    {
-      "created_at": "2026-01-30T01:00:59.664306Z",
-      "next_node_id": null,
-      "node_id": 3508932588,
-      "parent_node_id": 579858192,
-      "previous_node_id": null,
-      "ref_id": 478054559,
-      "updated_at": "2026-01-30T01:01:23.642738Z"
-    },
-    {
-      "created_at": "2026-01-30T01:00:10.943157Z",
-      "next_node_id": 579858192,
-      "node_id": 2729505065,
-      "parent_node_id": 1597550209,
-      "previous_node_id": null,
-      "ref_id": 3160940561,
-      "updated_at": "2026-01-30T01:01:23.641614Z"
-    },
-    {
-      "created_at": "2026-01-30T01:50:25.860129Z",
-      "next_node_id": 951479840,
-      "node_id": 2110438267,
-      "parent_node_id": 3097612021,
-      "previous_node_id": 2985725644,
-      "ref_id": 3000555623,
-      "updated_at": "2026-01-30T01:51:48.626171Z"
-    },
-    {
-      "created_at": "2026-01-30T01:48:47.908044Z",
-      "next_node_id": 2985725644,
-      "node_id": 2308567631,
-      "parent_node_id": 3097612021,
-      "previous_node_id": null,
-      "ref_id": 3319150164,
-      "updated_at": "2026-01-30T01:49:06.938587Z"
-    },
-    {
-      "created_at": "2026-01-30T01:00:36.373809Z",
-      "next_node_id": null,
-      "node_id": 1471098845,
-      "parent_node_id": 556460077,
-      "previous_node_id": 2817953266,
-      "ref_id": 691312134,
-      "updated_at": "2026-01-30T01:00:36.373817Z"
-    },
-    {
-      "created_at": "2026-01-30T02:41:48.192853Z",
-      "next_node_id": 2322273157,
-      "node_id": 3596773860,
-      "parent_node_id": 3832412309,
-      "previous_node_id": null,
-      "ref_id": 1654534613,
-      "updated_at": "2026-01-30T02:42:01.531087Z"
+      "created_at": "2026-02-02T04:04:51.946427Z",
+      "next_node_id": 447076437,
+      "node_id": 4130304397,
+      "parent_node_id": 3722073337,
+      "previous_node_id": 2693518430,
+      "ref_id": 1456470970,
+      "updated_at": "2026-02-02T04:07:30.772337Z"
     }
   ],
   "references": [
     {
-      "comp_id": 140674376,
-      "created_at": "2026-01-30T01:49:06.937699Z",
-      "node_id": 2985725644,
+      "comp_id": 65484033,
+      "created_at": "2026-02-02T04:07:17.402373Z",
+      "node_id": 1862770114,
       "overrides": null,
-      "ref_id": 195174037,
-      "updated_at": "2026-01-30T01:49:06.937703Z"
+      "ref_id": 3782657289,
+      "updated_at": "2026-02-02T04:07:17.402386Z",
+      "useAI": false
     },
     {
-      "comp_id": 3907725880,
-      "created_at": "2026-01-30T01:49:22.415046Z",
-      "node_id": 3286560027,
+      "comp_id": 2420800256,
+      "created_at": "2026-02-02T04:07:23.140883Z",
+      "node_id": 3502079087,
       "overrides": null,
-      "ref_id": 3883967440,
-      "updated_at": "2026-01-30T01:49:22.415058Z"
+      "ref_id": 1362497636,
+      "updated_at": "2026-02-02T04:07:23.140891Z",
+      "useAI": false
     },
     {
-      "comp_id": 371395553,
-      "created_at": "2026-01-30T02:42:01.530043Z",
-      "node_id": 2322273157,
+      "comp_id": 2848056908,
+      "created_at": "2026-02-02T04:04:54.631285Z",
+      "node_id": 2693518430,
       "overrides": null,
-      "ref_id": 744722318,
-      "updated_at": "2026-01-30T02:42:01.530052Z"
+      "ref_id": 1170320415,
+      "updated_at": "2026-02-02T04:04:54.631294Z",
+      "useAI": false
     },
     {
-      "comp_id": 912305642,
-      "created_at": "2026-01-30T02:39:48.728631Z",
-      "node_id": 3832412309,
+      "comp_id": 1023396213,
+      "created_at": "2026-02-02T04:07:19.092806Z",
+      "node_id": 4131018542,
       "overrides": null,
-      "ref_id": 2250178062,
-      "updated_at": "2026-01-30T02:39:48.728635Z"
+      "ref_id": 3089065362,
+      "updated_at": "2026-02-02T04:07:19.092814Z",
+      "useAI": false
     },
     {
-      "comp_id": 2278940502,
-      "created_at": "2026-01-29T19:37:22.413649Z",
-      "node_id": 2924221211,
+      "comp_id": 2062517949,
+      "created_at": "2026-02-02T04:04:51.937208Z",
+      "node_id": 3722073337,
       "overrides": null,
-      "ref_id": 784214156,
-      "updated_at": "2026-01-29T19:37:22.413663Z"
+      "ref_id": 4068458209,
+      "updated_at": "2026-02-02T04:04:51.937214Z",
+      "useAI": false
     },
     {
-      "comp_id": 3545220711,
-      "created_at": "2026-01-30T01:00:10.942660Z",
-      "node_id": 2729505065,
+      "comp_id": 4058164116,
+      "created_at": "2026-02-02T04:07:24.211633Z",
+      "node_id": 3228613821,
       "overrides": null,
-      "ref_id": 3160940561,
-      "updated_at": "2026-01-30T01:00:10.942675Z"
+      "ref_id": 212138067,
+      "updated_at": "2026-02-02T04:07:24.211635Z",
+      "useAI": false
     },
     {
-      "comp_id": 1493086539,
-      "created_at": "2026-01-30T02:42:32.597651Z",
-      "node_id": 1595881426,
+      "comp_id": 2328172934,
+      "created_at": "2026-02-02T04:04:47.521269Z",
+      "node_id": 1719118832,
       "overrides": null,
-      "ref_id": 818655869,
-      "updated_at": "2026-01-30T02:42:32.597655Z"
+      "ref_id": 1478296366,
+      "updated_at": "2026-02-02T04:04:47.521269Z"
     },
     {
-      "comp_id": 970583074,
-      "created_at": "2026-01-30T01:51:48.624564Z",
-      "node_id": 951479840,
+      "comp_id": 3696924750,
+      "created_at": "2026-02-02T04:04:51.946092Z",
+      "node_id": 4130304397,
       "overrides": null,
-      "ref_id": 1432212312,
-      "updated_at": "2026-01-30T01:51:48.624576Z"
+      "ref_id": 1456470970,
+      "updated_at": "2026-02-02T04:04:51.946098Z",
+      "useAI": false
     },
     {
-      "comp_id": 1962119606,
-      "created_at": "2026-01-30T01:00:33.598902Z",
-      "node_id": 2817953266,
+      "comp_id": 3101502962,
+      "created_at": "2026-02-02T04:07:15.021257Z",
+      "node_id": 3849651321,
       "overrides": null,
-      "ref_id": 1030323420,
-      "updated_at": "2026-01-30T01:00:33.598910Z"
+      "ref_id": 1920480763,
+      "updated_at": "2026-02-02T04:07:15.021267Z",
+      "useAI": false
     },
     {
-      "comp_id": 2537847997,
-      "created_at": "2026-01-30T01:48:13.093645Z",
-      "node_id": 3097612021,
+      "comp_id": 2785211903,
+      "created_at": "2026-02-02T04:07:20.396816Z",
+      "node_id": 2131250972,
       "overrides": null,
-      "ref_id": 4229434537,
-      "updated_at": "2026-01-30T01:48:13.093654Z"
+      "ref_id": 2787291482,
+      "updated_at": "2026-02-02T04:07:20.396824Z",
+      "useAI": false
     },
     {
-      "comp_id": 1572676853,
-      "created_at": "2026-01-30T01:48:47.907743Z",
-      "node_id": 2308567631,
+      "comp_id": 4118346733,
+      "created_at": "2026-02-02T04:07:30.753987Z",
+      "node_id": 447076437,
       "overrides": null,
-      "ref_id": 3319150164,
-      "updated_at": "2026-01-30T01:48:47.907775Z"
+      "ref_id": 2891860344,
+      "updated_at": "2026-02-02T04:07:30.753993Z",
+      "useAI": false
     },
     {
-      "comp_id": 1636252688,
-      "created_at": "2026-01-29T19:50:43.622545Z",
-      "node_id": 1597550209,
+      "comp_id": 3607456023,
+      "created_at": "2026-02-02T04:07:21.772660Z",
+      "node_id": 706011803,
       "overrides": null,
-      "ref_id": 3684057095,
-      "updated_at": "2026-01-29T19:50:43.622553Z"
+      "ref_id": 691070213,
+      "updated_at": "2026-02-02T04:07:21.772665Z",
+      "useAI": false
     },
     {
-      "comp_id": 1997016273,
-      "created_at": "2026-01-30T02:42:56.507693Z",
-      "node_id": 693710902,
+      "comp_id": 1025514301,
+      "created_at": "2026-02-02T04:07:21.778003Z",
+      "node_id": 3738906358,
       "overrides": null,
-      "ref_id": 2234904412,
-      "updated_at": "2026-01-30T02:42:56.507703Z"
+      "ref_id": 1293353097,
+      "updated_at": "2026-02-02T04:07:21.778010Z",
+      "useAI": false
     },
     {
-      "comp_id": 44278079,
-      "created_at": "2026-01-30T01:00:36.373339Z",
-      "node_id": 1471098845,
+      "comp_id": 242208402,
+      "created_at": "2026-02-02T04:07:20.371479Z",
+      "node_id": 3586468051,
       "overrides": null,
-      "ref_id": 691312134,
-      "updated_at": "2026-01-30T01:00:36.373347Z"
+      "ref_id": 1741934724,
+      "updated_at": "2026-02-02T04:07:20.371490Z",
+      "useAI": false
     },
     {
-      "comp_id": 3291949151,
-      "created_at": "2026-01-30T01:50:25.859809Z",
-      "node_id": 2110438267,
+      "comp_id": 1175859468,
+      "created_at": "2026-02-02T04:07:19.099352Z",
+      "node_id": 1351117285,
       "overrides": null,
-      "ref_id": 3000555623,
-      "updated_at": "2026-01-30T01:50:25.859817Z"
+      "ref_id": 1246095299,
+      "updated_at": "2026-02-02T04:07:19.099358Z",
+      "useAI": false
     },
     {
-      "comp_id": 1298748398,
-      "created_at": "2026-01-30T01:49:51.965723Z",
-      "node_id": 1419869066,
+      "comp_id": 1871213378,
+      "created_at": "2026-02-02T04:07:23.146474Z",
+      "node_id": 1699079620,
       "overrides": null,
-      "ref_id": 2168968704,
-      "updated_at": "2026-01-30T01:49:51.965730Z"
-    },
-    {
-      "comp_id": 2450549735,
-      "created_at": "2026-01-29T19:50:41.659733Z",
-      "node_id": 556460077,
-      "overrides": null,
-      "ref_id": 1438331919,
-      "updated_at": "2026-01-29T19:50:41.659744Z"
-    },
-    {
-      "comp_id": 2901485332,
-      "created_at": "2026-01-30T01:01:11.270921Z",
-      "node_id": 579858192,
-      "overrides": null,
-      "ref_id": 4091889258,
-      "updated_at": "2026-01-30T01:01:11.270925Z"
-    },
-    {
-      "comp_id": 970583074,
-      "created_at": "2026-01-30T01:00:59.664068Z",
-      "node_id": 3508932588,
-      "overrides": null,
-      "ref_id": 478054559,
-      "updated_at": "2026-01-30T01:00:59.664073Z"
-    },
-    {
-      "comp_id": 3676288799,
-      "created_at": "2026-01-30T02:41:48.192347Z",
-      "node_id": 3596773860,
-      "overrides": null,
-      "ref_id": 1654534613,
-      "updated_at": "2026-01-30T02:41:48.192357Z"
+      "ref_id": 2529816471,
+      "updated_at": "2026-02-02T04:07:23.146484Z",
+      "useAI": false
     }
   ],
   "settings": {
-    "footer": [
-      {
-        "footer_id": 622469449,
-        "href": "https://github.com/scshafe",
-        "label": "Github",
-        "order": 0,
-        "position": "left",
-        "view_node_id": null
-      }
-    ],
+    "footer": [],
     "home": {
       "label": "Home",
-      "root_view_node_id": 2924221211
+      "root_view_node_id": 1719118832
     },
     "menu": [
       {
-        "href": "/hello",
-        "label": "Hello",
-        "menu_id": 1387701115,
+        "href": "/home",
+        "label": "Home",
+        "menu_id": 2231667417,
         "order": 0,
-        "position": "right"
-      },
-      {
-        "href": "/about",
-        "label": "about",
-        "menu_id": 1076179615,
-        "order": 0,
-        "position": "right"
+        "position": "left",
+        "view_node_id": 1719118832
       }
     ],
     "site": {
-      "author": "Cole",
-      "description": "ai|linux|physics",
-      "favicon_src": "/uploads/2142070919_multicolor-personal-favicon.png",
-      "keywords": "AI,software,physics,linux",
+      "author": "",
+      "description": "",
+      "favicon_src": "",
+      "keywords": "",
       "language": "en",
-      "robots": "noindex,nofollow",
-      "site_name": "hi, i'm cole",
-      "site_url": "https://scshafe.github.io",
-      "social_image_url": "/uploads/1776936889_ChatGPT_Image_Jan_30_2026_from_Photo_Dimensions_and_Crops.png",
-      "tagline": "hi, i'm cole.",
-      "theme_color": "#cce8b5",
+      "robots": "index,follow",
+      "site_name": "",
+      "site_url": "",
+      "social_image_border_color": "#0f172a",
+      "social_image_border_enabled": false,
+      "social_image_border_radius": 24,
+      "social_image_border_width": 16,
+      "social_image_url": "",
+      "tagline": "",
+      "theme_color": "#1f3b56",
       "twitter_handle": ""
     },
     "themeConfig": {
       "active_theme_id": null,
       "color_scheme": "system"
     },
-    "themes": []
+    "themes": [
+      {
+        "colors": {
+          "accent": "#3b82f6",
+          "background": "#ffffff",
+          "border": "#e2e8f0",
+          "foreground": "#0f172a",
+          "muted": "#f1f5f9",
+          "primary": "#1f3b56",
+          "secondary": "#64748b"
+        },
+        "created_at": "2026-02-02T06:33:34.296291Z",
+        "name": "Theme 1",
+        "theme_id": 1788580941
+      },
+      {
+        "colors": {
+          "accent": "#3b82f6",
+          "background": "#ffffff",
+          "border": "#e2e8f0",
+          "foreground": "#0f172a",
+          "muted": "#f1f5f9",
+          "primary": "#1f3b56",
+          "secondary": "#64748b"
+        },
+        "created_at": "2026-02-02T06:32:52.314332Z",
+        "name": "My Custom Theme",
+        "theme_id": 3851830714
+      },
+      {
+        "colors": {
+          "accent": "#3b82f6",
+          "background": "#ffffff",
+          "border": "#e2e8f0",
+          "foreground": "#0f172a",
+          "muted": "#f1f5f9",
+          "primary": "#1f3b56",
+          "secondary": "#64748b"
+        },
+        "created_at": "2026-02-02T06:32:52.317079Z",
+        "name": "Theme 1",
+        "theme_id": 2542538235
+      },
+      {
+        "colors": {
+          "accent": "#3b82f6",
+          "background": "#ffffff",
+          "border": "#e2e8f0",
+          "foreground": "#0f172a",
+          "muted": "#f1f5f9",
+          "primary": "#1f3b56",
+          "secondary": "#64748b"
+        },
+        "created_at": "2026-02-02T06:33:34.294339Z",
+        "name": "My Custom Theme",
+        "theme_id": 1062574402
+      }
+    ]
   }
 }

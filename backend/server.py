@@ -12,6 +12,30 @@ from flask_cors import CORS
 import requests
 from werkzeug.utils import secure_filename
 
+
+def load_dotenv(path: Path) -> None:
+    if not path.exists():
+        return
+    for raw_line in path.read_text().splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("export "):
+            line = line[len("export "):]
+        if "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        if not key:
+            continue
+        value = value.strip()
+        if (value.startswith("\"") and value.endswith("\"")) or (value.startswith("'") and value.endswith("'")):
+            value = value[1:-1]
+        os.environ.setdefault(key, value)
+
+
+load_dotenv(Path(__file__).resolve().parents[1] / ".env")
+
 try:
     from .database import (
         COMPONENT_DIR,
@@ -39,6 +63,10 @@ try:
         write_home_settings,
         write_json,
         write_theme_config,
+        read_ai_settings,
+        write_ai_settings,
+        read_view_styles,
+        write_view_styles,
     )
     from .export_metadata import export_metadata
     from .utils import resolve_node_tree
@@ -69,6 +97,10 @@ except ImportError:
         write_home_settings,
         write_json,
         write_theme_config,
+        read_ai_settings,
+        write_ai_settings,
+        read_view_styles,
+        write_view_styles,
     )
     from backend.export_metadata import export_metadata
     from backend.utils import resolve_node_tree
@@ -1265,6 +1297,34 @@ def update_site() -> tuple[Any, int]:
     return jsonify(site), 200
 
 
+@app.get("/ai-settings")
+def get_ai_settings() -> tuple[Any, int]:
+    return jsonify(read_ai_settings()), 200
+
+
+@app.put("/ai-settings")
+def update_ai_settings() -> tuple[Any, int]:
+    payload = request.get_json(force=True) or {}
+    settings = read_ai_settings()
+    settings.update(payload)
+    write_ai_settings(settings)
+    return jsonify(settings), 200
+
+
+@app.get("/view-styles")
+def get_view_styles() -> tuple[Any, int]:
+    return jsonify(read_view_styles()), 200
+
+
+@app.put("/view-styles")
+def update_view_styles() -> tuple[Any, int]:
+    payload = request.get_json(force=True) or {}
+    styles = read_view_styles()
+    styles.update(payload)
+    write_view_styles(styles)
+    return jsonify(styles), 200
+
+
 @app.get("/home/root-view")
 def get_root_view() -> tuple[Any, int]:
     home = read_home_settings()
@@ -1376,6 +1436,54 @@ def update_theme_config() -> tuple[Any, int]:
     config.update(payload)
     write_theme_config(config)
     return jsonify(config), 200
+
+
+@app.get("/themes/config")
+def get_theme_config() -> tuple[Any, int]:
+    return jsonify(read_theme_config()), 200
+
+
+@app.put("/themes/config")
+def put_theme_config() -> tuple[Any, int]:
+    payload = request.get_json(force=True) or {}
+    config = read_theme_config()
+    config.update(payload)
+    write_theme_config(config)
+    return jsonify(config), 200
+
+
+@app.get("/themes/custom")
+def list_custom_themes() -> tuple[Any, int]:
+    themes = list_json_files(THEME_CUSTOM_DIR)
+    return jsonify(themes), 200
+
+
+@app.post("/themes/custom")
+def create_custom_theme() -> tuple[Any, int]:
+    payload = request.get_json(force=True) or {}
+    theme_id = generate_id()
+    theme = {
+        "theme_id": theme_id,
+        "name": payload.get("name", "Untitled Theme"),
+        "colors": payload.get("colors", {
+            "background": "#ffffff",
+            "foreground": "#0f172a",
+            "primary": "#1f3b56",
+            "secondary": "#64748b",
+            "accent": "#3b82f6",
+            "muted": "#f1f5f9",
+            "border": "#e2e8f0"
+        }),
+        "created_at": now_iso()
+    }
+    write_json(THEME_CUSTOM_DIR / f"{theme_id}.json", theme)
+    return jsonify(theme), 201
+
+
+@app.delete("/themes/custom/<int:theme_id>")
+def delete_custom_theme(theme_id: int) -> tuple[Any, int]:
+    (THEME_CUSTOM_DIR / f"{theme_id}.json").unlink(missing_ok=True)
+    return jsonify({"deleted": theme_id}), 200
 
 
 @app.get("/themes/<int:theme_id>")

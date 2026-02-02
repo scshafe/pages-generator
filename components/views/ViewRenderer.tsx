@@ -1,7 +1,8 @@
+"use client";
+
 import type { ResolvedNode } from "@/lib/content/types";
-import { ViewComponentRenderer } from "@/components/views/ViewComponentRenderer";
 import { DragScopeProvider } from "@/components/views/DragScopeProvider";
-import { SortableChildren } from "@/components/views/ViewComponentRenderer";
+import { SortableChildren, ViewComponentRenderer, renderInlineBlocks } from "@/components/views/ViewComponentRenderer";
 import { ContainerFocusProvider } from "@/components/author/ContainerFocusProvider";
 import { ConfigurationPanel } from "@/components/author/ConfigurationPanel";
 import { AuthorShortcuts } from "@/components/views/AuthorShortcuts";
@@ -52,15 +53,19 @@ export function ViewRenderer({ view }: { view: ResolvedNode }) {
                 ) : null}
               </>
             ) : (
-              view.children.map((child, index) => (
-                <ViewComponentRenderer
-                  key={child.node.node_id}
-                  node={child}
-                  parentType="Container"
-                  previousSiblingType={view.children[index - 1]?.component.type ?? null}
-                  nextSiblingType={view.children[index + 1]?.component.type ?? null}
-                />
-              ))
+              renderInlineBlocks({
+                nodes: view.children,
+                renderItem: (child, index, siblings) => (
+                  <ViewComponentRenderer
+                    key={child.node.node_id}
+                    node={child}
+                    parentType="Container"
+                    previousSiblingType={siblings[index - 1]?.component.type ?? null}
+                    nextSiblingType={siblings[index + 1]?.component.type ?? null}
+                  />
+                ),
+                isAuthor
+              })
             )}
           </div>
         </DragScopeProvider>

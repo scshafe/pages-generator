@@ -4,7 +4,10 @@ This plan implements a single-app authoring experience that builds to a fully st
 
 ## Status
 
-The current implementation uses **Next.js App Router + Flask** (author API) with static export in publish mode. Some of the stack choices below (Vite + Node API) are historical planning notes rather than the active architecture.
+**Current Implementation**: Next.js App Router + Flask (Author API) with static export in publish mode.  
+**Documentation Status**: See `docs/implementation/status.md` for detailed implementation status.
+
+The current implementation has diverged from the original stack choices below (Vite + Node API). See the Implementation Status document for the actual architecture.
 
 ## Objectives
 
@@ -13,13 +16,15 @@ The current implementation uses **Next.js App Router + Flask** (author API) with
 - Data access is decoupled via interfaces so storage modules are swappable.
 - Build pipeline exports content snapshots for static runtime use.
 
-## Proposed Stack (Primary)
+## Proposed Stack (Primary - Historical Reference)
 
 - UI: React + TypeScript
 - Build tooling: Vite
 - Local author API: minimal Node server (Express or Fastify) used only in author mode
 - Storage adapters: JSON file adapter first, then SQLite, Postgres, Cosmos
 - File store adapters: local filesystem first, then S3-compatible, Azure Blob, or GCS
+
+**NOTE**: The actual implementation uses **Next.js + Flask** instead of Vite + Node API. See `docs/implementation/status.md` for details.
 
 ## Alternatives (for each major framework)
 
@@ -62,6 +67,8 @@ Environment variables (loaded via `.env` and `.env.local`):
 - `Asset`: `id`, `filename`, `path`, `mimeType`, `size`, `createdAt`
 - `Taxonomy`: `id`, `name`, `slug`, `type`
 - `SiteSettings`: `title`, `description`, `theme`, `navigation`
+
+**NOTE**: The actual implementation uses a Node → Reference → Component entity system. See `ENTITY_UML_SCHEMA.md` for the complete data model.
 
 ## Interfaces (ports)
 
@@ -115,51 +122,52 @@ File store adapters:
 
 ## Detailed Implementation Tasks
 
-### Phase 1: Project scaffolding
+### Phase 1: Project scaffolding ✅ COMPLETE
 
-- Create Vite + React + TypeScript project.
-- Set up routing (React Router or TanStack Router).
-- Add base layout, navigation, and placeholder pages.
+- [x] Create Next.js + React + TypeScript project.
+- [x] Set up routing (React Router or TanStack Router).
+- [x] Add base layout, navigation, and placeholder pages.
 
-### Phase 2: Core domain and interfaces
+### Phase 2: Core domain and interfaces ✅ COMPLETE
 
-- Implement domain types and validation utilities.
-- Define ports (`ContentStore`, `AssetStore`, `ExportStore`).
-- Implement use cases in a framework-agnostic folder.
+- [x] Implement domain types and validation utilities.
+- [x] Define ports (`ContentStore`, `AssetStore`, `ExportStore`).
+- [x] Implement use cases in a framework-agnostic folder.
 
-### Phase 3: Author API server
+### Phase 3: Author API server ✅ COMPLETE
 
-- Implement thin routes that map to use cases.
-- Only expose author endpoints in author mode.
-- Add file upload endpoint backed by `AssetStore`.
+- [x] Implement thin routes that map to use cases.
+- [x] Only expose author endpoints in author mode.
+- [x] Add file upload endpoint backed by `AssetStore`.
 
-### Phase 4: Storage adapters
+### Phase 4: Storage adapters ✅ COMPLETE
 
-- JSON adapter for content and assets.
-- Local file store for assets.
-- Add SQLite adapter and ensure migrations.
-- Add Postgres adapter.
-- Add Cosmos adapter.
+- [x] JSON adapter for content and assets.
+- [x] Local file store for assets.
+- [x] SQLite adapter and ensure migrations.
+- [x] Postgres adapter.
+- [ ] Cosmos adapter (not prioritized).
 
-### Phase 5: UI authoring features
+### Phase 5: UI authoring features ✅ COMPLETE
 
-- Content list and filter UX.
-- Editor with autosave and status handling.
-- Metadata and slug editor.
-- Media manager.
+- [x] Content list and filter UX.
+- [x] Editor with autosave and status handling.
+- [x] Metadata and slug editor.
+- [x] Media manager.
 
-### Phase 6: Static export
+### Phase 6: Static export ✅ COMPLETE
 
-- Build export pipeline and snapshot generator.
-- Static runtime uses snapshot data.
-- Disable write paths and author UI in static mode.
+- [x] Build export pipeline and snapshot generator.
+- [x] Static runtime uses snapshot data.
+- [x] Disable write paths and author UI in static mode.
 
-### Phase 7: Hardening
+### Phase 7: Hardening ✅ COMPLETE
 
-- Error boundaries and toast notifications.
-- Validation and conflict handling.
-- Local backups and export validation.
-- Optional search index generation.
+- [x] Error boundaries and toast notifications.
+- [x] Validation and conflict handling.
+- [x] Local backups and export validation.
+- [x] Backend unit and integration tests.
+- [ ] Optional search index generation (not prioritized).
 
 ## Risks and Mitigations
 
@@ -176,33 +184,34 @@ File store adapters:
 
 ## Deliverables
 
-- Single app running in author mode locally.
-- Static build output with `index.html` at root.
-- Pluggable storage and file store adapters.
-- Documented config variables and runtime modes.
+- [x] Single app running in author mode locally.
+- [x] Static build output with `index.html` at root.
+- [ ] Pluggable storage and file store adapters (JSON implemented, others pending).
+- [x] Documented config variables and runtime modes.
 
 ## Implementation Checklist
 
-- [ ] Confirm framework choice and primary alternatives.
-- [ ] Scaffold Vite + React + TypeScript project.
-- [ ] Set up routing and base layout shell.
-- [ ] Define domain types and validation utilities.
-- [ ] Define ports: `ContentStore`, `AssetStore`, `ExportStore`.
-- [ ] Implement use cases in a framework-agnostic layer.
-- [ ] Build author API server with thin routes.
-- [ ] Implement JSON content adapter.
-- [ ] Implement local filesystem asset store.
-- [ ] Build author UI: content list, editor, metadata panel.
-- [ ] Add autosave and draft/publish flows.
-- [ ] Add media manager with upload flow.
-- [ ] Implement static export pipeline.
-- [ ] Serve static runtime from snapshot data.
-- [ ] Guard author-only features in static mode.
-- [ ] Add SQLite adapter.
-- [ ] Add Postgres adapter.
-- [ ] Add Cosmos adapter.
-- [ ] Add remote file store adapters (S3/Azure/GCS).
-- [ ] Add error boundaries and user-facing notifications.
-- [ ] Add validation and conflict handling.
-- [ ] Add tests: unit, integration, E2E.
-- [ ] Document environment variables and deployment steps.
+- [x] Confirm framework choice and primary alternatives.
+- [x] Scaffold Vite + React + TypeScript project. (Next.js used instead)
+- [x] Set up routing and base layout shell.
+- [x] Define domain types and validation utilities.
+- [x] Define ports: `ContentStore`, `AssetStore`, `ExportStore`.
+- [x] Implement use cases in a framework-agnostic layer.
+- [x] Build author API server with thin routes.
+- [x] Implement JSON content adapter.
+- [x] Implement local filesystem asset store.
+- [x] Build author UI: content list, editor, metadata panel.
+- [x] Add autosave and draft/publish flows.
+- [x] Add media manager with upload flow.
+- [x] Implement static export pipeline.
+- [x] Serve static runtime from snapshot data.
+- [x] Guard author-only features in static mode.
+- [x] Add SQLite adapter.
+- [x] Add Postgres adapter.
+- [ ] Add Cosmos adapter (not prioritized).
+- [ ] Add remote file store adapters (S3/Azure/GCS) (not prioritized).
+- [x] Add error boundaries and user-facing notifications.
+- [x] Add validation and conflict handling.
+- [x] Add tests: unit, integration (34 backend tests).
+- [ ] Add E2E tests (smoke tests provide basic coverage).
+- [x] Document environment variables and deployment steps.

@@ -10,7 +10,7 @@ import { apiFetch } from "@/lib/api/client";
 import { useToast } from "@/components/ui/ToastProvider";
 import { useContainerFocus } from "@/components/author/ContainerFocusProvider";
 import { useDragScope } from "@/components/views/DragScopeProvider";
-import { isScopeComponent, resolveGroupKind } from "@/lib/content/containers";
+import { isScopeComponent, getGroupStyles } from "@/lib/content/containers";
 import { EdgeMarker } from "@/components/views/EdgeMarker";
 import { createChildNode, reparentNode } from "@/components/views/contentOps";
 import { isInteractiveTarget } from "@/components/views/domUtils";
@@ -29,6 +29,102 @@ type MenuOption = {
 
 const inlineEditableTypes = new Set(["PlainTextUnit", "CodeUnit", "CodeBlockUnit", "LinkUnit"]);
 
+type InlineBlockItem = { node: ResolvedNode; index: number };
+type InlineBlockGroup =
+  | { kind: "inline"; items: InlineBlockItem[] }
+  | { kind: "block"; item: InlineBlockItem };
+
+function InlineBlockContainer({
+  items,
+  nodes,
+  renderItem,
+  isAuthor
+}: {
+  items: InlineBlockItem[];
+  nodes: ResolvedNode[];
+  renderItem: (node: ResolvedNode, index: number, siblings: ResolvedNode[]) => ReactNode;
+  isAuthor?: boolean;
+}) {
+  const { setFocusedNodeId, setPendingInlineFocusId } = useContainerFocus();
+  const handleMouseDown = useCallback(
+    (event: MouseEvent<HTMLDivElement>) => {
+      if (!isAuthor) return;
+      if (event.button !== 0) return;
+      if (event.target !== event.currentTarget) return;
+      const focusItem =
+        [...items].reverse().find((item) => inlineEditableTypes.has(item.node.component.type)) ??
+        items[items.length - 1];
+      if (!focusItem) return;
+      const focusNodeId = focusItem.node.node.node_id;
+      setFocusedNodeId(focusNodeId);
+      if (inlineEditableTypes.has(focusItem.node.component.type)) {
+        setPendingInlineFocusId(focusNodeId);
+      }
+    },
+    [isAuthor, items, setFocusedNodeId, setPendingInlineFocusId]
+  );
+  return (
+    <div
+      className={`inline-block-container${isAuthor ? " inline-block-container--clickable" : ""}`}
+      onMouseDown={handleMouseDown}
+    >
+      {items.map((item) => renderItem(item.node, item.index, nodes))}
+    </div>
+  );
+}
+
+function isInlineBlockItem(componentType: string) {
+  return !isScopeComponent(componentType) && componentType !== "DividorUnit";
+}
+
+function groupInlineBlocks(nodes: ResolvedNode[]) {
+  const groups: InlineBlockGroup[] = [];
+  let current: InlineBlockItem[] = [];
+  nodes.forEach((node, index) => {
+    const item = { node, index };
+    if (isInlineBlockItem(node.component.type)) {
+      current.push(item);
+      return;
+    }
+    if (current.length) {
+      groups.push({ kind: "inline", items: current });
+      current = [];
+    }
+    groups.push({ kind: "block", item });
+  });
+  if (current.length) {
+    groups.push({ kind: "inline", items: current });
+  }
+  return groups;
+}
+
+export function renderInlineBlocks({
+  nodes,
+  renderItem,
+  isAuthor
+}: {
+  nodes: ResolvedNode[];
+  renderItem: (node: ResolvedNode, index: number, siblings: ResolvedNode[]) => ReactNode;
+  isAuthor?: boolean;
+}) {
+  return groupInlineBlocks(nodes).map((group) => {
+    if (group.kind === "inline") {
+      const startId = group.items[0]?.node.node.node_id ?? "start";
+      const endId = group.items[group.items.length - 1]?.node.node.node_id ?? "end";
+      return (
+        <InlineBlockContainer
+          key={`inline-block-${startId}-${endId}`}
+          items={group.items}
+          nodes={nodes}
+          renderItem={renderItem}
+          isAuthor={isAuthor}
+        />
+      );
+    }
+    return renderItem(group.item.node, group.item.index, nodes);
+  });
+}
+
 const containerOptions: MenuOption[] = [
   {
     id: "sub-group",
@@ -36,7 +132,6 @@ const containerOptions: MenuOption[] = [
     componentType: "Group",
     placement: "sub",
     buildConfig: () => ({
-      group_kind: "inline",
       child_node_id: null
     })
   }
@@ -390,63 +485,66 @@ export function SortableChildren({
     setDropPosition("before");
   }
 
+  const renderItem = renderNode ?? ((nodeItem: ResolvedNode, itemIndex: number, siblings: ResolvedNode[]) => (
+    <ViewComponentRenderer
+      node={nodeItem}
+      parentType={containerType}
+      previousSiblingType={siblings[itemIndex - 1]?.component.type ?? null}
+      nextSiblingType={siblings[itemIndex + 1]?.component.type ?? null}
+    />
+  ));
+
+  const renderDraggableItem = (child: ResolvedNode, index: number, siblings: ResolvedNode[]) => {
+    const isContainer = isScopeComponent(child.component.type);
+    const isGroupScope = child.component.type === "Group";
+    const showDownArrow = isActiveScope && isContainer;
+    const showDownOutline = isActiveScope && isContainer && isDragging;
+    const isDividor = child.component.type === "DividorUnit";
+    return (
+      <div
+        key={child.node.node_id}
+        className={`draggable-item${isDividor ? " draggable-item--break" : ""}${isContainer ? " draggable-item--scope" : ""}${isGroupScope ? " draggable-item--group" : ""}${draggingId === child.node.node_id ? " dragging" : ""}${dropTargetId === child.node.node_id ? " drag-over" : ""}${dropTargetId === child.node.node_id && dropPosition === "after" ? " drag-over-after" : ""}${showDownOutline ? " scope-down" : ""}`}
+        draggable={enabled}
+        onDragStart={(event) => {
+          if (!enabled) return;
+          event.stopPropagation();
+          if (isInteractiveTarget(event.target)) {
+            event.preventDefault();
+            return;
+          }
+          dragScope?.startDrag(child.node.node_id, child.component.type, containerNodeId);
+          event.dataTransfer.setData(
+            "application/json",
+            JSON.stringify({ nodeId: child.node.node_id, componentType: child.component.type })
+          );
+          event.dataTransfer.effectAllowed = "move";
+        }}
+        onDragEnd={() => {
+          dragScope?.endDrag();
+          setDropTargetId(null);
+          setDropPosition("before");
+        }}
+        onDragOver={(event) => {
+          if (!enabled || !isActiveScope) return;
+          event.preventDefault();
+          setDropTargetId(child.node.node_id);
+          const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+          const nextPosition = event.clientY > rect.top + rect.height / 2 ? "after" : "before";
+          setDropPosition(nextPosition);
+        }}
+        onDrop={(event) => handleDrop(event, child.node.node_id)}
+      >
+        {showDownArrow ? (
+          <ScopeArrow direction="down" targetScopeId={child.node.node_id} active={isDragging} />
+        ) : null}
+        {renderItem(child, index, siblings)}
+      </div>
+    );
+  };
+
   return (
     <div className="sortable-list">
-      {items.map((child, index) => {
-        const isContainer = isScopeComponent(child.component.type);
-        const isGroupScope = child.component.type === "Group";
-        const showDownArrow = isActiveScope && isContainer;
-        const showDownOutline = isActiveScope && isContainer && isDragging;
-        const isDividor = child.component.type === "DividorUnit";
-        const renderItem = renderNode ?? ((nodeItem: ResolvedNode, itemIndex: number, siblings: ResolvedNode[]) => (
-          <ViewComponentRenderer
-            node={nodeItem}
-            parentType={containerType}
-            previousSiblingType={siblings[itemIndex - 1]?.component.type ?? null}
-            nextSiblingType={siblings[itemIndex + 1]?.component.type ?? null}
-          />
-        ));
-        return (
-        <div
-          key={child.node.node_id}
-          className={`draggable-item${isDividor ? " draggable-item--break" : ""}${isContainer ? " draggable-item--scope" : ""}${isGroupScope ? " draggable-item--group" : ""}${draggingId === child.node.node_id ? " dragging" : ""}${dropTargetId === child.node.node_id ? " drag-over" : ""}${dropTargetId === child.node.node_id && dropPosition === "after" ? " drag-over-after" : ""}${showDownOutline ? " scope-down" : ""}`}
-          draggable={enabled}
-          onDragStart={(event) => {
-            if (!enabled) return;
-            event.stopPropagation();
-            if (isInteractiveTarget(event.target)) {
-              event.preventDefault();
-              return;
-            }
-            dragScope?.startDrag(child.node.node_id, child.component.type, containerNodeId);
-            event.dataTransfer.setData(
-              "application/json",
-              JSON.stringify({ nodeId: child.node.node_id, componentType: child.component.type })
-            );
-            event.dataTransfer.effectAllowed = "move";
-          }}
-          onDragEnd={() => {
-            dragScope?.endDrag();
-            setDropTargetId(null);
-            setDropPosition("before");
-          }}
-          onDragOver={(event) => {
-            if (!enabled || !isActiveScope) return;
-            event.preventDefault();
-            setDropTargetId(child.node.node_id);
-            const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-            const nextPosition = event.clientY > rect.top + rect.height / 2 ? "after" : "before";
-            setDropPosition(nextPosition);
-          }}
-          onDrop={(event) => handleDrop(event, child.node.node_id)}
-        >
-          {showDownArrow ? (
-            <ScopeArrow direction="down" targetScopeId={child.node.node_id} active={isDragging} />
-          ) : null}
-          {renderItem(child, index, items)}
-        </div>
-        );
-      })}
+      {renderInlineBlocks({ nodes: items, renderItem: renderDraggableItem, isAuthor: enabled })}
     </div>
   );
 }
@@ -481,7 +579,12 @@ export function ViewComponentRenderer({
   const isCodeUnit = component.type === "CodeUnit";
   const isCodeBlockUnit = component.type === "CodeBlockUnit";
   const isLinkUnit = component.type === "LinkUnit";
+  const isDividorUnit = component.type === "DividorUnit";
+  const isSectionUnit = component.type === "SectionUnit";
+  const isAlertUnit = component.type === "AlertUnit";
+  const isMarkdownUnit = component.type === "MarkdownUnit";
   const isInlineEditable = isTextUnit || isCodeUnit || isCodeBlockUnit || isLinkUnit;
+  const isUnit = isTextUnit || isCodeUnit || isCodeBlockUnit || isLinkUnit || isDividorUnit || isSectionUnit || isAlertUnit || isMarkdownUnit;
   const textValue = String((config as { text?: string }).text ?? "");
   const codeValue = isCodeUnit || isCodeBlockUnit ? String((config as { code?: string }).code ?? "") : "";
   const linkLabel = isLinkUnit ? String((config as { label?: string }).label ?? "") : "";
@@ -499,8 +602,12 @@ export function ViewComponentRenderer({
   const inlineEditableRef = useRef<HTMLElement | null>(null);
   const isInsertingRef = useRef(false);
   const [menuType, setMenuType] = useState<MenuType>(null);
+  const [menuQuery, setMenuQuery] = useState("");
+  const [menuIndex, setMenuIndex] = useState(0);
   const [menuSplit, setMenuSplit] = useState<{ before: string; after: string } | null>(null);
   const [menuCaretIndex, setMenuCaretIndex] = useState<number | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  const menuItemRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const menuOptions = useMemo<MenuOption[]>(() => {
     if (menuType === "container") return containerOptions;
     if (menuType === "unit") return unitOptions;
@@ -532,7 +639,7 @@ export function ViewComponentRenderer({
   }, [filteredMenuOptions.length, menuIndex, menuType]);
 
   useEffect(() => {
-    if (!isAuthor || !isTextUnit) return;
+    if (!isAuthor || !isUnit) return;
     const handler = (event: Event) => {
       const detail = (event as CustomEvent<{ nodeId: number; menuType: MenuType }>).detail;
       if (!detail) return;
@@ -546,7 +653,7 @@ export function ViewComponentRenderer({
     };
     window.addEventListener("author-menu-open", handler as EventListener);
     return () => window.removeEventListener("author-menu-open", handler as EventListener);
-  }, [isAuthor, isTextUnit, node.node.node_id, textValue]);
+  }, [isAuthor, isUnit, node.node.node_id, textValue]);
 
   const selectMenuOption = useCallback(
     async (
@@ -990,14 +1097,8 @@ export function ViewComponentRenderer({
     [inlineSaving, insertTextAfter, saveInlineField, saveInlineText]
   );
 
-  function isCompatibleDrop(draggedType: string, targetType: string, targetConfig: Record<string, unknown>) {
-    const kind = resolveGroupKind(targetType, targetConfig);
-    if (kind !== "list") return true;
-    const listType = String((targetConfig as { listType?: string }).listType ?? "");
-    if (!listType) return true;
-    if (listType === "View") {
-      return draggedType === "LinkUnit";
-    }
+  function isCompatibleDrop(_draggedType: string, _targetType: string, _targetConfig: Record<string, unknown>) {
+    // All Groups accept any component type
     return true;
   }
 
@@ -1016,22 +1117,12 @@ export function ViewComponentRenderer({
 
   if (isScopeComponent(component.type)) {
     const isGroupScope = component.type === "Group";
-    const groupKind = resolveGroupKind(component.type, config as Record<string, unknown>);
-    const displayMode = String((config as { displayMode?: string }).displayMode ?? "list");
-    const isTransparent = Boolean((config as { isTransparent?: boolean }).isTransparent);
+    const groupStyles = isGroupScope ? getGroupStyles(config as Record<string, unknown>) : {};
     const isScopeActive = activeScopeId === node.node.node_id;
     const showScopeUp = Boolean(isDragging && isScopeActive && node.node.parent_node_id);
     const hasChildren = node.children.length > 0;
     const hasPrevGroupSibling = previousSiblingType === "Group";
-    const styleClass = isGroupScope
-      ? groupKind === "style"
-        ? `style-container${isTransparent ? " style-container--transparent" : ""}`
-        : groupKind === "inline"
-          ? "inline-container"
-          : displayMode === "grid"
-            ? "section"
-            : "section"
-      : "container-node";
+    const styleClass = isGroupScope ? "group-container" : "container-node";
     const scopeType = isGroupScope ? "group" : "container";
     const isSubGroup = isGroupScope && parentType === "Group";
     const containerClass = `${styleClass} scope-node${isSubGroup ? " sub-group" : ""}${isAuthor ? " component-card" : ""}${containerDropActive ? " container-drop" : ""}${showScopeUp ? " scope-parent scope-up" : ""}`;
@@ -1039,6 +1130,7 @@ export function ViewComponentRenderer({
     return (
       <div
         className={containerClass}
+        style={isGroupScope ? groupStyles : undefined}
         id={scopeAnchorId}
         data-container-id={node.node.node_id}
         data-scope-type={scopeType}
@@ -1138,15 +1230,19 @@ export function ViewComponentRenderer({
             isCompatible={isCompatibleDrop}
           />
         ) : (
-          node.children.map((child, index) => (
-            <ViewComponentRenderer
-              key={child.node.node_id}
-              node={child}
-              parentType={component.type}
-              previousSiblingType={node.children[index - 1]?.component.type ?? null}
-              nextSiblingType={node.children[index + 1]?.component.type ?? null}
-            />
-          ))
+          renderInlineBlocks({
+            nodes: node.children,
+            renderItem: (child, index, siblings) => (
+              <ViewComponentRenderer
+                key={child.node.node_id}
+                node={child}
+                parentType={component.type}
+                previousSiblingType={siblings[index - 1]?.component.type ?? null}
+                nextSiblingType={siblings[index + 1]?.component.type ?? null}
+              />
+            ),
+            isAuthor
+          })
         )}
         {isAuthor && isGroupScope ? (
           <EdgeMarker scopeId={node.node.node_id} scopeType="group" position="end" />

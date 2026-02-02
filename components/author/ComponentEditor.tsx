@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api/client";
 import { useToast } from "@/components/ui/ToastProvider";
 import { Switch } from "@/components/ui/Switch";
-import { resolveGroupKind } from "@/lib/content/containers";
 
 const textTypes = ["PlainTextUnit"] as const;
 const contentTypes = ["MarkdownUnit", "AlertUnit"] as const;
@@ -50,12 +49,23 @@ export function ComponentEditor({
     start_date: String(config.start_date ?? ""),
     end_date: String(config.end_date ?? ""),
     image: String(config.image ?? ""),
-    isTransparent: String(config.isTransparent ?? "false"),
     variant: String(config.variant ?? "info"),
-    group_kind: String((config as { group_kind?: string }).group_kind ?? ""),
-    listType: String((config as { listType?: string }).listType ?? ""),
-    displayMode: String((config as { displayMode?: string }).displayMode ?? "list"),
-    name: String((config as { name?: string }).name ?? "")
+    name: String((config as { name?: string }).name ?? ""),
+    // Group CSS styling properties
+    display: String((config as Record<string, unknown>).display ?? ""),
+    flexDirection: String((config as Record<string, unknown>).flexDirection ?? ""),
+    flexWrap: String((config as Record<string, unknown>).flexWrap ?? ""),
+    justifyContent: String((config as Record<string, unknown>).justifyContent ?? ""),
+    alignItems: String((config as Record<string, unknown>).alignItems ?? ""),
+    gap: String((config as Record<string, unknown>).gap ?? ""),
+    padding: String((config as Record<string, unknown>).padding ?? ""),
+    margin: String((config as Record<string, unknown>).margin ?? ""),
+    width: String((config as Record<string, unknown>).width ?? ""),
+    maxWidth: String((config as Record<string, unknown>).maxWidth ?? ""),
+    backgroundColor: String((config as Record<string, unknown>).backgroundColor ?? ""),
+    borderRadius: String((config as Record<string, unknown>).borderRadius ?? ""),
+    border: String((config as Record<string, unknown>).border ?? ""),
+    boxShadow: String((config as Record<string, unknown>).boxShadow ?? "")
   });
   const [showMarkdownPreview, setShowMarkdownPreview] = useState(false);
   const [linkType, setLinkType] = useState<"internal" | "external">("internal");
@@ -68,7 +78,6 @@ export function ComponentEditor({
   const [selectedAnchorHash, setSelectedAnchorHash] = useState<string | null>(null);
 
 
-  const groupKind = formValues.group_kind || resolveGroupKind(componentType, config);
   const isGroup = componentType === "Group";
 
   const fields = useMemo(() => {
@@ -123,7 +132,7 @@ export function ComponentEditor({
     (linkType === "internal" && selectedViewId && views.length > 0);
 
   const aiEnabled = formValues.useAI === "true";
-  const componentLabel = isGroup ? `Group (${groupKind || "inline"})` : componentType;
+  const componentLabel = isGroup ? "Group" : componentType;
 
   const buildUpdatedConfig = useCallback(() => {
     const updatedConfig = { ...config } as Record<string, unknown>;
@@ -151,14 +160,19 @@ export function ComponentEditor({
       updatedConfig.autoplay = formValues.autoplay === "true";
     }
     if (isGroup) {
-      updatedConfig.group_kind = groupKind;
-      if (groupKind === "style") {
-        updatedConfig.isTransparent = formValues.isTransparent === "true";
-      }
-      if (groupKind === "list") {
-        updatedConfig.listType = formValues.listType ?? "";
-        updatedConfig.displayMode = formValues.displayMode ?? "list";
-        updatedConfig.name = formValues.name ?? "";
+      // CSS styling properties for Group
+      const cssProps = [
+        "display", "flexDirection", "flexWrap", "justifyContent", "alignItems", "gap",
+        "padding", "margin", "width", "maxWidth", "backgroundColor", "borderRadius",
+        "border", "boxShadow", "name"
+      ];
+      for (const prop of cssProps) {
+        const value = formValues[prop]?.trim();
+        if (value) {
+          updatedConfig[prop] = value;
+        } else {
+          delete updatedConfig[prop];
+        }
       }
     }
 
@@ -170,7 +184,6 @@ export function ComponentEditor({
   }, [
     componentType,
     config,
-    groupKind,
     externalUrl,
     fields,
     formValues,
@@ -247,8 +260,7 @@ export function ComponentEditor({
           found.push({ hash, title: label });
         }
       } else if (type === "Group") {
-        const kind = resolveGroupKind(type, current.config ?? {}) || "inline";
-        const label = String(current.config?.name ?? `Group (${kind})`);
+        const label = String(current.config?.name ?? "Group");
         found.push({ hash: `group-${current.node.node_id}`, title: label });
       } else if (type && isLinkableComponent(type)) {
         const title = getAnchorLabel(type, current.config ?? {});
@@ -450,82 +462,204 @@ export function ComponentEditor({
             );
           })}
           {isGroup ? (
-            <div className="form-grid">
+            <div className="form-grid group-style-editor">
               <label>
-                <span>Group type</span>
-                <select
-                  value={groupKind}
+                <span>Name</span>
+                <input
+                  value={formValues.name ?? ""}
+                  placeholder="Optional label"
                   onChange={(event) =>
-                    setFormValues((prev) => ({
-                      ...prev,
-                      group_kind: event.target.value
-                    }))
+                    setFormValues((prev) => ({ ...prev, name: event.target.value }))
                   }
-                >
-                  <option value="style">Style</option>
-                  <option value="inline">Inline</option>
-                  <option value="list">List</option>
-                </select>
+                />
               </label>
-              {groupKind === "style" ? (
-                <div className="toggle-row">
-                  <span>Transparent</span>
-                  <Switch
-                    checked={formValues.isTransparent === "true"}
-                    onCheckedChange={(checked) =>
-                      setFormValues((prev) => ({
-                        ...prev,
-                        isTransparent: checked ? "true" : "false"
-                      }))
-                    }
-                    aria-label="Transparent"
-                  />
-                </div>
-              ) : null}
-              {groupKind === "list" ? (
-                <>
+              <details className="style-section">
+                <summary>Layout</summary>
+                <div className="style-fields">
                   <label>
-                    <span>List type</span>
+                    <span>Display</span>
                     <select
-                      value={formValues.listType ?? "View"}
+                      value={formValues.display ?? ""}
                       onChange={(event) =>
-                        setFormValues((prev) => ({
-                          ...prev,
-                          listType: event.target.value
-                        }))
+                        setFormValues((prev) => ({ ...prev, display: event.target.value }))
                       }
                     >
-                      <option value="View">View</option>
-                      <option value="">Any</option>
-                    </select>
-                  </label>
-                  <label>
-                    <span>Display mode</span>
-                    <select
-                      value={formValues.displayMode ?? "list"}
-                      onChange={(event) =>
-                        setFormValues((prev) => ({
-                          ...prev,
-                          displayMode: event.target.value
-                        }))
-                      }
-                    >
-                      <option value="list">List</option>
+                      <option value="">Default</option>
+                      <option value="flex">Flex</option>
+                      <option value="block">Block</option>
+                      <option value="inline-flex">Inline Flex</option>
                       <option value="grid">Grid</option>
-                      <option value="cards">Cards</option>
                     </select>
                   </label>
                   <label>
-                    <span>Name</span>
-                    <input
-                      value={formValues.name ?? ""}
+                    <span>Direction</span>
+                    <select
+                      value={formValues.flexDirection ?? ""}
                       onChange={(event) =>
-                        setFormValues((prev) => ({ ...prev, name: event.target.value }))
+                        setFormValues((prev) => ({ ...prev, flexDirection: event.target.value }))
+                      }
+                    >
+                      <option value="">Default</option>
+                      <option value="row">Row</option>
+                      <option value="column">Column</option>
+                      <option value="row-reverse">Row Reverse</option>
+                      <option value="column-reverse">Column Reverse</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Wrap</span>
+                    <select
+                      value={formValues.flexWrap ?? ""}
+                      onChange={(event) =>
+                        setFormValues((prev) => ({ ...prev, flexWrap: event.target.value }))
+                      }
+                    >
+                      <option value="">Default</option>
+                      <option value="nowrap">No Wrap</option>
+                      <option value="wrap">Wrap</option>
+                      <option value="wrap-reverse">Wrap Reverse</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Justify</span>
+                    <select
+                      value={formValues.justifyContent ?? ""}
+                      onChange={(event) =>
+                        setFormValues((prev) => ({ ...prev, justifyContent: event.target.value }))
+                      }
+                    >
+                      <option value="">Default</option>
+                      <option value="flex-start">Start</option>
+                      <option value="center">Center</option>
+                      <option value="flex-end">End</option>
+                      <option value="space-between">Space Between</option>
+                      <option value="space-around">Space Around</option>
+                      <option value="space-evenly">Space Evenly</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Align</span>
+                    <select
+                      value={formValues.alignItems ?? ""}
+                      onChange={(event) =>
+                        setFormValues((prev) => ({ ...prev, alignItems: event.target.value }))
+                      }
+                    >
+                      <option value="">Default</option>
+                      <option value="flex-start">Start</option>
+                      <option value="center">Center</option>
+                      <option value="flex-end">End</option>
+                      <option value="stretch">Stretch</option>
+                      <option value="baseline">Baseline</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Gap</span>
+                    <input
+                      value={formValues.gap ?? ""}
+                      placeholder="e.g. 8px, 1rem"
+                      onChange={(event) =>
+                        setFormValues((prev) => ({ ...prev, gap: event.target.value }))
                       }
                     />
                   </label>
-                </>
-              ) : null}
+                </div>
+              </details>
+              <details className="style-section">
+                <summary>Spacing</summary>
+                <div className="style-fields">
+                  <label>
+                    <span>Padding</span>
+                    <input
+                      value={formValues.padding ?? ""}
+                      placeholder="e.g. 16px, 1rem 2rem"
+                      onChange={(event) =>
+                        setFormValues((prev) => ({ ...prev, padding: event.target.value }))
+                      }
+                    />
+                  </label>
+                  <label>
+                    <span>Margin</span>
+                    <input
+                      value={formValues.margin ?? ""}
+                      placeholder="e.g. 0 auto, 16px"
+                      onChange={(event) =>
+                        setFormValues((prev) => ({ ...prev, margin: event.target.value }))
+                      }
+                    />
+                  </label>
+                </div>
+              </details>
+              <details className="style-section">
+                <summary>Sizing</summary>
+                <div className="style-fields">
+                  <label>
+                    <span>Width</span>
+                    <input
+                      value={formValues.width ?? ""}
+                      placeholder="e.g. 100%, 300px"
+                      onChange={(event) =>
+                        setFormValues((prev) => ({ ...prev, width: event.target.value }))
+                      }
+                    />
+                  </label>
+                  <label>
+                    <span>Max Width</span>
+                    <input
+                      value={formValues.maxWidth ?? ""}
+                      placeholder="e.g. 800px, 100%"
+                      onChange={(event) =>
+                        setFormValues((prev) => ({ ...prev, maxWidth: event.target.value }))
+                      }
+                    />
+                  </label>
+                </div>
+              </details>
+              <details className="style-section">
+                <summary>Background & Border</summary>
+                <div className="style-fields">
+                  <label>
+                    <span>Background</span>
+                    <input
+                      value={formValues.backgroundColor ?? ""}
+                      placeholder="e.g. #ffffff, rgba(0,0,0,0.1)"
+                      onChange={(event) =>
+                        setFormValues((prev) => ({ ...prev, backgroundColor: event.target.value }))
+                      }
+                    />
+                  </label>
+                  <label>
+                    <span>Border Radius</span>
+                    <input
+                      value={formValues.borderRadius ?? ""}
+                      placeholder="e.g. 8px, 50%"
+                      onChange={(event) =>
+                        setFormValues((prev) => ({ ...prev, borderRadius: event.target.value }))
+                      }
+                    />
+                  </label>
+                  <label>
+                    <span>Border</span>
+                    <input
+                      value={formValues.border ?? ""}
+                      placeholder="e.g. 1px solid #ccc"
+                      onChange={(event) =>
+                        setFormValues((prev) => ({ ...prev, border: event.target.value }))
+                      }
+                    />
+                  </label>
+                  <label>
+                    <span>Box Shadow</span>
+                    <input
+                      value={formValues.boxShadow ?? ""}
+                      placeholder="e.g. 0 2px 4px rgba(0,0,0,0.1)"
+                      onChange={(event) =>
+                        setFormValues((prev) => ({ ...prev, boxShadow: event.target.value }))
+                      }
+                    />
+                  </label>
+                </div>
+              </details>
             </div>
           ) : null}
           {componentType === "ImageMedia" ? (

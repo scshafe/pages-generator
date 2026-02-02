@@ -3,3 +3,8 @@ flask-cors
 Pillow
 pyyaml
 requests
+pytest
+
+# Optional: Storage adapters
+# Uncomment to enable PostgreSQL storage
+# psycopg2-binary

@@ -9,7 +9,6 @@ import { Switch } from "@/components/ui/Switch";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api/client";
 import { siteConfig } from "@/site.config";
-import { resolveGroupKind } from "@/lib/content/containers";
 
 const componentOptions = [
   { value: "PlainTextUnit", label: "Text" },
@@ -81,20 +80,12 @@ function buildConfig(type: ComponentType, values: Record<string, string>) {
       config = { child_node_id: null, name: values.name ?? "" };
       break;
     case "Group": {
-      const kind = values.group_kind ?? "inline";
       config = {
-        group_kind: kind,
         child_node_id: null
       };
-      if (kind === "style") {
-        config.isTransparent = values.isTransparent === "true";
-      }
-      if (kind === "list") {
-        config.listType = values.listType ?? "View";
-        config.displayMode = values.displayMode ?? "list";
-        if (values.name) {
-          config.name = values.name;
-        }
+      // Optional name
+      if (values.name) {
+        config.name = values.name;
       }
       break;
     }
@@ -151,7 +142,6 @@ export function AddComponentForm({
   const toast = useToast();
   const aiEnabled = values.useAI === "true";
   const showAiControls = type !== "Mirror";
-  const groupKind = values.group_kind || "inline";
 
   const fields = useMemo(() => {
     switch (type) {
@@ -249,8 +239,7 @@ export function AddComponentForm({
             found.push({ hash, title: label });
           }
         } else if (type === "Group") {
-          const kind = resolveGroupKind(type, current.config ?? {}) || "inline";
-          const label = String(current.config?.name ?? `Group (${kind})`);
+          const label = String(current.config?.name ?? "Group");
           found.push({ hash: `group-${current.node.node_id}`, title: label });
         } else if (type && isLinkableComponent(type)) {
           const title = getAnchorLabel(type, current.config ?? {});
@@ -285,8 +274,7 @@ export function AddComponentForm({
 
   const extractMirrorLabel = useCallback((componentType: string, config: Record<string, unknown>) => {
     if (componentType === "Group") {
-      const kind = resolveGroupKind(componentType, config) || "inline";
-      return `Group (${kind})`;
+      return String((config as { name?: string }).name ?? "Group");
     }
     if (componentType === "Container") {
       return String((config as { name?: string; title?: string }).name ?? (config as { title?: string }).title ?? "Container");
@@ -371,9 +359,7 @@ export function AddComponentForm({
           const childCount = current.children?.length ?? 0;
           const preview = extractMirrorPreview(type, current.config ?? {}, childCount);
           const previewSrc = type === "ImageMedia" ? String(current.config?.src ?? "") : undefined;
-          const displayType = type === "Group"
-            ? `Group:${resolveGroupKind(type, current.config ?? {}) || "inline"}`
-            : type;
+          const displayType = type;
           items.push({
             ref_id: current.reference?.ref_id ?? current.node.node_id,
             comp_id: current.component.comp_id,
@@ -643,84 +629,16 @@ export function AddComponentForm({
           );
         })}
         {type === "Group" ? (
-          <div className="form-grid">
-            <label>
-              <span>Group type</span>
-              <select
-                value={groupKind}
-                onChange={(event) =>
-                  setValues((prev) => ({
-                    ...prev,
-                    group_kind: event.target.value
-                  }))
-                }
-              >
-                <option value="style">Style</option>
-                <option value="inline">Inline</option>
-                <option value="list">List</option>
-              </select>
-            </label>
-            {groupKind === "style" ? (
-              <div className="toggle-row">
-                <span>Transparent</span>
-                <Switch
-                  checked={values.isTransparent === "true"}
-                  onCheckedChange={(checked) =>
-                    setValues((prev) => ({
-                      ...prev,
-                      isTransparent: checked ? "true" : "false"
-                    }))
-                  }
-                  aria-label="Transparent"
-                />
-              </div>
-            ) : null}
-            {groupKind === "list" ? (
-              <>
-                <label>
-                  <span>List type</span>
-                  <select
-                    value={values.listType ?? "View"}
-                    onChange={(event) =>
-                      setValues((prev) => ({
-                        ...prev,
-                        listType: event.target.value
-                      }))
-                    }
-                  >
-                    <option value="View">View</option>
-                    <option value="">Any</option>
-                  </select>
-                </label>
-                <label>
-                  <span>Display mode</span>
-                  <select
-                    value={values.displayMode ?? "list"}
-                    onChange={(event) =>
-                      setValues((prev) => ({
-                        ...prev,
-                        displayMode: event.target.value
-                      }))
-                    }
-                  >
-                    <option value="list">List</option>
-                    <option value="grid">Grid</option>
-                    <option value="cards">Cards</option>
-                  </select>
-                </label>
-                <label>
-                  <span>Name</span>
-                  <input
-                    value={values.name ?? ""}
-                    onChange={(event) =>
-                      setValues((prev) => ({ ...prev, name: event.target.value }))
-                    }
-                    placeholder="Optional list name"
-                  />
-                </label>
-              </>
-            ) : null}
-          </div>
+          <label>
+            <span>Name</span>
+            <input
+              value={values.name ?? ""}
+              onChange={(event) =>
+                setValues((prev) => ({ ...prev, name: event.target.value }))
+              }
+              placeholder="Optional group name"
+            />
+          </label>
         ) : null}
         {type === "Container" ? (
           <label>

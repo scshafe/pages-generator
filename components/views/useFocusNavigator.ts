@@ -1,6 +1,17 @@
 import { useCallback } from "react";
 
 const inlineEditableTypes = new Set(["PlainTextUnit", "CodeUnit", "CodeBlockUnit", "LinkUnit"]);
+const unitTypes = new Set([
+  "PlainTextUnit",
+  "CodeUnit",
+  "CodeBlockUnit",
+  "LinkUnit",
+  "DividorUnit",
+  "SectionUnit",
+  "AlertUnit",
+  "MarkdownUnit"
+]);
+const scopeComponentTypes = new Set(["Group", "GroupMarker", "ViewMarker"]);
 
 function getSelectionOffset(container: HTMLElement) {
   const selection = window.getSelection();
@@ -84,6 +95,51 @@ export function useFocusNavigator({
       )
     ) as HTMLElement[];
   }, []);
+
+  const getFocusElement = useCallback(() => {
+    const active = document.activeElement as HTMLElement | null;
+    const activeNode = active?.closest("[data-node-id], [data-edge-marker]") as HTMLElement | null;
+    if (activeNode) return activeNode;
+    const focusId = focusRef.current;
+    if (!focusId) return null;
+    return document.querySelector(`[data-node-id='${focusId}']`) as HTMLElement | null;
+  }, [focusRef]);
+
+  const getScopeIdForElement = useCallback((element: HTMLElement | null) => {
+    if (!element) return null;
+    const componentType = element.dataset.componentType ?? "";
+    if (scopeComponentTypes.has(componentType) || element.dataset.edgeMarker) {
+      const nodeId = Number(element.dataset.nodeId ?? "");
+      return Number.isNaN(nodeId) || nodeId <= 0 ? null : nodeId;
+    }
+    const parentId = Number(element.dataset.parentId ?? "");
+    return Number.isNaN(parentId) || parentId <= 0 ? null : parentId;
+  }, []);
+
+  const findNearestInScope = useCallback(
+    (scopeId: number, fromElement: HTMLElement | null, predicate: (element: HTMLElement) => boolean) => {
+      const siblings = getSiblingElements(String(scopeId));
+      if (!siblings.length) return null;
+      const candidates = siblings.filter(predicate);
+      if (!candidates.length) return null;
+      if (!fromElement) return candidates[0] ?? null;
+      const fromIndex = siblings.indexOf(fromElement);
+      if (fromIndex < 0) return candidates[0] ?? null;
+      let best = candidates[0] ?? null;
+      let bestDistance = Number.POSITIVE_INFINITY;
+      for (const candidate of candidates) {
+        const candidateIndex = siblings.indexOf(candidate);
+        if (candidateIndex < 0) continue;
+        const distance = Math.abs(candidateIndex - fromIndex);
+        if (distance < bestDistance) {
+          best = candidate;
+          bestDistance = distance;
+        }
+      }
+      return best;
+    },
+    [getSiblingElements]
+  );
 
   const focusFirst = useCallback(() => {
     const first = document.querySelector("[data-navigable='true']") as HTMLElement | null;
@@ -206,11 +262,22 @@ export function useFocusNavigator({
 
   const moveCaret = useCallback(
     (position: "start" | "end") => {
-      const currentId = focusRef.current;
-      if (!currentId) return;
-      const current = document.querySelector(`[data-node-id='${currentId}']`) as HTMLElement | null;
-      if (!current) return;
-      const editable = current.querySelector("[contenteditable='true']") as HTMLElement | null;
+      const activeElement = getFocusElement();
+      const activeType = activeElement?.dataset.componentType ?? "";
+      let targetElement = activeElement && inlineEditableTypes.has(activeType) ? activeElement : null;
+      if (!targetElement) {
+        const scopeId = getScopeIdForElement(activeElement);
+        if (!scopeId) return;
+        targetElement = findNearestInScope(
+          scopeId,
+          activeElement,
+          (element) => inlineEditableTypes.has(element.dataset.componentType ?? "")
+        );
+      }
+      if (!targetElement) return;
+      const targetId = Number(targetElement.dataset.nodeId ?? "");
+      if (!targetId) return;
+      const editable = targetElement.querySelector("[contenteditable='true']") as HTMLElement | null;
       if (!editable) return;
       const range = document.createRange();
       range.selectNodeContents(editable);
@@ -219,33 +286,52 @@ export function useFocusNavigator({
       selection?.removeAllRanges();
       selection?.addRange(range);
       editable.focus();
-      setFocusedNodeId(currentId);
-      setPendingInlineFocusId(currentId);
+      setFocusedNodeId(targetId);
+      setPendingInlineFocusId(targetId);
     },
-    [focusRef, setFocusedNodeId, setPendingInlineFocusId]
+    [findNearestInScope, getFocusElement, getScopeIdForElement, setFocusedNodeId, setPendingInlineFocusId]
   );
 
   const resolveTargetTextUnit = useCallback(() => {
-    const focusId = focusRef.current;
-    const activeElement = document.activeElement as HTMLElement | null;
-    const activeNode = activeElement?.closest("[data-node-id]") as HTMLElement | null;
-    const targetId = focusId ?? (activeNode ? Number(activeNode.dataset.nodeId ?? "") : null);
-    if (!targetId) return null;
-
-    let targetElement = document.querySelector(`[data-node-id='${targetId}']`) as HTMLElement | null;
-    if (targetElement && targetElement.dataset.componentType !== "PlainTextUnit") {
-      const textChild = targetElement.querySelector("[data-component-type='PlainTextUnit']") as HTMLElement | null;
-      if (textChild) {
-        targetElement = textChild;
-      }
+    const activeElement = getFocusElement();
+    if (!activeElement) return null;
+    const componentType = activeElement.dataset.componentType ?? "";
+    if (componentType === "PlainTextUnit") {
+      const targetId = Number(activeElement.dataset.nodeId ?? "");
+      return targetId ? { nodeId: targetId } : null;
     }
-
+    const scopeId = getScopeIdForElement(activeElement);
+    if (!scopeId) return null;
+    const targetElement = findNearestInScope(
+      scopeId,
+      activeElement,
+      (element) => element.dataset.componentType === "PlainTextUnit"
+    );
     const resolvedId = targetElement ? Number(targetElement.dataset.nodeId ?? "") : null;
-    if (!resolvedId || targetElement?.dataset.componentType !== "PlainTextUnit") {
-      return null;
-    }
+    if (!resolvedId) return null;
     return { nodeId: resolvedId };
-  }, [focusRef]);
+  }, [findNearestInScope, getFocusElement, getScopeIdForElement]);
+
+  const resolveTargetUnit = useCallback(() => {
+    const activeElement = getFocusElement();
+    if (!activeElement) return null;
+    const componentType = activeElement.dataset.componentType ?? "";
+    if (unitTypes.has(componentType)) {
+      const targetId = Number(activeElement.dataset.nodeId ?? "");
+      return targetId ? { nodeId: targetId, componentType } : null;
+    }
+    const scopeId = getScopeIdForElement(activeElement);
+    if (!scopeId) return null;
+    const targetElement = findNearestInScope(
+      scopeId,
+      activeElement,
+      (element) => unitTypes.has(element.dataset.componentType ?? "")
+    );
+    const resolvedId = targetElement ? Number(targetElement.dataset.nodeId ?? "") : null;
+    const resolvedType = targetElement?.dataset.componentType ?? "";
+    if (!resolvedId || !resolvedType) return null;
+    return { nodeId: resolvedId, componentType: resolvedType };
+  }, [findNearestInScope, getFocusElement, getScopeIdForElement]);
 
   return {
     focusElement,
@@ -255,6 +341,7 @@ export function useFocusNavigator({
     moveOut,
     moveIn,
     moveCaret,
-    resolveTargetTextUnit
+    resolveTargetTextUnit,
+    resolveTargetUnit
   };
 }

@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import random
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -25,7 +25,7 @@ SITE_FILE = SETTINGS_DIR / "site.json"
 
 
 def now_iso() -> str:
-    return datetime.utcnow().isoformat() + "Z"
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
 def generate_id() -> int:
@@ -143,3 +143,48 @@ def read_theme_config() -> dict[str, Any]:
 
 def write_theme_config(data: dict[str, Any]) -> None:
     write_json(THEME_CONFIG, data)
+
+
+AI_SETTINGS_FILE = SETTINGS_DIR / "ai.json"
+
+
+def read_ai_settings() -> dict[str, Any]:
+    return read_json(
+        AI_SETTINGS_FILE,
+        {
+            "voice_tone": "professional",
+            "voice_style": "concise",
+            "voice_personality": "friendly",
+            "custom_instructions": "",
+            "ai_enabled": True,
+            "auto_suggestions": False,
+            "writing_assistance": True,
+        },
+    )
+
+
+def write_ai_settings(data: dict[str, Any]) -> None:
+    write_json(AI_SETTINGS_FILE, data)
+
+
+VIEW_STYLES_FILE = SETTINGS_DIR / "view-styles.json"
+
+
+def read_view_styles() -> dict[str, Any]:
+    return read_json(
+        VIEW_STYLES_FILE,
+        {
+            "default_max_width": "768px",
+            "default_padding": "1.5rem",
+            "default_text_alignment": "left",
+            "default_font_size": "1rem",
+            "default_line_height": "1.75",
+            "header_style": "standard",
+            "content_style": "prose",
+            "spacing_unit": 8,
+        },
+    )
+
+
+def write_view_styles(data: dict[str, Any]) -> None:
+    write_json(VIEW_STYLES_FILE, data)

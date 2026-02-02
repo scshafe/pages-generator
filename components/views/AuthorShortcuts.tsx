@@ -46,7 +46,7 @@ export function AuthorShortcuts() {
     (menuType: MenuTrigger) => {
       const target = resolveTargetTextUnit();
       if (!target) {
-        toast.push("Focus a text unit to open menus", "error");
+        toast.push("No text unit available to open menu", "error");
         return;
       }
 
@@ -62,7 +62,7 @@ export function AuthorShortcuts() {
   const createGroup = useCallback(() => {
     const target = resolveTargetTextUnit();
     if (!target) {
-      toast.push("Focus a text unit to create a group", "error");
+      toast.push("No text unit available to create a group", "error");
       return;
     }
     window.dispatchEvent(
@@ -166,7 +166,12 @@ export function AuthorShortcuts() {
           if (key === "arrowright" && !isCaretAtEnd(editable)) return;
           if (key === "arrowleft" && !isCaretAtStart(editable)) return;
         } else if (isEditableTarget(event.target)) {
-          return;
+          const navigableTarget = (event.target as HTMLElement | null)?.closest(
+            "[data-navigable='true'], [data-edge-marker]"
+          );
+          if (!navigableTarget) {
+            return;
+          }
         }
         event.preventDefault();
         focusAdjacent(key === "arrowleft" ? "prev" : "next");

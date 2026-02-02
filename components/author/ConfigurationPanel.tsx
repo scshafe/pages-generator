@@ -6,7 +6,6 @@ import { useContainerFocus } from "@/components/author/ContainerFocusProvider";
 import { ComponentEditor } from "@/components/author/ComponentEditor";
 import { Switch } from "@/components/ui/Switch";
 import { InfoIcon } from "@/components/ui/icons";
-import { resolveGroupKind } from "@/lib/content/containers";
 import type { ResolvedNode } from "@/lib/content/types";
 
 export function ConfigurationPanel() {
@@ -18,15 +17,7 @@ export function ConfigurationPanel() {
   const [referenceUseAI, setReferenceUseAI] = useState(false);
   const [isSavingReference, setIsSavingReference] = useState(false);
   const expandOnTypes = useMemo(() => new Set<string>([]), []);
-  const typeLabel = resolved
-    ? (() => {
-        if (resolved.component.type === "Group") {
-          const kind = resolveGroupKind(resolved.component.type, resolved.config ?? {}) || "inline";
-          return `Group (${kind})`;
-        }
-        return resolved.component.type;
-      })()
-    : null;
+  const typeLabel = resolved?.component.type ?? null;
 
   useEffect(() => {
     if (!focusedNodeId) {

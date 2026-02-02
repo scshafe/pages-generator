@@ -62,6 +62,9 @@ export function EdgeMarker({
       data-node-id={scopeId}
       data-component-type={componentType}
       disabled={isSaving}
+      onFocus={() => {
+        setFocusedNodeId(scopeId);
+      }}
       onClick={addText}
       onKeyDown={(event) => {
         if (event.key === "Enter" || event.key === " ") {

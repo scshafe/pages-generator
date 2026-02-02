@@ -7,18 +7,20 @@ import { MediaPanel } from "@/components/settings/MediaPanel";
 import { SitePanel } from "@/components/settings/SitePanel";
 import { CursorPanel } from "@/components/settings/CursorPanel";
 import { ShortcutsPanel } from "@/components/settings/ShortcutsPanel";
+import { AIPanel } from "@/components/settings/AIPanel";
+import { ThemePanel } from "@/components/settings/ThemePanel";
+import { ViewStylePanel } from "@/components/settings/ViewStylePanel";
 
 const tabs = [
   { id: "site", label: "Site" },
   { id: "views", label: "Views" },
+  { id: "styles", label: "Styles" },
   { id: "navigation", label: "Navigation" },
   { id: "media", label: "Media" },
   { id: "ai", label: "AI" },
   { id: "theme", label: "Theme" },
   { id: "cursor", label: "Cursor" },
-  { id: "shortcuts", label: "Shortcuts" },
-  { id: "structure", label: "Structure" },
-  { id: "knowledge", label: "Knowledge Base" }
+  { id: "shortcuts", label: "Shortcuts" }
 ] as const;
 
 type TabId = (typeof tabs)[number]["id"];
@@ -47,14 +49,13 @@ export function SettingsTabs() {
       <div className="section">
         {activeTab === "site" ? <SitePanel /> : null}
         {activeTab === "views" ? <ViewsPanel /> : null}
+        {activeTab === "styles" ? <ViewStylePanel /> : null}
         {activeTab === "navigation" ? <NavigationPanel /> : null}
         {activeTab === "media" ? <MediaPanel /> : null}
-        {activeTab === "ai" ? null : null}
-        {activeTab === "theme" ? null : null}
+        {activeTab === "ai" ? <AIPanel /> : null}
+        {activeTab === "theme" ? <ThemePanel /> : null}
         {activeTab === "cursor" ? <CursorPanel /> : null}
         {activeTab === "shortcuts" ? <ShortcutsPanel /> : null}
-        {activeTab === "structure" ? null : null}
-        {activeTab === "knowledge" ? null : null}
       </div>
     </section>
   );

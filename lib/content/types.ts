@@ -11,6 +11,7 @@ export type ComponentType =
   | "Group"
   | "PlainTextUnit"
   | "DividorUnit"
+  | "SectionUnit"
   | "CodeUnit"
   | "CodeBlockUnit"
   | "AlertUnit"
@@ -23,8 +24,6 @@ export type ComponentType =
   | "ExperienceComponent"
   | "HtmlComponent"
   | "JsComponent";
-
-export type GroupKind = "inline" | "list" | "style";
 
 export type AlertVariant = "info" | "warning" | "error" | "success";
 export type DisplayMode = "list" | "grid" | "cards";

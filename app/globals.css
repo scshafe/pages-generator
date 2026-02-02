@@ -249,6 +249,28 @@ main {
   line-height: 1.6;
 }
 
+.inline-block-container {
+  display: block;
+  width: 100%;
+  line-height: 1.6;
+}
+
+.inline-block-container--clickable {
+  border-radius: 6px;
+  cursor: text;
+  transition: background 0.15s ease;
+}
+
+.inline-block-container--clickable:hover {
+  background: color-mix(in oklab, var(--surface) 82%, var(--border) 18%);
+}
+
+.inline-block-container > * {
+  display: inline-block;
+  vertical-align: baseline;
+  max-width: 100%;
+}
+
 .scope-node[data-scope-type="group"] {
   position: relative;
   border-radius: 12px;
@@ -1120,19 +1142,63 @@ textarea {
   gap: 8px;
 }
 
-.style-container {
-  padding: 16px;
-  border-radius: 16px;
-  border: 1px dashed var(--border);
-  background: white;
-  display: grid;
+.group-container.scope-node[data-scope-type="group"] {
+  padding: 4px;
+}
+
+/* Group style editor */
+.group-style-editor {
   gap: 12px;
 }
 
+.group-style-editor .style-section {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fffdf8;
+}
 
-.style-container--transparent {
-  background: transparent;
-  border-style: solid;
+.group-style-editor .style-section summary {
+  padding: 10px 12px;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--muted);
+  font-size: 0.9rem;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.group-style-editor .style-section summary::before {
+  content: "▸";
+  transition: transform 0.15s ease;
+}
+
+.group-style-editor .style-section[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.group-style-editor .style-section summary::-webkit-details-marker {
+  display: none;
+}
+
+.group-style-editor .style-fields {
+  padding: 0 12px 12px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.group-style-editor .style-fields label {
+  display: grid;
+  gap: 4px;
+  font-size: 0.85rem;
+}
+
+.group-style-editor .style-fields input,
+.group-style-editor .style-fields select {
+  padding: 8px 10px;
+  font-size: 0.9rem;
 }
 
 .scope-node.sub-group {
@@ -1217,16 +1283,21 @@ textarea {
   margin: 0;
 }
 
+.inline-block-container,
 .inline-container,
 .section,
 .style-container {
   overflow-wrap: anywhere;
 }
 
+.inline-block-container > *,
 .inline-container > * {
   max-width: 100%;
 }
 
+.inline-block-container .code-inline,
+.inline-block-container a,
+.inline-block-container .text-unit,
 .inline-container .code-inline,
 .inline-container a,
 .inline-container .text-unit {
@@ -1276,6 +1347,12 @@ textarea {
   cursor: grab;
 }
 
+.draggable-item--group,
+.draggable-item--break {
+  display: block;
+  width: 100%;
+}
+
 .drag-handle {
   border: 1px solid var(--border);
   background: white;
@@ -1317,8 +1394,7 @@ textarea {
 }
 
 .draggable-item.drag-over {
-  outline: 2px dashed rgba(47, 111, 98, 0.35);
-  outline-offset: 4px;
+  position: relative;
 }
 
 .draggable-item.drag-over::before {
@@ -1326,19 +1402,32 @@ textarea {
   position: absolute;
   left: 0;
   right: 0;
-  top: -4px;
-  height: 2px;
-  background: rgba(47, 111, 98, 0.6);
+  top: -2px;
+  height: 3px;
+  background: var(--accent, rgba(47, 111, 98, 0.8));
+  border-radius: 2px;
+  z-index: 10;
 }
 
 .draggable-item.drag-over-after::before {
   top: auto;
-  bottom: -4px;
+  bottom: -2px;
 }
 
 .container-drop {
-  outline: 2px dashed rgba(47, 111, 98, 0.25);
-  outline-offset: 6px;
+  position: relative;
+}
+
+.container-drop::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 3px;
+  background: var(--accent, rgba(47, 111, 98, 0.8));
+  border-radius: 2px;
+  z-index: 10;
 }
 
 .scope-parent {
@@ -1499,6 +1588,22 @@ select {
 .view-item {
   display: grid;
   gap: 12px;
+}
+
+/* Group container - inline blocks handle unit layout */
+.group-container {
+  display: block;
+}
+
+/* Reader mode: Groups render children directly without sortable-list wrapper */
+.group-container > .group-container {
+  display: block;
+  width: 100%;
+}
+
+.group-container > .dividor-unit {
+  display: block;
+  width: 100%;
 }
 
 @media (max-width: 720px) {
