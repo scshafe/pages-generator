@@ -5,6 +5,8 @@ export type CompId = UniqueId;
 export type MenuId = UniqueId;
 export type FooterId = UniqueId;
 export type ThemeId = UniqueId;
+export type PurposeId = UniqueId;
+export type CustomComponentId = UniqueId;
 
 export type ComponentType =
   | "Container"
@@ -127,4 +129,29 @@ export interface ThemeDefinition {
   name: string;
   color_scheme: ColorScheme;
   tokens?: Record<string, string>;
+}
+
+export interface CustomColorObject {
+  backgroundColor: string;
+  textColor: string;
+  borderColor: string;
+  fontFamily: string;
+  fontSize: string;
+  lineHeight: string;
+}
+
+export type CustomColorMap = Record<string, Record<string, CustomColorObject>>;
+
+export interface PurposeItem {
+  purpose_id: PurposeId;
+  name: string;
+  created_at?: string;
+}
+
+export interface CustomComponentItem {
+  custom_component_id: CustomComponentId;
+  name: string;
+  component_type: string;
+  theme_id: ThemeId;
+  created_at?: string;
 }

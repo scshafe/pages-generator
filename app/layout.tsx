@@ -6,7 +6,7 @@ import { AuthorHeader } from "@/blogcomponents/ui/AuthorHeader";
 import { SiteFooter } from "@/blogcomponents/ui/SiteFooter";
 import { ToastProvider } from "@/blogcomponents/ui/ToastProvider";
 import { ContainerFocusProvider } from "@/blogcomponents/author/ContainerFocusProvider";
-import { AuthorPanel } from "@/blogcomponents/author/AuthorPanel";
+import { AuthorPanelGate } from "@/blogcomponents/author/AuthorPanelGate";
 import { getSiteSettings } from "@/lib/content/site";
 
 const displayFont = Space_Grotesk({
@@ -71,7 +71,7 @@ export default async function RootLayout({
               <div className="container">{children}</div>
             </main>
             <SiteFooter />
-            {isAuthor ? <AuthorPanel /> : null}
+            {isAuthor ? <AuthorPanelGate /> : null}
           </ContainerFocusProvider>
         </ToastProvider>
       </body>

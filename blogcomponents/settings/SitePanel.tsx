@@ -159,8 +159,12 @@ export function SitePanel() {
         <p>Identity and metadata for your site.</p>
       </div>
       <div className="section-card">
+        <div className="section-header">
+          <h4>Site Details</h4>
+          <p>Core identity and defaults.</p>
+        </div>
         <div className="form-grid">
-          <label>
+          <label className="field-half">
             <span>Site Name</span>
             <input
               value={form.site_name}
@@ -176,7 +180,7 @@ export function SitePanel() {
               placeholder="Thoughts, notes, and experiments"
             />
           </label>
-          <label>
+          <label className="field-half">
             <span>Site URL</span>
             <input
               value={form.site_url}
@@ -184,13 +188,38 @@ export function SitePanel() {
               placeholder="https://example.com"
             />
           </label>
-          <label>
+          <label className="field-half">
             <span>Default Language</span>
             <input
               value={form.language}
               onChange={(event) => setForm((prev) => ({ ...prev, language: event.target.value }))}
               placeholder="en"
             />
+          </label>
+          <label>
+            <span>Robots</span>
+            <Select
+              value={form.robots}
+              onValueChange={(value) => setForm((prev) => ({ ...prev, robots: value }))}
+            >
+              <SelectTrigger className="robots-select-trigger">
+                <SelectValue placeholder="Select robots" />
+              </SelectTrigger>
+              <SelectContent className="robots-select-content" position="popper">
+                <SelectItem className="robots-select-item" value="index,follow">
+                  index,follow
+                </SelectItem>
+                <SelectItem className="robots-select-item" value="noindex,follow">
+                  noindex,follow
+                </SelectItem>
+                <SelectItem className="robots-select-item" value="index,nofollow">
+                  index,nofollow
+                </SelectItem>
+                <SelectItem className="robots-select-item" value="noindex,nofollow">
+                  noindex,nofollow
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </label>
           <label>
             <span>Favicon</span>
@@ -203,11 +232,32 @@ export function SitePanel() {
               <Image src={faviconUrl} alt="Favicon preview" width={64} height={64} unoptimized />
             </div>
           ) : null}
-          <div className="section-divider" />
-          <div className="section-header">
-            <h4>Rich Preview Settings</h4>
-            <p>Controls link preview metadata for social sharing.</p>
-          </div>
+        </div>
+      </div>
+
+      <div className="section-card">
+        <div className="section-header">
+          <h4>Social Media</h4>
+          <p>Handles used on social profiles.</p>
+        </div>
+        <div className="form-grid">
+          <label className="field-half">
+            <span>Twitter Handle</span>
+            <input
+              value={form.twitter_handle}
+              onChange={(event) => setForm((prev) => ({ ...prev, twitter_handle: event.target.value }))}
+              placeholder="@studio"
+            />
+          </label>
+        </div>
+      </div>
+
+      <div className="section-card">
+        <div className="section-header">
+          <h4>Rich Preview Links</h4>
+          <p>Metadata and imagery for link previews.</p>
+        </div>
+        <div className="form-grid">
           <label>
             <span>Meta Description</span>
             <textarea
@@ -216,7 +266,7 @@ export function SitePanel() {
               placeholder="A short description for search and previews."
             />
           </label>
-          <label>
+          <label className="field-half">
             <span>Keywords</span>
             <input
               value={form.keywords}
@@ -224,7 +274,7 @@ export function SitePanel() {
               placeholder="design, studio, portfolio"
             />
           </label>
-          <label>
+          <label className="field-half">
             <span>Author</span>
             <input
               value={form.author}
@@ -240,15 +290,7 @@ export function SitePanel() {
               onChange={(event) => setForm((prev) => ({ ...prev, theme_color: event.target.value }))}
             />
           </label>
-          <label>
-            <span>Twitter Handle</span>
-            <input
-              value={form.twitter_handle}
-              onChange={(event) => setForm((prev) => ({ ...prev, twitter_handle: event.target.value }))}
-              placeholder="@studio"
-            />
-          </label>
-          <label>
+          <label className="field-half">
             <span>Social Image URL</span>
             <input
               value={form.social_image_url}
@@ -310,31 +352,6 @@ export function SitePanel() {
               }
             />
           </label>
-          <label>
-            <span>Robots</span>
-            <Select
-              value={form.robots}
-              onValueChange={(value) => setForm((prev) => ({ ...prev, robots: value }))}
-            >
-              <SelectTrigger className="robots-select-trigger">
-                <SelectValue placeholder="Select robots" />
-              </SelectTrigger>
-              <SelectContent className="robots-select-content" position="popper">
-                <SelectItem className="robots-select-item" value="index,follow">
-                  index,follow
-                </SelectItem>
-                <SelectItem className="robots-select-item" value="noindex,follow">
-                  noindex,follow
-                </SelectItem>
-                <SelectItem className="robots-select-item" value="index,nofollow">
-                  index,nofollow
-                </SelectItem>
-                <SelectItem className="robots-select-item" value="noindex,nofollow">
-                  noindex,nofollow
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </label>
           {form.social_image_url ? (
             <div className="image-preview">
               <Image
@@ -348,23 +365,23 @@ export function SitePanel() {
             </div>
           ) : null}
         </div>
-        {error ? <div className="alert">{error}</div> : null}
-        {isAuthor && (hasChanges || saveStatus !== "idle") ? (
-          <div className="action-bar">
-            <div className="action-group action-group--right">
-              {saveStatus === "saving" ? (
-                <span className="status-chip status-saving">Saving...</span>
-              ) : saveStatus === "error" ? (
-                <span className="status-chip status-error">Save failed</span>
-              ) : saveStatus === "saved" ? (
-                <span className="status-chip status-saved">Saved</span>
-              ) : hasChanges ? (
-                <span className="status-chip status-dirty">Unsaved changes</span>
-              ) : null}
-            </div>
-          </div>
-        ) : null}
       </div>
+      {error ? <div className="alert">{error}</div> : null}
+      {isAuthor && (hasChanges || saveStatus !== "idle") ? (
+        <div className="action-bar">
+          <div className="action-group action-group--right">
+            {saveStatus === "saving" ? (
+              <span className="status-chip status-saving">Saving...</span>
+            ) : saveStatus === "error" ? (
+              <span className="status-chip status-error">Save failed</span>
+            ) : saveStatus === "saved" ? (
+              <span className="status-chip status-saved">Saved</span>
+            ) : hasChanges ? (
+              <span className="status-chip status-dirty">Unsaved changes</span>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

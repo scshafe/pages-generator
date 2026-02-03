@@ -1,6 +1,7 @@
 import { apiFetch } from "@/lib/api/client";
 import { loadMetadataSnapshot } from "@/lib/content/metadata";
 import { isViewContainer } from "@/lib/content/containers";
+import { getPublishViewExample } from "@/lib/content/publishViewExample";
 import type {
   ComponentRecord,
   NodeRecord,
@@ -110,6 +111,10 @@ async function resolveViewByPathAuthor(pathname: string): Promise<ResolvedNode |
 
 export async function getResolvedViewByPath(viewPath: string[]): Promise<ResolvedNode | null> {
   const pathname = `/${viewPath.join("/")}`.replace(/\/$/, "") || "/";
+
+  if (pathname.toLowerCase() === "/publishviewexample" || pathname.toLowerCase() === "/publish-view-example") {
+    return getPublishViewExample();
+  }
 
   if (buildMode === "publish") {
     return resolveViewByPathStatic(pathname);

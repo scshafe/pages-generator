@@ -10,6 +10,8 @@ export interface MetadataSnapshot {
     site?: unknown;
     menu: unknown[];
     footer: unknown[];
+    purposes?: unknown[];
+    customComponents?: unknown[];
     themes: unknown[];
     themeConfig: unknown;
   };

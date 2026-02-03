@@ -97,11 +97,11 @@ export function MediaPanel() {
         <h2>Media</h2>
         <p>Upload and manage assets.</p>
       </div>
-      <label className="section-card">
-        <span>Upload file</span>
+      <div className="media-upload">
+        <span className="muted">Upload file</span>
         <input type="file" onChange={handleUpload} />
         <span className="muted">Images, PDFs, and videos are supported.</span>
-      </label>
+      </div>
       {isUploading ? <p>Uploading...</p> : null}
       {error ? <div className="alert">{error}</div> : null}
       <div className="media-grid">

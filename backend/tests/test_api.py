@@ -15,7 +15,18 @@ def client(tmp_path, monkeypatch):
     content_dir.mkdir()
 
     # Create required subdirectories
-    for subdir in ["nodes", "references", "components", "settings", "settings/menu", "settings/footer", "settings/themes", "settings/themes/custom"]:
+    for subdir in [
+        "nodes",
+        "references",
+        "components",
+        "settings",
+        "settings/menu",
+        "settings/footer",
+        "settings/purposes",
+        "settings/custom-components",
+        "settings/themes",
+        "settings/themes/custom",
+    ]:
         (content_dir / subdir).mkdir(parents=True, exist_ok=True)
 
     # Patch the CONTENT_ROOT in database module
@@ -27,6 +38,8 @@ def client(tmp_path, monkeypatch):
     monkeypatch.setattr(db, "SETTINGS_DIR", content_dir / "settings")
     monkeypatch.setattr(db, "MENU_DIR", content_dir / "settings/menu")
     monkeypatch.setattr(db, "FOOTER_DIR", content_dir / "settings/footer")
+    monkeypatch.setattr(db, "PURPOSE_DIR", content_dir / "settings/purposes")
+    monkeypatch.setattr(db, "CUSTOM_COMPONENT_DIR", content_dir / "settings/custom-components")
     monkeypatch.setattr(db, "THEME_DIR", content_dir / "settings/themes")
     monkeypatch.setattr(db, "THEME_CONFIG", content_dir / "settings/themes/config.json")
     monkeypatch.setattr(db, "THEME_CUSTOM_DIR", content_dir / "settings/themes/custom")

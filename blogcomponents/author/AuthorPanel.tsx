@@ -2,13 +2,17 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
-import { ConfigurationPanel } from "@/blogcomponents/author/ConfigurationPanel";
-import { AIAssistantPanel } from "@/blogcomponents/author/AIAssistantPanel";
-import { AuthorShortcutsPanel } from "@/blogcomponents/author/AuthorShortcutsPanel";
-import { AuthorCommandsPanel } from "@/blogcomponents/author/AuthorCommandsPanel";
+import {
+  AuthorFooterPanel,
+  AuthorGeneralPanel,
+  AuthorGroupsPanel,
+  AuthorHeaderPanel,
+  AuthorUnitsPanel,
+  AuthorViewPanel
+} from "@/blogcomponents/author/ThemeModePanels";
 import { isEditableTarget } from "@/blogcomponents/views/useFocusNavigator";
 
-type PanelTab = "configuration" | "agent" | "shortcuts" | "commands";
+type PanelTab = "general" | "header" | "footer" | "view" | "groups" | "units";
 
 const PANEL_STORAGE_KEY = "authorPanelHeight";
 const PANEL_MIN_HEIGHT = 240;
@@ -18,7 +22,7 @@ const DEFAULT_PANEL_HEIGHT = 360;
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
 export function AuthorPanel() {
-  const [activeTab, setActiveTab] = useState<PanelTab | null>("configuration");
+  const [activeTab, setActiveTab] = useState<PanelTab | null>("general");
   const [panelHeight, setPanelHeight] = useState<number | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const headerRef = useRef<HTMLDivElement | null>(null);
@@ -34,7 +38,7 @@ export function AuthorPanel() {
       if (!isHyper) return;
       if (event.key.toLowerCase() !== "a") return;
       event.preventDefault();
-      setActiveTab("agent");
+      setActiveTab("general");
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -146,44 +150,66 @@ export function AuthorPanel() {
     <div className={className}>
       <button
         type="button"
-        className={`author-panel__tab${activeTab === "configuration" ? " is-active" : ""}`}
-        onClick={() => handleTabClick("configuration")}
-        aria-pressed={activeTab === "configuration"}
+        className={`author-panel__tab${activeTab === "general" ? " is-active" : ""}`}
+        onClick={() => handleTabClick("general")}
+        aria-pressed={activeTab === "general"}
       >
-        Configuration
+        General
       </button>
       <span className="author-panel__divider" aria-hidden="true">
         |
       </span>
       <button
         type="button"
-        className={`author-panel__tab${activeTab === "agent" ? " is-active" : ""}`}
-        onClick={() => handleTabClick("agent")}
-        aria-pressed={activeTab === "agent"}
+        className={`author-panel__tab${activeTab === "header" ? " is-active" : ""}`}
+        onClick={() => handleTabClick("header")}
+        aria-pressed={activeTab === "header"}
       >
-        Agent
+        Header
       </button>
       <span className="author-panel__divider" aria-hidden="true">
         |
       </span>
       <button
         type="button"
-        className={`author-panel__tab${activeTab === "shortcuts" ? " is-active" : ""}`}
-        onClick={() => handleTabClick("shortcuts")}
-        aria-pressed={activeTab === "shortcuts"}
+        className={`author-panel__tab${activeTab === "footer" ? " is-active" : ""}`}
+        onClick={() => handleTabClick("footer")}
+        aria-pressed={activeTab === "footer"}
       >
-        Shortcuts
+        Footer
       </button>
       <span className="author-panel__divider" aria-hidden="true">
         |
       </span>
       <button
         type="button"
-        className={`author-panel__tab${activeTab === "commands" ? " is-active" : ""}`}
-        onClick={() => handleTabClick("commands")}
-        aria-pressed={activeTab === "commands"}
+        className={`author-panel__tab${activeTab === "view" ? " is-active" : ""}`}
+        onClick={() => handleTabClick("view")}
+        aria-pressed={activeTab === "view"}
       >
-        Commands
+        View
+      </button>
+      <span className="author-panel__divider" aria-hidden="true">
+        |
+      </span>
+      <button
+        type="button"
+        className={`author-panel__tab${activeTab === "groups" ? " is-active" : ""}`}
+        onClick={() => handleTabClick("groups")}
+        aria-pressed={activeTab === "groups"}
+      >
+        Groups
+      </button>
+      <span className="author-panel__divider" aria-hidden="true">
+        |
+      </span>
+      <button
+        type="button"
+        className={`author-panel__tab${activeTab === "units" ? " is-active" : ""}`}
+        onClick={() => handleTabClick("units")}
+        aria-pressed={activeTab === "units"}
+      >
+        Units
       </button>
     </div>
   );
@@ -220,14 +246,18 @@ export function AuthorPanel() {
         </div>
         {activeTab ? (
           <div className="author-panel__content">
-            {activeTab === "configuration" ? (
-              <ConfigurationPanel />
-            ) : activeTab === "agent" ? (
-              <AIAssistantPanel />
-            ) : activeTab === "shortcuts" ? (
-              <AuthorShortcutsPanel />
+            {activeTab === "general" ? (
+              <AuthorGeneralPanel />
+            ) : activeTab === "header" ? (
+              <AuthorHeaderPanel />
+            ) : activeTab === "footer" ? (
+              <AuthorFooterPanel />
+            ) : activeTab === "view" ? (
+              <AuthorViewPanel />
+            ) : activeTab === "groups" ? (
+              <AuthorGroupsPanel />
             ) : (
-              <AuthorCommandsPanel />
+              <AuthorUnitsPanel />
             )}
           </div>
         ) : null}

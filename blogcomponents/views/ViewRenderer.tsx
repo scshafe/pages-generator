@@ -8,7 +8,6 @@ import { VocabProvider } from "@/blogcomponents/views/VocabProvider";
 import { useContainerFocus } from "@/blogcomponents/author/ContainerFocusProvider";
 import { AuthorShortcuts } from "@/blogcomponents/views/AuthorShortcuts";
 import { ViewHeader } from "@/blogcomponents/views/ViewHeader";
-import { EdgeMarker } from "@/blogcomponents/views/EdgeMarker";
 import type { VocabSegment } from "@/lib/content/terminology.types";
 
 export function ViewRenderer({
@@ -33,12 +32,6 @@ export function ViewRenderer({
           <div className="section">
             {isAuthor ? (
               <>
-                <EdgeMarker
-                  scopeId={view.node.node_id}
-                  scopeType="view"
-                  position="start"
-                  beforeNodeId={view.children[0]?.node.node_id ?? null}
-                />
                 <SortableChildren
                   nodes={view.children}
                   enabled={isAuthor}
@@ -56,9 +49,6 @@ export function ViewRenderer({
                     />
                   )}
                 />
-                {view.children.length > 0 ? (
-                  <EdgeMarker scopeId={view.node.node_id} scopeType="view" position="end" />
-                ) : null}
               </>
             ) : (
               renderInlineBlocks({

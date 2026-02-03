@@ -47,6 +47,8 @@ try:
         read_site_settings,
         THEME_CUSTOM_DIR,
         THEME_CONFIG,
+        PURPOSE_DIR,
+        CUSTOM_COMPONENT_DIR,
         write_site_settings,
         component_path,
         ensure_dirs,
@@ -84,6 +86,8 @@ except ImportError:
         read_site_settings,
         THEME_CUSTOM_DIR,
         THEME_CONFIG,
+        PURPOSE_DIR,
+        CUSTOM_COMPONENT_DIR,
         write_site_settings,
         component_path,
         ensure_dirs,
@@ -117,6 +121,43 @@ CORS(app)
 ensure_dirs()
 
 RESERVED_VIEW_PATHS = ["/settings", "/feed.xml", "/api"]
+
+CUSTOM_COLOR_TYPES = ["general", "header", "footer", "view", "groups", "units"]
+DEFAULT_CUSTOM_COLOR = {
+    "backgroundColor": "#ffffff",
+    "textColor": "#000000",
+    "borderColor": "#d7cdbf",
+    "fontFamily": "",
+    "fontSize": "16px",
+    "lineHeight": "1.6",
+}
+
+
+def build_default_custom_colors() -> dict[str, dict[str, dict[str, Any]]]:
+    result: dict[str, dict[str, dict[str, Any]]] = {}
+    for type_key in CUSTOM_COLOR_TYPES:
+        result[type_key] = {type_key: dict(DEFAULT_CUSTOM_COLOR)}
+    return result
+
+
+def normalize_custom_colors(value: Any) -> dict[str, dict[str, dict[str, Any]]]:
+    defaults = build_default_custom_colors()
+    if not isinstance(value, dict):
+        return defaults
+    normalized: dict[str, dict[str, dict[str, Any]]] = {}
+    for type_key in CUSTOM_COLOR_TYPES:
+        raw_type = value.get(type_key) if isinstance(value, dict) else None
+        if not isinstance(raw_type, dict):
+            normalized[type_key] = defaults[type_key]
+            continue
+        type_map: dict[str, dict[str, Any]] = {}
+        for name, entry in raw_type.items():
+            if isinstance(entry, dict):
+                type_map[str(name)] = entry
+        if type_key not in type_map:
+            type_map[type_key] = dict(defaults[type_key][type_key])
+        normalized[type_key] = type_map
+    return normalized
 
 
 def _is_reserved_view_path(path_value: str) -> bool:
@@ -1487,6 +1528,97 @@ def delete_footer_item(footer_id: int) -> tuple[Any, int]:
     return jsonify({"deleted": footer_id}), 200
 
 
+@app.get("/purposes")
+def list_purposes() -> tuple[Any, int]:
+    return jsonify(list_json_files(PURPOSE_DIR)), 200
+
+
+@app.post("/purposes")
+def create_purpose() -> tuple[Any, int]:
+    payload = request.get_json(force=True) or {}
+    purpose_id = payload.get("purpose_id") or generate_id()
+    name = str(payload.get("name") or "").strip() or "Untitled"
+    item = {
+        "purpose_id": purpose_id,
+        "name": name,
+        "created_at": now_iso(),
+    }
+    write_json(PURPOSE_DIR / f"{purpose_id}.json", item)
+    return jsonify(item), 201
+
+
+@app.put("/purposes/<int:purpose_id>")
+def update_purpose(purpose_id: int) -> tuple[Any, int]:
+    payload = request.get_json(force=True) or {}
+    item = read_json(PURPOSE_DIR / f"{purpose_id}.json")
+    if not item:
+        return jsonify({"error": "Purpose not found"}), 404
+    if "name" in payload:
+        item["name"] = str(payload.get("name") or "").strip() or item.get("name", "Untitled")
+    write_json(PURPOSE_DIR / f"{purpose_id}.json", item)
+    return jsonify(item), 200
+
+
+@app.delete("/purposes/<int:purpose_id>")
+def delete_purpose(purpose_id: int) -> tuple[Any, int]:
+    (PURPOSE_DIR / f"{purpose_id}.json").unlink(missing_ok=True)
+    return jsonify({"deleted": purpose_id}), 200
+
+
+@app.get("/custom-components")
+def list_custom_components() -> tuple[Any, int]:
+    return jsonify(list_json_files(CUSTOM_COMPONENT_DIR)), 200
+
+
+@app.post("/custom-components")
+def create_custom_component() -> tuple[Any, int]:
+    payload = request.get_json(force=True) or {}
+    component_name = str(payload.get("name") or "").strip()
+    component_type = str(payload.get("component_type") or "").strip()
+    theme_id = payload.get("theme_id")
+    if not component_name or not component_type or theme_id is None:
+        return jsonify({"error": "name, component_type, and theme_id are required"}), 400
+    theme = read_json(THEME_CUSTOM_DIR / f"{theme_id}.json")
+    if not theme:
+        return jsonify({"error": "Theme not found"}), 404
+    custom_component_id = payload.get("custom_component_id") or generate_id()
+    item = {
+        "custom_component_id": custom_component_id,
+        "name": component_name,
+        "component_type": component_type,
+        "theme_id": theme_id,
+        "created_at": now_iso(),
+    }
+    write_json(CUSTOM_COMPONENT_DIR / f"{custom_component_id}.json", item)
+    return jsonify(item), 201
+
+
+@app.put("/custom-components/<int:custom_component_id>")
+def update_custom_component(custom_component_id: int) -> tuple[Any, int]:
+    payload = request.get_json(force=True) or {}
+    item = read_json(CUSTOM_COMPONENT_DIR / f"{custom_component_id}.json")
+    if not item:
+        return jsonify({"error": "Custom component not found"}), 404
+    if "name" in payload:
+        item["name"] = str(payload.get("name") or "").strip() or item.get("name", "Untitled")
+    if "component_type" in payload:
+        item["component_type"] = str(payload.get("component_type") or "").strip()
+    if "theme_id" in payload:
+        theme_id = payload.get("theme_id")
+        theme = read_json(THEME_CUSTOM_DIR / f"{theme_id}.json")
+        if not theme:
+            return jsonify({"error": "Theme not found"}), 404
+        item["theme_id"] = theme_id
+    write_json(CUSTOM_COMPONENT_DIR / f"{custom_component_id}.json", item)
+    return jsonify(item), 200
+
+
+@app.delete("/custom-components/<int:custom_component_id>")
+def delete_custom_component(custom_component_id: int) -> tuple[Any, int]:
+    (CUSTOM_COMPONENT_DIR / f"{custom_component_id}.json").unlink(missing_ok=True)
+    return jsonify({"deleted": custom_component_id}), 200
+
+
 @app.get("/themes")
 def list_themes() -> tuple[Any, int]:
     themes = list_json_files(THEME_CUSTOM_DIR)
@@ -1518,7 +1650,11 @@ def put_theme_config() -> tuple[Any, int]:
 
 @app.get("/themes/custom")
 def list_custom_themes() -> tuple[Any, int]:
-    themes = list_json_files(THEME_CUSTOM_DIR)
+    themes = []
+    for theme in list_json_files(THEME_CUSTOM_DIR):
+        if isinstance(theme, dict):
+            theme["custom_colors"] = normalize_custom_colors(theme.get("custom_colors"))
+        themes.append(theme)
     return jsonify(themes), 200
 
 
@@ -1538,6 +1674,7 @@ def create_custom_theme() -> tuple[Any, int]:
             "muted": "#f1f5f9",
             "border": "#e2e8f0"
         }),
+        "custom_colors": normalize_custom_colors(payload.get("custom_colors")),
         "created_at": now_iso()
     }
     write_json(THEME_CUSTOM_DIR / f"{theme_id}.json", theme)
@@ -1555,6 +1692,8 @@ def get_theme(theme_id: int) -> tuple[Any, int]:
     theme = read_json(THEME_CUSTOM_DIR / f"{theme_id}.json")
     if not theme:
         return jsonify({"error": "Theme not found"}), 404
+    if isinstance(theme, dict):
+        theme["custom_colors"] = normalize_custom_colors(theme.get("custom_colors"))
     return jsonify(theme), 200
 
 
@@ -1562,6 +1701,8 @@ def get_theme(theme_id: int) -> tuple[Any, int]:
 def update_theme(theme_id: int) -> tuple[Any, int]:
     payload = request.get_json(force=True) or {}
     theme = read_json(THEME_CUSTOM_DIR / f"{theme_id}.json") or {"theme_id": theme_id}
+    if "custom_colors" in payload:
+        payload["custom_colors"] = normalize_custom_colors(payload.get("custom_colors"))
     theme.update(payload)
     write_json(THEME_CUSTOM_DIR / f"{theme_id}.json", theme)
     return jsonify(theme), 200

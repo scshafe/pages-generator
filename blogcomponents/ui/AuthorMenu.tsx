@@ -20,13 +20,10 @@ export function AuthorMenu() {
             </Link>
           </NavigationMenuLink>
           <NavigationMenuLink asChild>
-            <Link className="nav-menu-dropdown__link" href="/styles">
-              Styles
+            <Link className="nav-menu-dropdown__link" href="/views">
+              Views
             </Link>
           </NavigationMenuLink>
-          <button type="button" role="menuitem">
-            Views
-          </button>
           <button type="button" role="menuitem">
             Notes
           </button>

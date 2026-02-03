@@ -4,7 +4,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ViewsPanel } from "@/blogcomponents/settings/ViewsPanel";
 import { NavigationPanel } from "@/blogcomponents/settings/NavigationPanel";
 import { MediaPanel } from "@/blogcomponents/settings/MediaPanel";
 import { SitePanel } from "@/blogcomponents/settings/SitePanel";
@@ -12,6 +11,9 @@ import { CursorPanel } from "@/blogcomponents/settings/CursorPanel";
 import { ShortcutsPanel } from "@/blogcomponents/settings/ShortcutsPanel";
 import { AIPanel } from "@/blogcomponents/settings/AIPanel";
 import { ThemePanel } from "@/blogcomponents/settings/ThemePanel";
+import { ViewStylePanel } from "@/blogcomponents/settings/ViewStylePanel";
+import { PurposesPanel } from "@/blogcomponents/settings/PurposesPanel";
+import { CustomComponentsPanel } from "@/blogcomponents/settings/CustomComponentsPanel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { settingsTabs } from "@/lib/content/settingsTabs";
 
@@ -59,11 +61,17 @@ export function SettingsTabs() {
         <TabsContent value="site" className="section settings-tab-content">
           <SitePanel />
         </TabsContent>
-        <TabsContent value="views" className="section settings-tab-content">
-          <ViewsPanel />
+        <TabsContent value="styles" className="section settings-tab-content">
+          <ViewStylePanel />
         </TabsContent>
         <TabsContent value="navigation" className="section settings-tab-content">
           <NavigationPanel />
+        </TabsContent>
+        <TabsContent value="purposes" className="section settings-tab-content">
+          <PurposesPanel />
+        </TabsContent>
+        <TabsContent value="custom-components" className="section settings-tab-content">
+          <CustomComponentsPanel />
         </TabsContent>
         <TabsContent value="media" className="section settings-tab-content">
           <MediaPanel />

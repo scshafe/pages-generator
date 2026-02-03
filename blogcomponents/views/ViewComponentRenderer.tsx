@@ -451,6 +451,7 @@ export function SortableChildren({
   const draggingType = dragScope?.draggingType ?? "";
   const isDragging = enabled && Boolean(dragScope?.isDragging);
   const isActiveScope = isDragging && dragScope?.activeScopeId === containerNodeId;
+  const scopeType = containerType === "Group" ? "group" : "view";
 
   useEffect(() => {
     setItems(nodes);
@@ -590,6 +591,14 @@ export function SortableChildren({
         {showDownArrow ? (
           <ScopeArrow direction="down" targetScopeId={child.node.node_id} active={isDragging} />
         ) : null}
+        {enabled ? (
+          <EdgeMarker
+            scopeId={containerNodeId}
+            scopeType={scopeType}
+            position="between"
+            beforeNodeId={child.node.node_id}
+          />
+        ) : null}
         {renderItem(child, index, siblings)}
       </div>
     );
@@ -597,7 +606,17 @@ export function SortableChildren({
 
   return (
     <div className="sortable-list">
-      {renderInlineBlocks({ nodes: items, renderItem: renderDraggableItem, isAuthor: enabled })}
+      {items.length ? (
+        renderInlineBlocks({ nodes: items, renderItem: renderDraggableItem, isAuthor: enabled })
+      ) : null}
+      {enabled ? (
+        <EdgeMarker
+          scopeId={containerNodeId}
+          scopeType={scopeType}
+          position="end"
+          isBlank={!items.length}
+        />
+      ) : null}
     </div>
   );
 }
@@ -1204,8 +1223,6 @@ export function ViewComponentRenderer({
     const groupStyles = isGroupScope ? getGroupStyles(config as Record<string, unknown>) : {};
     const isScopeActive = activeScopeId === node.node.node_id;
     const showScopeUp = Boolean(isDragging && isScopeActive && node.node.parent_node_id);
-    const hasChildren = node.children.length > 0;
-    const hasPrevGroupSibling = previousSiblingType === "Group";
     const styleClass = isGroupScope ? "group-container" : "container-node";
     const scopeType = isGroupScope ? "group" : "container";
     const isSubGroup = isGroupScope && parentType === "Group";
@@ -1296,14 +1313,6 @@ export function ViewComponentRenderer({
         {showScopeUp && node.node.parent_node_id ? (
           <ScopeArrow direction="up" targetScopeId={node.node.parent_node_id} active={Boolean(dragScope?.isDragging)} />
         ) : null}
-        {isAuthor && isGroupScope && hasChildren && !hasPrevGroupSibling ? (
-          <EdgeMarker
-            scopeId={node.node.node_id}
-            scopeType="group"
-            position="start"
-            beforeNodeId={node.children[0]?.node.node_id ?? null}
-          />
-        ) : null}
         {isAuthor ? (
           <SortableChildren
             nodes={node.children}
@@ -1328,9 +1337,6 @@ export function ViewComponentRenderer({
             isAuthor
           })
         )}
-        {isAuthor && isGroupScope ? (
-          <EdgeMarker scopeId={node.node.node_id} scopeType="group" position="end" />
-        ) : null}
       </div>
     );
   }

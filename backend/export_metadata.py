@@ -12,6 +12,8 @@ from .database import (
     MENU_DIR,
     NODE_DIR,
     REFERENCE_DIR,
+    PURPOSE_DIR,
+    CUSTOM_COMPONENT_DIR,
     SITE_FILE,
     THEME_CONFIG,
     THEME_CUSTOM_DIR,
@@ -29,6 +31,8 @@ def export_metadata() -> dict[str, Any]:
     home = read_json(HOME_FILE, {"label": "Home", "root_view_node_id": None})
     menu = list_json_files(MENU_DIR)
     footer = list_json_files(FOOTER_DIR)
+    purposes = list_json_files(PURPOSE_DIR)
+    custom_components = list_json_files(CUSTOM_COMPONENT_DIR)
     site = read_json(
         SITE_FILE,
         {
@@ -77,6 +81,8 @@ def export_metadata() -> dict[str, Any]:
             "site": site,
             "menu": menu,
             "footer": footer,
+            "purposes": purposes,
+            "customComponents": custom_components,
             "themes": themes,
             "themeConfig": theme_config,
         },

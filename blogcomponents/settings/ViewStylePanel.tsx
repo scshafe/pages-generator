@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { apiFetch } from "@/lib/api/client";
 import { useToast } from "@/blogcomponents/ui/ToastProvider";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export interface ViewStyleDefaults {
   default_max_width: string;
@@ -26,38 +27,12 @@ const defaultViewStyles: ViewStyleDefaults = {
   spacing_unit: 8
 };
 
-const maxWidthOptions = [
-  { value: "640px", label: "Small (640px)" },
-  { value: "768px", label: "Medium (768px)" },
-  { value: "1024px", label: "Large (1024px)" },
-  { value: "1280px", label: "Extra Large (1280px)" },
-  { value: "100%", label: "Full Width" }
-];
-
-const paddingOptions = [
-  { value: "1rem", label: "Compact (1rem)" },
-  { value: "1.5rem", label: "Standard (1.5rem)" },
-  { value: "2rem", label: "Comfortable (2rem)" },
-  { value: "3rem", label: "Spacious (3rem)" }
-];
-
-const fontSizeOptions = [
-  { value: "0.875rem", label: "Small (14px)" },
-  { value: "1rem", label: "Medium (16px)" },
-  { value: "1.125rem", label: "Large (18px)" },
-  { value: "1.25rem", label: "Extra Large (20px)" }
-];
-
-const lineHeightOptions = [
-  { value: "1.5", label: "Tight (1.5)" },
-  { value: "1.625", label: "Normal (1.625)" },
-  { value: "1.75", label: "Relaxed (1.75)" },
-  { value: "2", label: "Loose (2)" }
-];
+const voices = [{ id: "default", name: "Default Voice" }];
 
 export function ViewStylePanel() {
-  const [form, setForm] = useState<ViewStyleDefaults>(defaultViewStyles);
-  const [savedSnapshot, setSavedSnapshot] = useState<ViewStyleDefaults>(defaultViewStyles);
+  const [rawText, setRawText] = useState("");
+  const [savedRaw, setSavedRaw] = useState("");
+  const [activeVoiceId, setActiveVoiceId] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const toast = useToast();
@@ -65,18 +40,32 @@ export function ViewStylePanel() {
   const hasLoadedRef = useRef(false);
   const saveTimerRef = useRef<number | null>(null);
 
+  const parsed = useMemo(() => {
+    if (!rawText.trim()) return { value: null, error: null };
+    try {
+      const parsedValue = JSON.parse(rawText) as Partial<ViewStyleDefaults>;
+      const next = { ...defaultViewStyles, ...parsedValue };
+      return { value: next, error: null };
+    } catch (err) {
+      return { value: null, error: err instanceof Error ? err.message : "Invalid JSON" };
+    }
+  }, [rawText]);
+
+  const hasChanges = rawText.trim().length > 0 && rawText !== savedRaw;
+
   const loadSettings = useCallback(async () => {
     if (!isAuthor) return;
     try {
       const response = await apiFetch<ViewStyleDefaults>("/view-styles");
       const next = { ...defaultViewStyles, ...response };
-      setForm(next);
-      setSavedSnapshot(next);
+      const nextRaw = JSON.stringify(next, null, 2);
+      setRawText(nextRaw);
+      setSavedRaw(nextRaw);
       setSaveStatus("idle");
     } catch {
-      // Settings might not exist yet, use defaults
-      setForm(defaultViewStyles);
-      setSavedSnapshot(defaultViewStyles);
+      const nextRaw = JSON.stringify(defaultViewStyles, null, 2);
+      setRawText(nextRaw);
+      setSavedRaw(nextRaw);
     } finally {
       hasLoadedRef.current = true;
     }
@@ -86,15 +75,11 @@ export function ViewStylePanel() {
     loadSettings();
   }, [loadSettings]);
 
-  const hasChanges = (() => {
-    const keys = Object.keys(defaultViewStyles) as (keyof ViewStyleDefaults)[];
-    return keys.some((key) => form[key] !== savedSnapshot[key]);
-  })();
-
   useEffect(() => {
     if (!isAuthor) return;
     if (!hasLoadedRef.current) return;
     if (!hasChanges) return;
+    if (!parsed.value) return;
 
     if (saveTimerRef.current) {
       window.clearTimeout(saveTimerRef.current);
@@ -105,16 +90,17 @@ export function ViewStylePanel() {
       try {
         const updated = await apiFetch<ViewStyleDefaults>("/view-styles", {
           method: "PUT",
-          body: JSON.stringify(form)
+          body: JSON.stringify(parsed.value)
         });
         const next = { ...defaultViewStyles, ...updated };
-        setForm(next);
-        setSavedSnapshot(next);
+        const nextRaw = JSON.stringify(next, null, 2);
+        setRawText(nextRaw);
+        setSavedRaw(nextRaw);
         setSaveStatus("saved");
         setError(null);
         window.setTimeout(() => setSaveStatus("idle"), 1500);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to save view styles");
+        setError(err instanceof Error ? err.message : "Failed to save voices");
         setSaveStatus("error");
         toast.push("Save failed", "error");
       } finally {
@@ -128,180 +114,48 @@ export function ViewStylePanel() {
         saveTimerRef.current = null;
       }
     };
-  }, [form, hasChanges, isAuthor, toast]);
+  }, [hasChanges, isAuthor, parsed.value, rawText, toast]);
 
   return (
-    <div className="panel">
-      <div className="panel-header">
-        <h2>View Style Defaults</h2>
-        <p>Set default styles that apply to all views unless overridden.</p>
-      </div>
-
-      <div className="section-card">
-        <div className="section-header">
-          <h4>Layout Defaults</h4>
-          <p>Control the default layout behavior for views.</p>
+    <div className="panel voices-panel">
+      {activeVoiceId ? (
+        <div className="voices-editor">
+          <div className="voices-editor__toolbar">
+            <button className="button ghost small" type="button" onClick={() => setActiveVoiceId(null)}>
+              Back
+            </button>
+          </div>
+          <textarea value={rawText} onChange={(event) => setRawText(event.target.value)} rows={18} />
+          {parsed.error ? <span className="form-error">{parsed.error}</span> : null}
         </div>
-        <div className="form-grid">
-          <label>
-            <span>Max Content Width</span>
-            <select
-              value={form.default_max_width}
-              onChange={(e) => setForm((prev) => ({ ...prev, default_max_width: e.target.value }))}
-            >
-              {maxWidthOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
+      ) : (
+        <div className="voices-table">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Voice</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {voices.map((voice) => (
+                <TableRow
+                  key={voice.id}
+                  className="voices-table-row"
+                  onClick={() => setActiveVoiceId(voice.id)}
+                >
+                  <TableCell>{voice.name}</TableCell>
+                </TableRow>
               ))}
-            </select>
-            <span className="form-hint">Maximum width for content containers.</span>
-          </label>
-
-          <label>
-            <span>Content Padding</span>
-            <select
-              value={form.default_padding}
-              onChange={(e) => setForm((prev) => ({ ...prev, default_padding: e.target.value }))}
-            >
-              {paddingOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-            <span className="form-hint">Padding around content areas.</span>
-          </label>
-
-          <label>
-            <span>Spacing Unit (px)</span>
-            <input
-              type="number"
-              min={4}
-              max={16}
-              value={form.spacing_unit}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, spacing_unit: Number(e.target.value) }))
-              }
-            />
-            <span className="form-hint">Base spacing unit for margins and gaps.</span>
-          </label>
+            </TableBody>
+          </Table>
         </div>
-      </div>
-
-      <div className="section-card">
-        <div className="section-header">
-          <h4>Typography Defaults</h4>
-          <p>Default text styling for view content.</p>
-        </div>
-        <div className="form-grid">
-          <label>
-            <span>Text Alignment</span>
-            <select
-              value={form.default_text_alignment}
-              onChange={(e) =>
-                setForm((prev) => ({
-                  ...prev,
-                  default_text_alignment: e.target.value as ViewStyleDefaults["default_text_alignment"]
-                }))
-              }
-            >
-              <option value="left">Left</option>
-              <option value="center">Center</option>
-              <option value="right">Right</option>
-              <option value="justify">Justify</option>
-            </select>
-          </label>
-
-          <label>
-            <span>Font Size</span>
-            <select
-              value={form.default_font_size}
-              onChange={(e) => setForm((prev) => ({ ...prev, default_font_size: e.target.value }))}
-            >
-              {fontSizeOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label>
-            <span>Line Height</span>
-            <select
-              value={form.default_line_height}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, default_line_height: e.target.value }))
-              }
-            >
-              {lineHeightOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-      </div>
-
-      <div className="section-card">
-        <div className="section-header">
-          <h4>Style Presets</h4>
-          <p>Quick style presets for common view types.</p>
-        </div>
-        <div className="form-grid">
-          <label>
-            <span>Header Style</span>
-            <select
-              value={form.header_style}
-              onChange={(e) =>
-                setForm((prev) => ({
-                  ...prev,
-                  header_style: e.target.value as ViewStyleDefaults["header_style"]
-                }))
-              }
-            >
-              <option value="standard">Standard</option>
-              <option value="hero">Hero (large, centered)</option>
-              <option value="minimal">Minimal</option>
-            </select>
-            <span className="form-hint">Default style for view headers.</span>
-          </label>
-
-          <label>
-            <span>Content Style</span>
-            <select
-              value={form.content_style}
-              onChange={(e) =>
-                setForm((prev) => ({
-                  ...prev,
-                  content_style: e.target.value as ViewStyleDefaults["content_style"]
-                }))
-              }
-            >
-              <option value="prose">Prose (long-form text)</option>
-              <option value="cards">Cards (block items)</option>
-              <option value="grid">Grid (tiled layout)</option>
-            </select>
-            <span className="form-hint">Default layout style for view content.</span>
-          </label>
-        </div>
-      </div>
+      )}
 
       {error ? <div className="alert">{error}</div> : null}
-      {isAuthor && (hasChanges || saveStatus !== "idle") ? (
+      {isAuthor && saveStatus === "saving" ? (
         <div className="action-bar">
           <div className="action-group action-group--right">
-            {saveStatus === "saving" ? (
-              <span className="status-chip status-saving">Saving...</span>
-            ) : saveStatus === "error" ? (
-              <span className="status-chip status-error">Save failed</span>
-            ) : saveStatus === "saved" ? (
-              <span className="status-chip status-saved">Saved</span>
-            ) : hasChanges ? (
-              <span className="status-chip status-dirty">Unsaved changes</span>
-            ) : null}
+            <span className="status-chip status-saving">Saving...</span>
           </div>
         </div>
       ) : null}

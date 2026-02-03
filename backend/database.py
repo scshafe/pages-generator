@@ -22,6 +22,8 @@ HOME_FILE = SETTINGS_DIR / "home.json"
 MENU_DIR = SETTINGS_DIR / "menu"
 FOOTER_DIR = SETTINGS_DIR / "footer"
 SITE_FILE = SETTINGS_DIR / "site.json"
+PURPOSE_DIR = SETTINGS_DIR / "purposes"
+CUSTOM_COMPONENT_DIR = SETTINGS_DIR / "custom-components"
 
 
 def now_iso() -> str:
@@ -42,6 +44,8 @@ def ensure_dirs() -> None:
         FOOTER_DIR,
         THEME_DIR,
         THEME_CUSTOM_DIR,
+        PURPOSE_DIR,
+        CUSTOM_COMPONENT_DIR,
     ]:
         directory.mkdir(parents=True, exist_ok=True)
 
