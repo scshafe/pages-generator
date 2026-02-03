@@ -1,8 +1,8 @@
 import { getResolvedViewByPath } from "@/lib/content/views.server";
 import { loadMetadataSnapshot } from "@/lib/content/metadata";
 import { isViewContainer } from "@/lib/content/containers";
-import { ViewRenderer } from "@/components/views/ViewRenderer";
-import { NotFoundView } from "@/components/views/NotFoundView";
+import { ViewRenderer } from "@/blogcomponents/views/ViewRenderer";
+import { NotFoundView } from "@/blogcomponents/views/NotFoundView";
 import { buildVocabSegments, loadTerminology } from "@/lib/content/terminology";
 
 export default async function ViewPage({

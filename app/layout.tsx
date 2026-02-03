@@ -1,9 +1,12 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Space_Grotesk, Source_Serif_4 } from "next/font/google";
-import { SiteHeader } from "@/components/ui/SiteHeader";
-import { SiteFooter } from "@/components/ui/SiteFooter";
-import { ToastProvider } from "@/components/ui/ToastProvider";
+import { SiteHeader } from "@/blogcomponents/ui/SiteHeader";
+import { AuthorHeader } from "@/blogcomponents/ui/AuthorHeader";
+import { SiteFooter } from "@/blogcomponents/ui/SiteFooter";
+import { ToastProvider } from "@/blogcomponents/ui/ToastProvider";
+import { ContainerFocusProvider } from "@/blogcomponents/author/ContainerFocusProvider";
+import { AuthorPanel } from "@/blogcomponents/author/AuthorPanel";
 import { getSiteSettings } from "@/lib/content/site";
 
 const displayFont = Space_Grotesk({
@@ -56,15 +59,20 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const site = await getSiteSettings();
+  const isAuthor = process.env.NEXT_PUBLIC_BUILD_MODE === "author";
   return (
     <html lang={site.language || "en"} className={`${displayFont.variable} ${bodyFont.variable}`}>
-      <body>
+      <body className={isAuthor ? "author-mode" : undefined}>
         <ToastProvider>
-          <SiteHeader />
-          <main>
-            <div className="container">{children}</div>
-          </main>
-          <SiteFooter />
+          <ContainerFocusProvider>
+            {isAuthor ? <AuthorHeader /> : null}
+            <SiteHeader />
+            <main>
+              <div className="container">{children}</div>
+            </main>
+            <SiteFooter />
+            {isAuthor ? <AuthorPanel /> : null}
+          </ContainerFocusProvider>
         </ToastProvider>
       </body>
     </html>

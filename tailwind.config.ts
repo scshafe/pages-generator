@@ -4,6 +4,7 @@ const config: Config = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./blogcomponents/**/*.{js,ts,jsx,tsx,mdx}",
     "./lib/**/*.{js,ts,jsx,tsx,mdx}"
   ],
   theme: {
@@ -12,7 +13,7 @@ const config: Config = {
         muted: "#f0e9df",
         "muted-foreground": "#5d5a52",
         border: "#d7cdbf",
-        background: "#fffaf4",
+        background: "#f8f4ee",
         foreground: "#1f1f1b",
         popover: "#fffaf4",
         "popover-foreground": "#1f1f1b",

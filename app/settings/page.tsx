@@ -1,4 +1,4 @@
-import { SettingsTabs } from "@/components/settings/SettingsTabs";
+import { SettingsTabs } from "@/blogcomponents/settings/SettingsTabs";
 
 export default function SettingsPage() {
   if (process.env.NEXT_PUBLIC_BUILD_MODE === "publish") {
