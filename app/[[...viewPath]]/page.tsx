@@ -3,6 +3,7 @@ import { loadMetadataSnapshot } from "@/lib/content/metadata";
 import { isViewContainer } from "@/lib/content/containers";
 import { ViewRenderer } from "@/components/views/ViewRenderer";
 import { NotFoundView } from "@/components/views/NotFoundView";
+import { buildVocabSegments, loadTerminology } from "@/lib/content/terminology";
 
 export default async function ViewPage({
   params
@@ -14,8 +15,14 @@ export default async function ViewPage({
   if (!resolved) {
     return <NotFoundView />;
   }
+  const terminology = await loadTerminology();
+  const vocabSegments = buildVocabSegments(
+    resolved,
+    terminology,
+    (resolved.config as { active_vocab_terms?: unknown }).active_vocab_terms
+  );
 
-  return <ViewRenderer view={resolved} />;
+  return <ViewRenderer view={resolved} vocabSegments={vocabSegments} />;
 }
 
 export async function generateStaticParams() {

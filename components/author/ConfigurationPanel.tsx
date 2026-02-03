@@ -1,21 +1,37 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api/client";
 import { useContainerFocus } from "@/components/author/ContainerFocusProvider";
 import { ComponentEditor } from "@/components/author/ComponentEditor";
 import { Switch } from "@/components/ui/Switch";
 import { InfoIcon } from "@/components/ui/icons";
+import { useToast } from "@/components/ui/ToastProvider";
 import type { ResolvedNode } from "@/lib/content/types";
+import type { TerminologyMap } from "@/lib/content/terminology.types";
+
+function normalizeTerms(value: unknown) {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) => (typeof item === "string" ? item.trim() : String(item).trim()))
+    .filter((item) => item.length > 0);
+}
 
 export function ConfigurationPanel() {
   const { focusedNodeId } = useContainerFocus();
+  const router = useRouter();
+  const toast = useToast();
   const [resolved, setResolved] = useState<ResolvedNode | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isCompact, setIsCompact] = useState(true);
   const [referenceUseAI, setReferenceUseAI] = useState(false);
   const [isSavingReference, setIsSavingReference] = useState(false);
+  const [terminology, setTerminology] = useState<TerminologyMap>({});
+  const [activeVocabTerms, setActiveVocabTerms] = useState<string[]>([]);
+  const [isSavingVocabTerms, setIsSavingVocabTerms] = useState(false);
+  const [vocabError, setVocabError] = useState<string | null>(null);
   const expandOnTypes = useMemo(() => new Set<string>([]), []);
   const typeLabel = resolved?.component.type ?? null;
 
@@ -78,6 +94,44 @@ export function ConfigurationPanel() {
     setReferenceUseAI(Boolean((resolved.reference as { useAI?: boolean }).useAI));
   }, [resolved?.reference?.ref_id, resolved?.reference?.useAI]);
 
+  const isViewContainer = resolved?.component?.type === "Container";
+
+  useEffect(() => {
+    if (!isViewContainer) {
+      setTerminology({});
+      setVocabError(null);
+      return;
+    }
+    let isActive = true;
+    apiFetch<TerminologyMap>("/terminology")
+      .then((data) => {
+        if (!isActive) return;
+        setTerminology(data ?? {});
+        setVocabError(null);
+      })
+      .catch((err) => {
+        if (!isActive) return;
+        setTerminology({});
+        setVocabError(err instanceof Error ? err.message : "Failed to load terminology");
+      });
+    return () => {
+      isActive = false;
+    };
+  }, [isViewContainer]);
+
+  useEffect(() => {
+    if (!isViewContainer) {
+      setActiveVocabTerms([]);
+      return;
+    }
+    setActiveVocabTerms(normalizeTerms((resolved?.config as { active_vocab_terms?: unknown })?.active_vocab_terms));
+  }, [isViewContainer, resolved?.config]);
+
+  const vocabTermList = useMemo(
+    () => Object.keys(terminology).sort((a, b) => a.localeCompare(b)),
+    [terminology]
+  );
+
   const handleReferenceToggle = useCallback(
     async (checked: boolean) => {
       if (!resolved?.reference?.ref_id) return;
@@ -97,6 +151,34 @@ export function ConfigurationPanel() {
       }
     },
     [referenceUseAI, resolved?.reference?.ref_id]
+  );
+
+  const handleVocabToggle = useCallback(
+    async (term: string, checked: boolean) => {
+      if (!resolved?.reference?.ref_id) return;
+      const previous = activeVocabTerms;
+      const nextTerms = checked
+        ? Array.from(new Set([...activeVocabTerms, term]))
+        : activeVocabTerms.filter((item) => item !== term);
+      setActiveVocabTerms(nextTerms);
+      setIsSavingVocabTerms(true);
+      setVocabError(null);
+      try {
+        await apiFetch(`/references/${resolved.reference.ref_id}`, {
+          method: "PUT",
+          body: JSON.stringify({ overrides: { active_vocab_terms: nextTerms } })
+        });
+        router.refresh();
+      } catch (err) {
+        setActiveVocabTerms(previous);
+        const message = err instanceof Error ? err.message : "Failed to update vocab terms";
+        setVocabError(message);
+        toast.push(message, "error");
+      } finally {
+        setIsSavingVocabTerms(false);
+      }
+    },
+    [activeVocabTerms, resolved?.reference?.ref_id, router, toast]
   );
 
   const referenceCount = resolved?.component.reference_count ?? 1;
@@ -207,6 +289,32 @@ export function ConfigurationPanel() {
                 componentType={resolved.component.type}
                 config={resolved.config}
               />
+            </div>
+          ) : null}
+          {resolved && !isLoading && isViewContainer ? (
+            <div className="config-section">
+              <div className="config-section-header">
+                <strong>Active Vocab Terms</strong>
+                <span className="muted">Highlight terms in this view</span>
+              </div>
+              {vocabError ? <div className="alert">{vocabError}</div> : null}
+              {vocabTermList.length === 0 ? (
+                <p className="muted">No terminology entries yet. Add terms in Settings &gt; Terminology.</p>
+              ) : (
+                <div className="config-section-list">
+                  {vocabTermList.map((term) => (
+                    <div key={term} className="toggle-row">
+                      <span>{term}</span>
+                      <Switch
+                        checked={activeVocabTerms.includes(term)}
+                        onCheckedChange={(checked) => handleVocabToggle(term, checked)}
+                        disabled={isSavingVocabTerms}
+                        aria-label={`Toggle vocab term ${term}`}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           ) : null}
           {!resolved && !isLoading && !error ? (

@@ -1,7 +1,9 @@
 "use client";
 
+"use client";
+
 import { useEffect, useState } from "react";
-import { MenuIcon } from "@/components/ui/icons";
+import { NavigationMenuContent, NavigationMenuItem, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
 
 const outlineClass = "outline-mode";
 
@@ -19,35 +21,29 @@ export function AuthorMenu() {
   }, [showOutlines]);
 
   return (
-    <div className="nav-menu" aria-label="Author menu">
-      <button
-        className="nav-menu-trigger"
-        type="button"
-        aria-haspopup="menu"
-        aria-expanded="false"
-      >
-        <MenuIcon size={24} strokeWidth={2} aria-hidden />
-        <span className="sr-only">Author menu</span>
-      </button>
-      <div className="nav-menu-dropdown" role="menu">
-        <button type="button" role="menuitem">
-          Views
-        </button>
-        <button type="button" role="menuitem">
-          Notes
-        </button>
-        <button type="button" role="menuitem">
-          Sources
-        </button>
-        <button
-          type="button"
-          role="menuitemcheckbox"
-          aria-checked={showOutlines}
-          onClick={() => setShowOutlines((prev) => !prev)}
-        >
-          {showOutlines ? "Hide outlines" : "Show outlines"}
-        </button>
-      </div>
-    </div>
+    <NavigationMenuItem>
+      <NavigationMenuTrigger className="nav-menu-trigger">Menu</NavigationMenuTrigger>
+      <NavigationMenuContent className="nav-menu-content">
+        <div className="nav-menu-dropdown" role="menu">
+          <button type="button" role="menuitem">
+            Views
+          </button>
+          <button type="button" role="menuitem">
+            Notes
+          </button>
+          <button type="button" role="menuitem">
+            Sources
+          </button>
+          <button
+            type="button"
+            role="menuitemcheckbox"
+            aria-checked={showOutlines}
+            onClick={() => setShowOutlines((prev) => !prev)}
+          >
+            {showOutlines ? "Hide outlines" : "Show outlines"}
+          </button>
+        </div>
+      </NavigationMenuContent>
+    </NavigationMenuItem>
   );
 }

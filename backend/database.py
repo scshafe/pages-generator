@@ -168,6 +168,7 @@ def write_ai_settings(data: dict[str, Any]) -> None:
 
 
 VIEW_STYLES_FILE = SETTINGS_DIR / "view-styles.json"
+TERMINOLOGY_FILE = SETTINGS_DIR / "terminology.json"
 
 
 def read_view_styles() -> dict[str, Any]:
@@ -188,3 +189,11 @@ def read_view_styles() -> dict[str, Any]:
 
 def write_view_styles(data: dict[str, Any]) -> None:
     write_json(VIEW_STYLES_FILE, data)
+
+
+def read_terminology() -> dict[str, Any]:
+    return read_json(TERMINOLOGY_FILE, {})
+
+
+def write_terminology(data: dict[str, Any]) -> None:
+    write_json(TERMINOLOGY_FILE, data)

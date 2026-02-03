@@ -66,10 +66,13 @@ try:
         read_ai_settings,
         write_ai_settings,
         read_view_styles,
+        read_terminology,
         write_view_styles,
+        write_terminology,
     )
     from .export_metadata import export_metadata
     from .utils import resolve_node_tree
+    from .object_model import apply_operations, OperationError
 except ImportError:
     from backend.database import (
         COMPONENT_DIR,
@@ -100,10 +103,13 @@ except ImportError:
         read_ai_settings,
         write_ai_settings,
         read_view_styles,
+        read_terminology,
         write_view_styles,
+        write_terminology,
     )
     from backend.export_metadata import export_metadata
     from backend.utils import resolve_node_tree
+    from backend.object_model import apply_operations, OperationError
 
 app = Flask(__name__)
 CORS(app)
@@ -1309,6 +1315,64 @@ def update_ai_settings() -> tuple[Any, int]:
     settings.update(payload)
     write_ai_settings(settings)
     return jsonify(settings), 200
+
+
+@app.post("/ai/chat")
+def ai_chat() -> tuple[Any, int]:
+    return jsonify({"message": "AI agent is not configured yet."}), 200
+
+
+@app.get("/terminology")
+def get_terminology() -> tuple[Any, int]:
+    return jsonify(read_terminology()), 200
+
+
+@app.put("/terminology")
+def update_terminology() -> tuple[Any, int]:
+    payload = request.get_json(force=True) or {}
+    if not isinstance(payload, dict):
+        return jsonify({"error": "Terminology must be an object"}), 400
+    cleaned: dict[str, dict[str, list[str]]] = {}
+    for term, value in payload.items():
+        if not isinstance(term, str):
+            continue
+        term_key = term.strip()
+        if not term_key:
+            continue
+        entry = value if isinstance(value, dict) else {}
+        definitions_raw = entry.get("Definitions") if isinstance(entry, dict) else None
+        examples_raw = entry.get("Examples") if isinstance(entry, dict) else None
+        definitions = [str(item).strip() for item in definitions_raw or [] if str(item).strip()]
+        examples = [str(item).strip() for item in examples_raw or [] if str(item).strip()]
+        cleaned[term_key] = {"Definitions": definitions, "Examples": examples}
+    write_terminology(cleaned)
+    return jsonify(cleaned), 200
+
+
+@app.post("/ai/ops/preview")
+def preview_ai_ops() -> tuple[Any, int]:
+    payload = request.get_json(force=True) or {}
+    operations = payload.get("operations", [])
+    if not isinstance(operations, list):
+        return jsonify({"error": "operations must be a list"}), 400
+    try:
+        result = apply_operations(operations, dry_run=True)
+    except OperationError as exc:
+        return jsonify({"error": str(exc)}), 400
+    return jsonify(result), 200
+
+
+@app.post("/ai/ops/apply")
+def apply_ai_ops() -> tuple[Any, int]:
+    payload = request.get_json(force=True) or {}
+    operations = payload.get("operations", [])
+    if not isinstance(operations, list):
+        return jsonify({"error": "operations must be a list"}), 400
+    try:
+        result = apply_operations(operations, dry_run=False)
+    except OperationError as exc:
+        return jsonify({"error": str(exc)}), 400
+    return jsonify(result), 200
 
 
 @app.get("/view-styles")

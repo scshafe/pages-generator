@@ -1,8 +1,17 @@
 import Link from "next/link";
 import { getNavigation } from "@/lib/content/navigation";
 import { getHomeSettings } from "@/lib/content/navigation";
-import { HomeIcon, SettingsIcon } from "@/components/ui/icons";
+import { HomeIcon } from "@/components/ui/icons";
 import { AuthorMenu } from "@/components/ui/AuthorMenu";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger
+} from "@/components/ui/navigation-menu";
+import { settingsTabs } from "@/lib/content/settingsTabs";
 
 export async function SiteHeader() {
   const [navigation, home] = await Promise.all([getNavigation(), getHomeSettings()]);
@@ -22,20 +31,39 @@ export async function SiteHeader() {
             </Link>
             {isAuthor ? <span className="author-pill">Author Mode</span> : null}
           </div>
-          <nav className="nav" aria-label="Main">
-            {navItems.map((item) => (
-              <Link key={item.menu_id} className="nav-link" href={item.href}>
-                <span>{item.label}</span>
-              </Link>
-            ))}
-            {settingsItem ? (
-              <Link key={settingsItem.menu_id} className="nav-link" href={settingsItem.href}>
-                <SettingsIcon size={24} strokeWidth={2} aria-hidden />
-                <span className="sr-only">Settings</span>
-              </Link>
-            ) : null}
-            {isAuthor ? <AuthorMenu /> : null}
-          </nav>
+          <NavigationMenu className="nav-menu-root" aria-label="Main">
+            <NavigationMenuList className="nav nav-menu-list">
+              {navItems.map((item) => (
+                <NavigationMenuItem key={item.menu_id}>
+                  <NavigationMenuLink asChild>
+                    <Link className="nav-link nav-menu-link" href={item.href}>
+                      <span>{item.label}</span>
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              ))}
+              {settingsItem ? (
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="nav-menu-trigger">Settings</NavigationMenuTrigger>
+                  <NavigationMenuContent className="nav-menu-content">
+                    <div className="nav-menu-dropdown" role="menu">
+                      {settingsTabs.map((tab) => (
+                        <NavigationMenuLink key={tab.id} asChild>
+                          <Link
+                            className="nav-menu-dropdown__link"
+                            href={`/settings?tab=${tab.id}`}
+                          >
+                            {tab.label}
+                          </Link>
+                        </NavigationMenuLink>
+                      ))}
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              ) : null}
+              {isAuthor ? <AuthorMenu /> : null}
+            </NavigationMenuList>
+          </NavigationMenu>
         </div>
     </header>
   );

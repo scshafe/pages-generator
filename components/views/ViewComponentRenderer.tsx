@@ -1,6 +1,7 @@
 "use client";
 
 import type { NodeRecord, ResolvedNode } from "@/lib/content/types";
+import type { VocabSegment } from "@/lib/content/terminology.types";
 import ReactMarkdown from "react-markdown";
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -16,6 +17,7 @@ import { createChildNode, reparentNode } from "@/components/views/contentOps";
 import { isInteractiveTarget } from "@/components/views/domUtils";
 import { useInlineMenuState } from "@/components/views/useInlineMenuState";
 import { useInlineMenuEvents } from "@/components/views/useInlineMenuEvents";
+import { useVocabSegments } from "@/components/views/VocabProvider";
 
 type MenuType = "container" | "unit" | "style" | null;
 
@@ -122,6 +124,51 @@ export function renderInlineBlocks({
       );
     }
     return renderItem(group.item.node, group.item.index, nodes);
+  });
+}
+
+function renderVocabSegments(segments: VocabSegment[] | null) {
+  if (!segments) return null;
+  return segments.map((segment, index) => {
+    if (segment.type === "text") {
+      return segment.value;
+    }
+    const hasDefinitions = segment.definitions.length > 0;
+    const hasExamples = segment.examples.length > 0;
+    return (
+      <span
+        key={`vocab-term-${segment.term}-${index}`}
+        className={`vocab-term${segment.isFirst ? " vocab-term--first" : " vocab-term--repeat"}`}
+      >
+        {segment.value}
+        <span className="vocab-tooltip" role="tooltip">
+          <span className="vocab-tooltip__title">{segment.term}</span>
+          {hasDefinitions ? (
+            <div className="vocab-tooltip__section">
+              <strong>Definitions</strong>
+              <ul>
+                {segment.definitions.map((definition, defIndex) => (
+                  <li key={`def-${segment.term}-${defIndex}`}>{definition}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          {hasExamples ? (
+            <div className="vocab-tooltip__section">
+              <strong>Examples</strong>
+              <ul>
+                {segment.examples.map((example, exampleIndex) => (
+                  <li key={`ex-${segment.term}-${exampleIndex}`}>{example}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          {!hasDefinitions && !hasExamples ? (
+            <span className="vocab-tooltip__empty">No definitions or examples.</span>
+          ) : null}
+        </span>
+      </span>
+    );
   });
 }
 
@@ -562,6 +609,7 @@ export function ViewComponentRenderer({
 }) {
   const { component, config } = node;
   const isAuthor = process.env.NEXT_PUBLIC_BUILD_MODE === "author";
+  const vocabSegments = useVocabSegments(node.node.node_id);
   const toast = useToast();
   const router = useRouter();
   const [containerDropActive, setContainerDropActive] = useState(false);
@@ -606,6 +654,7 @@ export function ViewComponentRenderer({
   const [menuIndex, setMenuIndex] = useState(0);
   const [menuSplit, setMenuSplit] = useState<{ before: string; after: string } | null>(null);
   const [menuCaretIndex, setMenuCaretIndex] = useState<number | null>(null);
+  const highlightedText = vocabSegments ? renderVocabSegments(vocabSegments) : textValue;
   const menuRef = useRef<HTMLDivElement | null>(null);
   const menuItemRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const menuOptions = useMemo<MenuOption[]>(() => {
@@ -1437,10 +1486,10 @@ export function ViewComponentRenderer({
                 }
               }}
             >
-              {isEditingInline ? inlineValueRef.current : textValue}
+              {isEditingInline ? inlineValueRef.current : highlightedText}
             </span>
           ) : (
-            <p>{textValue}</p>
+            <p>{vocabSegments ? renderVocabSegments(vocabSegments) : textValue}</p>
           )}
           {isAuthor && menuType ? (
             <div

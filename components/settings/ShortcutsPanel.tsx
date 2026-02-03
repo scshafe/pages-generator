@@ -13,6 +13,7 @@ export function ShortcutsPanel() {
           <li>Insert unit in place: Hyper + P</li>
           <li>Open style menu: Hyper + L</li>
           <li>Toggle configuration panel: Hyper + T</li>
+          <li>Toggle agent tab: Hyper + A</li>
           <li>Focus next: Hyper + K</li>
           <li>Focus previous: Hyper + J</li>
           <li>Move out before group: Hyper + O then J</li>
