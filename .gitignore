@@ -21,11 +21,8 @@ bun-debug.log*
 # Content (author data + snapshots)
 content/
 
-# User uploads / generated assets
-public/uploads/
-
-# Build-time generated social previews
-public/og/
+# NOTE: public/uploads/ and public/og/ are intentionally tracked — assets
+# referenced by content must be in git for the CI deploy build to include them.
 
 # Python
 __pycache__/

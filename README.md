@@ -68,6 +68,30 @@ Preview locally:
 npm run preview
 ```
 
+## Automated Deployment (GitHub Actions)
+
+Pushing to `main` triggers `.github/workflows/deploy.yml`: it builds the
+static site from the **committed** `content/metadata.json` snapshot (no
+Python, no local content needed) and pushes the output to
+`scshafe/scshafe.github.io` via a repo-scoped deploy key
+(`PAGES_DEPLOY_KEY` secret). GitHub Pages then redeploys automatically.
+Free on public repos.
+
+The one rule this adds: **content edits only reach the deploy if the
+snapshot is refreshed and committed.**
+
+```bash
+npm run export:metadata          # refresh content/metadata.json from content/
+git add content/metadata.json && git commit && git push   # → CI deploys
+```
+
+Code-only changes just need a push. Assets referenced by content
+(`public/og/`, `public/uploads/`) must be tracked in git or the CI build
+won't include them. The manual path (`npm run push-static`) still works but
+can race the CI history in the deploy repo — prefer CI; if you must publish
+manually, pull the deploy repo first. Note the "Updated at" timestamp
+injection (`publish:timestamp`) is local-only and skipped by CI.
+
 ## Export Build to External Repo
 
 Use this if you publish from a separate repo (e.g., GitHub Pages).
