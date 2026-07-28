@@ -1,5 +1,10 @@
 # Serving Dynamic Data to a GitHub Pages Site from the Tailnet
 
+> **Follow-up:** the Funnel option (Architecture B) now has a full build
+> design in [tailscale-funnel-plan.md](./tailscale-funnel-plan.md), with an
+> executable checklist at
+> `.claude/plans/2026-07-28-funnel-personalization-service.md`.
+
 Exploration of: (1) whether the site's "customized data" can live in a
 database on the tailnet that the site pulls from, and (2) per-UUID
 personalized pages whose links can be attached to job applications, with

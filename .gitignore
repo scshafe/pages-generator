@@ -38,4 +38,6 @@ venv/
 .ruff_cache/
 
 
-.claude
+# Claude session-local files, except committed plans
+.claude/*
+!.claude/plans/
