@@ -24,14 +24,29 @@ node scripts/ingest-jobtrack.mjs          # add --dry-run to preview
 npm run projects:validate
 
 # 4. Build the fully static site (publish mode)
+#    On the AUTHORING machine (content/nodes etc. present):
 NEXT_PUBLIC_BUILD_MODE=publish PATH="$PWD/env/bin:$PATH" npm run build
 
-# 5. Belt-and-suspenders leak scan of the static output (expect no matches)
-grep -rE "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}" .static-out --include='*.html' --include='*.txt'
-grep -rE "([0-9][[:space:]().-]?){10,}" .static-out --include='*.html' --include='*.txt'
+#    On a machine WITHOUT the author content graph (content/ is gitignored;
+#    only the committed content/metadata.json snapshot exists): do NOT run
+#    export:metadata or add-build-timestamp — they would regenerate a gutted
+#    metadata.json from the missing graph. Instead build from the committed
+#    snapshot directly:
+git checkout -- content/metadata.json   # ensure the authoritative snapshot
+NEXT_PUBLIC_BUILD_MODE=publish npx next build
+node scripts/isolate-static.mjs
+node scripts/export-build.mjs           # copies .static-out into ../scshafe.github.io
+
+# 5. Belt-and-suspenders leak scan of the tree that ships (expect: email scan
+#    empty; the digit scan may flag 10-digit CMS entity ids and asset
+#    timestamps — eyeball that every hit is an id, not a phone number)
+grep -rEo "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}" ../scshafe.github.io --include='*.html' --include='*.txt' --exclude-dir=.git
+grep -rEo "([0-9][[:space:]().-]?){10,}" ../scshafe.github.io --include='*.html' --include='*.txt' --exclude-dir=.git
 
 # 6. Publish to scshafe.github.io — the only outward-facing step
-npm run push-static
+#    Authoring machine: npm run push-static
+#    Content-less clone (build already copied by export-build above):
+cd ../scshafe.github.io && git add -A && git commit -m "Update static export $(date -u +%Y-%m-%dT%H:%M:%S.000Z)" && git push
 ```
 
 ## Ingestion rules
