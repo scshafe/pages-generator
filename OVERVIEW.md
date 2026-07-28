@@ -74,7 +74,7 @@ See `docs/implementation/view-layout.md` for the visual layout model and how Con
 - Views show edge markers at start/end; when empty, a single marker adds the first unit.
 - View titles are inline editable in author mode.
 - Text is editable in place; clearing all text removes that unit automatically.
-- Press Enter in a text unit to add a Dividor and a new text unit.
+- Press Enter in a text unit to add a Divider and a new text unit.
 - The Configuration panel can be toggled into a compact view that shows only type and name.
 - Configuration inputs are only in the Configuration panel (the canvas has no config controls).
 - The floating Configuration panel at the bottom shows editable settings for the most recently focused component.
@@ -110,7 +110,9 @@ See `docs/implementation/view-layout.md` for the visual layout model and how Con
 │           └── custom/{theme_id}.json
 ├── lib/
 │   ├── api/                  # API client
-│   └── content/              # View + metadata resolution
+│   ├── content/              # View + metadata resolution
+│   └── projects/             # projects/*.md frontmatter parser
+├── projects/                 # One markdown file per project (see AGENT_GUIDE.md)
 ├── scripts/
 │   ├── export-build.mjs       # Export /out to external repo
 │   ├── add-build-timestamp.mjs # Insert build timestamp into home view
@@ -147,6 +149,19 @@ During development, data is stored in individual JSON files:
 
 **metadata.json**
 - Generated at build time only and used for publish mode runtime.
+
+## Projects Section
+
+`/projects` is a code-defined section outside the Views entity system. Each
+project is one isolated markdown file in `projects/` (git-tracked, unlike
+`content/`), discovered automatically at build time — no shared index exists,
+so agents from different repositories can add entries in parallel without
+conflicts. `projects/AGENT_GUIDE.md` is the contract to point agents at;
+`npm run projects:validate` checks every entry against the schema. The list
+page (`app/projects/page.tsx`) and detail pages (`app/projects/[slug]/page.tsx`)
+render in both author and publish modes. CMS views must not claim reserved
+paths (`/projects`, `/settings`, `/terminology`, `/views`, `/posts`); the
+static-params generator filters them out.
 
 ## Build and Export
 

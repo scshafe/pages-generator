@@ -427,6 +427,10 @@ main {
   background: color-mix(in oklab, var(--surface) 82%, var(--border) 18%);
 }
 
+.inline-block-container--clickable:has(.group-edge-marker-wrap:hover) {
+  background: transparent;
+}
+
 .inline-block-container > * {
   display: inline-block;
   vertical-align: baseline;
@@ -461,7 +465,7 @@ main {
   max-width: 100%;
 }
 
-.inline-container > .dividor-unit {
+.inline-container > .divider-unit {
   display: block;
   width: 100%;
 }
@@ -610,7 +614,7 @@ main {
   }
 }
 
-.dividor-unit {
+.divider-unit {
   display: flex;
   align-items: center;
   padding: 0;
@@ -742,7 +746,7 @@ main {
   padding: 6px 8px;
 }
 
-.dividor {
+.divider {
   width: 100%;
   flex-basis: 100%;
   border-top: 1px solid var(--border);
@@ -2554,15 +2558,18 @@ textarea {
 .group-edge-marker-wrap {
   display: inline-flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  border-radius: 8px;
-  cursor: text;
+  align-items: stretch;
+  justify-content: stretch;
+  gap: 1px;
+  border-radius: 0;
+  cursor: pointer;
   box-sizing: border-box;
-  border: 1px solid transparent;
+  border: none;
   background: transparent;
-  padding: 2px 6px;
+  padding: 0;
+  width: 10px;
+  height: 25px;
+  min-height: 25px;
   text-align: left;
   font: inherit;
   outline: none;
@@ -2570,35 +2577,65 @@ textarea {
 
 .group-edge-marker-wrap--between,
 .group-edge-marker-wrap--end {
-  margin: 2px 4px;
+  margin: 2px 0;
 }
 
 .group-edge-marker-wrap:hover {
-  background: color-mix(in oklab, var(--surface) 82%, var(--border) 18%);
+  background: #ff7a00;
+  padding-left: 0;
+  padding-right: 0;
 }
 
-.group-edge-marker {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
+.group-edge-marker-wrap:has(.group-edge-marker-edge:first-child:hover) {
+  padding-left: 3px;
+  padding-right: 0;
+}
+
+.group-edge-marker-wrap:has(.group-edge-marker-edge:last-child:hover) {
+  padding-right: 3px;
+  padding-left: 0;
+}
+
+.group-edge-marker-segment {
+  display: block;
+  flex: 1;
+  width: 100%;
+  min-width: 10px;
+  max-width: 10px;
   border: none;
   padding: 0;
   background: #262a2a;
-  cursor: text;
-  font: inherit;
+  cursor: pointer;
+  border-radius: 0;
+  appearance: none;
+  -webkit-appearance: none;
 }
 
-.group-edge-marker:disabled {
+.group-edge-marker-wrap:hover .group-edge-marker-segment,
+.group-edge-marker-segment:hover {
+  background: #ff7a00;
+}
+
+.group-edge-marker-edge {
+  flex: 0 0 8px;
+  height: 8px;
+  min-height: 8px;
+  max-height: 8px;
+}
+
+.group-edge-marker {
+  min-height: 0;
+}
+
+
+.group-edge-marker-segment:disabled {
   opacity: 0.6;
   cursor: default;
 }
 
-.group-edge-marker:focus-visible {
+.group-edge-marker-segment:focus-visible {
   outline: 2px solid #f97316;
-  outline-offset: 3px;
+  outline-offset: 2px;
 }
 
 .group-edge-marker--blank {
@@ -2610,6 +2647,8 @@ textarea {
   line-height: 1;
   color: #262a2a;
   padding: 0;
+  border-top: none;
+  cursor: pointer;
 }
 
 .group-edge-marker-wrap--blank {
@@ -2619,20 +2658,11 @@ textarea {
   padding: 4px 0;
   margin: 10px 0;
   border: none;
+  height: auto;
 }
 
-.group-edge-marker-wrap--blank .group-edge-marker-arrow {
+.group-edge-marker-wrap--blank .group-edge-marker-edge {
   display: none;
-}
-
-.group-edge-marker-arrow {
-  border: none;
-  background: transparent;
-  padding: 0;
-  font-size: 0.65rem;
-  line-height: 1;
-  color: #262a2a;
-  cursor: pointer;
 }
 
 .inline-block-container,
@@ -2959,7 +2989,7 @@ select {
   width: 100%;
 }
 
-.group-container > .dividor-unit {
+.group-container > .divider-unit {
   display: block;
   width: 100%;
 }

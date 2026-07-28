@@ -70,7 +70,7 @@ A View is represented as:
 |----------|-------|--------|
 | **Containers** | Container, Group, InlineContainer, ListContainer, StyleContainer, ViewContainer | ✅ Implemented |
 | **Text Units** | PlainTextUnit, MarkdownUnit, CodeUnit, CodeBlockUnit | ✅ Implemented |
-| **Structural Units** | DividorUnit, SectionUnit | ✅ Implemented |
+| **Structural Units** | DividerUnit, SectionUnit | ✅ Implemented |
 | **Link Units** | LinkUnit | ✅ Implemented |
 | **Alerts** | AlertUnit | ✅ Implemented |
 | **Media** | ImageMedia, VideoMedia, PDFMedia | ✅ Implemented |
@@ -175,7 +175,7 @@ See `ENTITY_UML_SCHEMA.md` for complete UML diagram.
 | **Edge markers** | Empty views show single marker; add first unit via click |
 | **Editable view titles** | Inline editable view titles |
 | **Auto-remove units** | Clearing all text removes unit automatically |
-| **Enter key behavior** | Press Enter in text unit adds DividorUnit + new PlainTextUnit |
+| **Enter key behavior** | Press Enter in text unit adds DividerUnit + new PlainTextUnit |
 | **Configuration panel** | Floating panel shows settings for focused component |
 | **AI toggle** | Components support `useAI` with optional prompt |
 | **Reference AI** | References can enable `useAI` for flexible AI placement |
@@ -411,7 +411,7 @@ Based on `TODO.md` and implementation gaps:
 - Text units use `contenteditable` for inline editing
 - Blur event triggers save to backend
 - Empty text units auto-remove on blur
-- Press Enter in text unit adds DividorUnit + new PlainTextUnit
+- Press Enter in text unit adds DividerUnit + new PlainTextUnit
 
 ### Configuration Panel
 

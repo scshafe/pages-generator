@@ -210,8 +210,8 @@ export function ComponentEditor({
     switch (componentType) {
       case "PlainTextUnit":
         return String(config.text ?? "Text");
-      case "DividorUnit":
-        return "Dividor";
+      case "DividerUnit":
+        return "Divider";
       case "MarkdownUnit":
         return String(config.content ?? "Markdown").slice(0, 60);
       case "AlertUnit":

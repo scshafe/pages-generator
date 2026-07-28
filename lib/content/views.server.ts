@@ -1,6 +1,7 @@
 import { apiFetch } from "@/lib/api/client";
 import { loadMetadataSnapshot } from "@/lib/content/metadata";
 import { isViewContainer } from "@/lib/content/containers";
+import { normalizeViewPath } from "@/lib/content/paths";
 import { getPublishViewExample } from "@/lib/content/publishViewExample";
 import type {
   ComponentRecord,
@@ -77,7 +78,7 @@ async function resolveViewByPathStatic(pathname: string): Promise<ResolvedNode |
       return false;
     }
     const config = mergeConfig(component, ref);
-    return config.path === pathname;
+    return normalizeViewPath(config.path as string | undefined) === pathname;
   });
 
   if (!matchRef) {
@@ -93,7 +94,7 @@ async function resolveViewByPathStatic(pathname: string): Promise<ResolvedNode |
 
 async function resolveViewByPathAuthor(pathname: string): Promise<ResolvedNode | null> {
   const views = await apiFetch<{ node_id: number | null; config: { path?: string } }[]>("/views");
-  const match = views.find((view) => view.config.path === pathname);
+  const match = views.find((view) => normalizeViewPath(view.config.path) === pathname);
 
   if (!match) {
     if (pathname === "/") {
@@ -110,7 +111,7 @@ async function resolveViewByPathAuthor(pathname: string): Promise<ResolvedNode |
 }
 
 export async function getResolvedViewByPath(viewPath: string[]): Promise<ResolvedNode | null> {
-  const pathname = `/${viewPath.join("/")}`.replace(/\/$/, "") || "/";
+  const pathname = normalizeViewPath(`/${viewPath.join("/")}`);
 
   if (pathname.toLowerCase() === "/publishviewexample" || pathname.toLowerCase() === "/publish-view-example") {
     return getPublishViewExample();

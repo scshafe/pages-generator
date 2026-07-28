@@ -33,15 +33,15 @@ Key idea: Containers define structure, Groups define layout, Units define conten
 | 1) Inline block container (UI-only)                      |
 |    +-- Unit: PlainTextUnit (inline editable)             |
 |    +-- Unit: ImageMedia                                  |
-|    +-- Unit: DividorUnit (ends block)                    |
-|    +-- Inline block container (new block after Dividor)  |
+|    +-- Unit: DividerUnit (ends block)                    |
+|    +-- Inline block container (new block after Divider)  |
 |        +-- Unit: PlainTextUnit                           |
 |                                                          |
 | 2) Group (style | inline | list)                         |
 |    +-- Inline block container (UI-only)                  |
 |        +-- Unit: PlainTextUnit                           |
 |        +-- Unit: ImageMedia                              |
-|        +-- Unit: DividorUnit                             |
+|        +-- Unit: DividerUnit                             |
 |    +-- Inline block container (next block)               |
 |                                                          |
 | 3) Group (list)                                          |
@@ -70,7 +70,7 @@ Key idea: Containers define structure, Groups define layout, Units define conten
 - **Purpose:** layout and style wrapper for its children.
 - **Layout kinds:** `group_kind` = `inline`, `style`, or `list`.
 - **Default layout:** inline groups render child units as a series of inline spans.
-- **Inline block container:** units are wrapped into blocks of inline content, separated by `DividorUnit` or scope changes.
+- **Inline block container:** units are wrapped into blocks of inline content, separated by `DividerUnit` or scope changes.
 - **Edge markers:** groups show start/end edge markers in author mode for adding text.
 - **Optional config:** `listType`, `displayMode`, `isTransparent`, `name`.
 - **Children:** holds the head of its own linked list via `config.child_node_id`.
@@ -82,8 +82,8 @@ Key idea: Containers define structure, Groups define layout, Units define conten
 - **Purpose:** leaf content (text, code, media, etc.).
 - **Placement:** Units can live inside a Group or directly under a View.
 - **Inline block container:** Units are wrapped by a style-less inline block container at all scope levels (View or Group). This wrapper is UI-only and not stored.
-- **Dividor behavior:** `DividorUnit` is the shorthand for ending the current inline block container and starting a new one.
-- **Text editing:** `PlainTextUnit` is inline editable. Enter inserts a `DividorUnit` and a new text unit. Empty text removes the unit.
+- **Divider behavior:** `DividerUnit` is the shorthand for ending the current inline block container and starting a new one.
+- **Text editing:** `PlainTextUnit` is inline editable. Enter inserts a `DividerUnit` and a new text unit. Empty text removes the unit.
 - **Presentation:** text units render with a slightly darker background; code units use a dark theme with no padding.
 
 ## Edge markers

@@ -12,7 +12,7 @@ export type ComponentType =
   | "Container"
   | "Group"
   | "PlainTextUnit"
-  | "DividorUnit"
+  | "DividerUnit"
   | "SectionUnit"
   | "CodeUnit"
   | "CodeBlockUnit"

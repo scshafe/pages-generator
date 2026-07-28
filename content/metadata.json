@@ -2,238 +2,37 @@
   "assets": [],
   "components": {
     "AlertUnit": [],
+    "ButtonUnit": [],
     "CodeBlockUnit": [],
     "CodeUnit": [],
     "Container": [
       {
-        "comp_id": 2328172934,
+        "comp_id": 1404035074,
         "config": {
           "browser_title": "Home",
-          "child_node_id": 3722073337,
+          "child_node_id": null,
           "description": "",
           "name": "Home",
           "order": 0,
           "path": "/home",
           "title": "Home"
         },
-        "created_at": "2026-02-02T04:04:47.521269Z",
+        "created_at": "2026-02-04T02:49:23.744891Z",
         "reference_count": 1,
         "type": "Container",
-        "updated_at": "2026-02-02T04:04:51.959223Z"
+        "updated_at": "2026-02-04T02:49:23.744891Z"
       }
     ],
-    "DividorUnit": [
-      {
-        "comp_id": 1023396213,
-        "config": {},
-        "created_at": "2026-02-02T04:07:19.092360Z",
-        "reference_count": 1,
-        "type": "DividorUnit",
-        "updated_at": "2026-02-02T04:07:19.092367Z"
-      },
-      {
-        "comp_id": 4058164116,
-        "config": {},
-        "created_at": "2026-02-02T04:07:24.211425Z",
-        "reference_count": 1,
-        "type": "DividorUnit",
-        "updated_at": "2026-02-02T04:07:24.211430Z"
-      },
-      {
-        "comp_id": 3607456023,
-        "config": {},
-        "created_at": "2026-02-02T04:07:21.772289Z",
-        "reference_count": 1,
-        "type": "DividorUnit",
-        "updated_at": "2026-02-02T04:07:21.772297Z"
-      },
-      {
-        "comp_id": 3101502962,
-        "config": {},
-        "created_at": "2026-02-02T04:07:15.020625Z",
-        "reference_count": 1,
-        "type": "DividorUnit",
-        "updated_at": "2026-02-02T04:07:15.020632Z"
-      },
-      {
-        "comp_id": 2420800256,
-        "config": {},
-        "created_at": "2026-02-02T04:07:23.140395Z",
-        "reference_count": 1,
-        "type": "DividorUnit",
-        "updated_at": "2026-02-02T04:07:23.140403Z"
-      },
-      {
-        "comp_id": 242208402,
-        "config": {},
-        "created_at": "2026-02-02T04:07:20.370866Z",
-        "reference_count": 1,
-        "type": "DividorUnit",
-        "updated_at": "2026-02-02T04:07:20.370872Z"
-      }
-    ],
+    "DividorUnit": [],
     "ExperienceComponent": [],
-    "Group": [
-      {
-        "comp_id": 2062517949,
-        "config": {
-          "child_node_id": 2693518430,
-          "group_kind": "inline"
-        },
-        "created_at": "2026-02-02T04:04:51.936861Z",
-        "reference_count": 1,
-        "type": "Group",
-        "updated_at": "2026-02-02T04:04:54.639577Z"
-      }
-    ],
+    "Group": [],
     "ImageMedia": [],
     "InlineContainer": [],
     "LinkUnit": [],
     "ListContainer": [],
     "MarkdownUnit": [],
     "PDFMedia": [],
-    "PlainTextUnit": [
-      {
-        "comp_id": 1175859468,
-        "config": {
-          "text": "jfdkslf"
-        },
-        "created_at": "2026-02-02T04:07:19.098973Z",
-        "reference_count": 1,
-        "type": "PlainTextUnit",
-        "updated_at": "2026-02-02T04:07:20.365904Z"
-      },
-      {
-        "comp_id": 2996194226,
-        "config": {
-          "text": ""
-        },
-        "created_at": "2026-02-02T04:06:44.284335Z",
-        "reference_count": 1,
-        "type": "PlainTextUnit",
-        "updated_at": "2026-02-02T04:06:44.284342Z"
-      },
-      {
-        "comp_id": 2785211903,
-        "config": {
-          "text": "fksjdfl"
-        },
-        "created_at": "2026-02-02T04:07:20.382020Z",
-        "reference_count": 1,
-        "type": "PlainTextUnit",
-        "updated_at": "2026-02-02T04:07:21.769096Z"
-      },
-      {
-        "comp_id": 2848056908,
-        "config": {
-          "text": "djfksdl"
-        },
-        "created_at": "2026-02-02T04:04:54.630875Z",
-        "reference_count": 1,
-        "type": "PlainTextUnit",
-        "updated_at": "2026-02-02T04:04:56.984832Z"
-      },
-      {
-        "comp_id": 248942013,
-        "config": {
-          "text": ""
-        },
-        "created_at": "2026-02-02T04:07:11.917263Z",
-        "reference_count": 1,
-        "type": "PlainTextUnit",
-        "updated_at": "2026-02-02T04:07:11.917284Z"
-      },
-      {
-        "comp_id": 3696924750,
-        "config": {
-          "text": "fjkfls"
-        },
-        "created_at": "2026-02-02T04:04:51.945719Z",
-        "reference_count": 1,
-        "type": "PlainTextUnit",
-        "updated_at": "2026-02-02T04:04:54.696791Z"
-      },
-      {
-        "comp_id": 1025514301,
-        "config": {
-          "text": "fjdsklsfj"
-        },
-        "created_at": "2026-02-02T04:07:21.777589Z",
-        "reference_count": 1,
-        "type": "PlainTextUnit",
-        "updated_at": "2026-02-02T04:07:23.137216Z"
-      },
-      {
-        "comp_id": 1871213378,
-        "config": {
-          "text": "jfsdkflds"
-        },
-        "created_at": "2026-02-02T04:07:23.145991Z",
-        "reference_count": 1,
-        "type": "PlainTextUnit",
-        "updated_at": "2026-02-02T04:07:24.207709Z"
-      },
-      {
-        "comp_id": 65484033,
-        "config": {
-          "text": "fjdsk"
-        },
-        "created_at": "2026-02-02T04:07:17.400868Z",
-        "reference_count": 1,
-        "type": "PlainTextUnit",
-        "updated_at": "2026-02-02T04:07:19.088454Z"
-      },
-      {
-        "comp_id": 4118346733,
-        "config": {
-          "text": ""
-        },
-        "created_at": "2026-02-02T04:07:30.753278Z",
-        "reference_count": 1,
-        "type": "PlainTextUnit",
-        "updated_at": "2026-02-02T04:07:30.753286Z"
-      },
-      {
-        "comp_id": 653977868,
-        "config": {
-          "text": ""
-        },
-        "created_at": "2026-02-02T04:07:07.184797Z",
-        "reference_count": 1,
-        "type": "PlainTextUnit",
-        "updated_at": "2026-02-02T04:07:07.184804Z"
-      },
-      {
-        "comp_id": 2855876745,
-        "config": {
-          "text": ""
-        },
-        "created_at": "2026-02-02T04:04:50.834720Z",
-        "reference_count": 1,
-        "type": "PlainTextUnit",
-        "updated_at": "2026-02-02T04:04:50.834728Z"
-      },
-      {
-        "comp_id": 3285199382,
-        "config": {
-          "text": ""
-        },
-        "created_at": "2026-02-02T04:07:24.216476Z",
-        "reference_count": 1,
-        "type": "PlainTextUnit",
-        "updated_at": "2026-02-02T04:07:24.216480Z"
-      },
-      {
-        "comp_id": 3333527212,
-        "config": {
-          "text": ""
-        },
-        "created_at": "2026-02-02T04:07:15.029383Z",
-        "reference_count": 1,
-        "type": "PlainTextUnit",
-        "updated_at": "2026-02-02T04:07:15.029394Z"
-      }
-    ],
+    "PlainTextUnit": [],
     "SectionUnit": [],
     "StyleContainer": [],
     "VideoMedia": [],
@@ -241,326 +40,58 @@
   },
   "nodes": [
     {
-      "created_at": "2026-02-02T04:07:15.021752Z",
-      "next_node_id": 1862770114,
-      "node_id": 3849651321,
-      "parent_node_id": 3722073337,
-      "previous_node_id": 447076437,
-      "ref_id": 1920480763,
-      "updated_at": "2026-02-02T04:07:30.770810Z"
-    },
-    {
-      "created_at": "2026-02-02T04:04:54.631586Z",
-      "next_node_id": 4130304397,
-      "node_id": 2693518430,
-      "parent_node_id": 3722073337,
-      "previous_node_id": null,
-      "ref_id": 1170320415,
-      "updated_at": "2026-02-02T04:04:54.639122Z"
-    },
-    {
-      "created_at": "2026-02-02T04:07:19.093207Z",
-      "next_node_id": 1351117285,
-      "node_id": 4131018542,
-      "parent_node_id": 3722073337,
-      "previous_node_id": 1862770114,
-      "ref_id": 3089065362,
-      "updated_at": "2026-02-02T04:07:19.109604Z"
-    },
-    {
-      "created_at": "2026-02-02T04:07:30.754395Z",
-      "next_node_id": 3849651321,
-      "node_id": 447076437,
-      "parent_node_id": 3722073337,
-      "previous_node_id": 4130304397,
-      "ref_id": 2891860344,
-      "updated_at": "2026-02-02T04:07:30.766869Z"
-    },
-    {
-      "created_at": "2026-02-02T04:07:23.146993Z",
-      "next_node_id": 3228613821,
-      "node_id": 1699079620,
-      "parent_node_id": 3722073337,
-      "previous_node_id": 3502079087,
-      "ref_id": 2529816471,
-      "updated_at": "2026-02-02T04:07:24.212703Z"
-    },
-    {
-      "created_at": "2026-02-02T04:04:47.521269Z",
+      "created_at": "2026-02-04T02:49:23.744891Z",
       "next_node_id": null,
-      "node_id": 1719118832,
+      "node_id": 1941266181,
       "parent_node_id": null,
       "previous_node_id": null,
-      "ref_id": 1478296366,
-      "updated_at": "2026-02-02T04:04:47.521269Z"
-    },
-    {
-      "created_at": "2026-02-02T04:07:21.773067Z",
-      "next_node_id": 3738906358,
-      "node_id": 706011803,
-      "parent_node_id": 3722073337,
-      "previous_node_id": 2131250972,
-      "ref_id": 691070213,
-      "updated_at": "2026-02-02T04:07:21.780547Z"
-    },
-    {
-      "created_at": "2026-02-02T04:07:23.141337Z",
-      "next_node_id": 1699079620,
-      "node_id": 3502079087,
-      "parent_node_id": 3722073337,
-      "previous_node_id": 3738906358,
-      "ref_id": 1362497636,
-      "updated_at": "2026-02-02T04:07:23.149258Z"
-    },
-    {
-      "created_at": "2026-02-02T04:07:21.778294Z",
-      "next_node_id": 3502079087,
-      "node_id": 3738906358,
-      "parent_node_id": 3722073337,
-      "previous_node_id": 706011803,
-      "ref_id": 1293353097,
-      "updated_at": "2026-02-02T04:07:23.142421Z"
-    },
-    {
-      "created_at": "2026-02-02T04:07:20.398372Z",
-      "next_node_id": 706011803,
-      "node_id": 2131250972,
-      "parent_node_id": 3722073337,
-      "previous_node_id": 3586468051,
-      "ref_id": 2787291482,
-      "updated_at": "2026-02-02T04:07:21.774400Z"
-    },
-    {
-      "created_at": "2026-02-02T04:07:19.099587Z",
-      "next_node_id": 3586468051,
-      "node_id": 1351117285,
-      "parent_node_id": 3722073337,
-      "previous_node_id": 4131018542,
-      "ref_id": 1246095299,
-      "updated_at": "2026-02-02T04:07:20.374531Z"
-    },
-    {
-      "created_at": "2026-02-02T04:07:17.403048Z",
-      "next_node_id": 4131018542,
-      "node_id": 1862770114,
-      "parent_node_id": 3722073337,
-      "previous_node_id": 3849651321,
-      "ref_id": 3782657289,
-      "updated_at": "2026-02-02T04:07:19.094330Z"
-    },
-    {
-      "created_at": "2026-02-02T04:07:20.371945Z",
-      "next_node_id": 2131250972,
-      "node_id": 3586468051,
-      "parent_node_id": 3722073337,
-      "previous_node_id": 1351117285,
-      "ref_id": 1741934724,
-      "updated_at": "2026-02-02T04:07:20.400390Z"
-    },
-    {
-      "created_at": "2026-02-02T04:07:24.211770Z",
-      "next_node_id": null,
-      "node_id": 3228613821,
-      "parent_node_id": 3722073337,
-      "previous_node_id": 1699079620,
-      "ref_id": 212138067,
-      "updated_at": "2026-02-02T04:07:30.766582Z"
-    },
-    {
-      "created_at": "2026-02-02T04:04:51.937591Z",
-      "next_node_id": null,
-      "node_id": 3722073337,
-      "parent_node_id": 1719118832,
-      "previous_node_id": null,
-      "ref_id": 4068458209,
-      "updated_at": "2026-02-02T04:04:51.958280Z"
-    },
-    {
-      "created_at": "2026-02-02T04:04:51.946427Z",
-      "next_node_id": 447076437,
-      "node_id": 4130304397,
-      "parent_node_id": 3722073337,
-      "previous_node_id": 2693518430,
-      "ref_id": 1456470970,
-      "updated_at": "2026-02-02T04:07:30.772337Z"
+      "ref_id": 3810144644,
+      "updated_at": "2026-02-04T02:49:23.744891Z"
     }
   ],
   "references": [
     {
-      "comp_id": 65484033,
-      "created_at": "2026-02-02T04:07:17.402373Z",
-      "node_id": 1862770114,
+      "comp_id": 1404035074,
+      "created_at": "2026-02-04T02:49:23.744891Z",
+      "node_id": 1941266181,
       "overrides": null,
-      "ref_id": 3782657289,
-      "updated_at": "2026-02-02T04:07:17.402386Z",
-      "useAI": false
-    },
-    {
-      "comp_id": 2420800256,
-      "created_at": "2026-02-02T04:07:23.140883Z",
-      "node_id": 3502079087,
-      "overrides": null,
-      "ref_id": 1362497636,
-      "updated_at": "2026-02-02T04:07:23.140891Z",
-      "useAI": false
-    },
-    {
-      "comp_id": 2848056908,
-      "created_at": "2026-02-02T04:04:54.631285Z",
-      "node_id": 2693518430,
-      "overrides": null,
-      "ref_id": 1170320415,
-      "updated_at": "2026-02-02T04:04:54.631294Z",
-      "useAI": false
-    },
-    {
-      "comp_id": 1023396213,
-      "created_at": "2026-02-02T04:07:19.092806Z",
-      "node_id": 4131018542,
-      "overrides": null,
-      "ref_id": 3089065362,
-      "updated_at": "2026-02-02T04:07:19.092814Z",
-      "useAI": false
-    },
-    {
-      "comp_id": 2062517949,
-      "created_at": "2026-02-02T04:04:51.937208Z",
-      "node_id": 3722073337,
-      "overrides": null,
-      "ref_id": 4068458209,
-      "updated_at": "2026-02-02T04:04:51.937214Z",
-      "useAI": false
-    },
-    {
-      "comp_id": 4058164116,
-      "created_at": "2026-02-02T04:07:24.211633Z",
-      "node_id": 3228613821,
-      "overrides": null,
-      "ref_id": 212138067,
-      "updated_at": "2026-02-02T04:07:24.211635Z",
-      "useAI": false
-    },
-    {
-      "comp_id": 2328172934,
-      "created_at": "2026-02-02T04:04:47.521269Z",
-      "node_id": 1719118832,
-      "overrides": null,
-      "ref_id": 1478296366,
-      "updated_at": "2026-02-02T04:04:47.521269Z"
-    },
-    {
-      "comp_id": 3696924750,
-      "created_at": "2026-02-02T04:04:51.946092Z",
-      "node_id": 4130304397,
-      "overrides": null,
-      "ref_id": 1456470970,
-      "updated_at": "2026-02-02T04:04:51.946098Z",
-      "useAI": false
-    },
-    {
-      "comp_id": 3101502962,
-      "created_at": "2026-02-02T04:07:15.021257Z",
-      "node_id": 3849651321,
-      "overrides": null,
-      "ref_id": 1920480763,
-      "updated_at": "2026-02-02T04:07:15.021267Z",
-      "useAI": false
-    },
-    {
-      "comp_id": 2785211903,
-      "created_at": "2026-02-02T04:07:20.396816Z",
-      "node_id": 2131250972,
-      "overrides": null,
-      "ref_id": 2787291482,
-      "updated_at": "2026-02-02T04:07:20.396824Z",
-      "useAI": false
-    },
-    {
-      "comp_id": 4118346733,
-      "created_at": "2026-02-02T04:07:30.753987Z",
-      "node_id": 447076437,
-      "overrides": null,
-      "ref_id": 2891860344,
-      "updated_at": "2026-02-02T04:07:30.753993Z",
-      "useAI": false
-    },
-    {
-      "comp_id": 3607456023,
-      "created_at": "2026-02-02T04:07:21.772660Z",
-      "node_id": 706011803,
-      "overrides": null,
-      "ref_id": 691070213,
-      "updated_at": "2026-02-02T04:07:21.772665Z",
-      "useAI": false
-    },
-    {
-      "comp_id": 1025514301,
-      "created_at": "2026-02-02T04:07:21.778003Z",
-      "node_id": 3738906358,
-      "overrides": null,
-      "ref_id": 1293353097,
-      "updated_at": "2026-02-02T04:07:21.778010Z",
-      "useAI": false
-    },
-    {
-      "comp_id": 242208402,
-      "created_at": "2026-02-02T04:07:20.371479Z",
-      "node_id": 3586468051,
-      "overrides": null,
-      "ref_id": 1741934724,
-      "updated_at": "2026-02-02T04:07:20.371490Z",
-      "useAI": false
-    },
-    {
-      "comp_id": 1175859468,
-      "created_at": "2026-02-02T04:07:19.099352Z",
-      "node_id": 1351117285,
-      "overrides": null,
-      "ref_id": 1246095299,
-      "updated_at": "2026-02-02T04:07:19.099358Z",
-      "useAI": false
-    },
-    {
-      "comp_id": 1871213378,
-      "created_at": "2026-02-02T04:07:23.146474Z",
-      "node_id": 1699079620,
-      "overrides": null,
-      "ref_id": 2529816471,
-      "updated_at": "2026-02-02T04:07:23.146484Z",
-      "useAI": false
+      "ref_id": 3810144644,
+      "updated_at": "2026-02-04T02:49:23.744891Z"
     }
   ],
   "settings": {
+    "customComponents": [],
     "footer": [],
     "home": {
       "label": "Home",
-      "root_view_node_id": 1719118832
+      "root_view_node_id": 1941266181
     },
     "menu": [
       {
         "href": "/home",
         "label": "Home",
-        "menu_id": 2231667417,
+        "menu_id": 1557671931,
         "order": 0,
         "position": "left",
-        "view_node_id": 1719118832
+        "view_node_id": 1941266181
       }
     ],
+    "purposes": [],
     "site": {
-      "author": "",
-      "description": "",
+      "author": "Cole",
+      "description": "ai|linux|physics",
       "favicon_src": "",
-      "keywords": "",
+      "keywords": "AI,software,physics,linux",
       "language": "en",
       "robots": "index,follow",
-      "site_name": "",
-      "site_url": "",
+      "site_name": "hi, i'm cole",
+      "site_url": "https://scshafe.github.io",
       "social_image_border_color": "#0f172a",
       "social_image_border_enabled": false,
       "social_image_border_radius": 24,
       "social_image_border_width": 16,
-      "social_image_url": "",
-      "tagline": "",
+      "social_image_url": "/og/social-border-1776936889_ChatGPT_Image_Jan_30_2026_from_Photo_Dimensions_and_Crops-20-40-fecb3e.png",
+      "tagline": "ai|linux|physics",
       "theme_color": "#1f3b56",
       "twitter_handle": ""
     },
@@ -568,63 +99,6 @@
       "active_theme_id": null,
       "color_scheme": "system"
     },
-    "themes": [
-      {
-        "colors": {
-          "accent": "#3b82f6",
-          "background": "#ffffff",
-          "border": "#e2e8f0",
-          "foreground": "#0f172a",
-          "muted": "#f1f5f9",
-          "primary": "#1f3b56",
-          "secondary": "#64748b"
-        },
-        "created_at": "2026-02-02T06:33:34.296291Z",
-        "name": "Theme 1",
-        "theme_id": 1788580941
-      },
-      {
-        "colors": {
-          "accent": "#3b82f6",
-          "background": "#ffffff",
-          "border": "#e2e8f0",
-          "foreground": "#0f172a",
-          "muted": "#f1f5f9",
-          "primary": "#1f3b56",
-          "secondary": "#64748b"
-        },
-        "created_at": "2026-02-02T06:32:52.314332Z",
-        "name": "My Custom Theme",
-        "theme_id": 3851830714
-      },
-      {
-        "colors": {
-          "accent": "#3b82f6",
-          "background": "#ffffff",
-          "border": "#e2e8f0",
-          "foreground": "#0f172a",
-          "muted": "#f1f5f9",
-          "primary": "#1f3b56",
-          "secondary": "#64748b"
-        },
-        "created_at": "2026-02-02T06:32:52.317079Z",
-        "name": "Theme 1",
-        "theme_id": 2542538235
-      },
-      {
-        "colors": {
-          "accent": "#3b82f6",
-          "background": "#ffffff",
-          "border": "#e2e8f0",
-          "foreground": "#0f172a",
-          "muted": "#f1f5f9",
-          "primary": "#1f3b56",
-          "secondary": "#64748b"
-        },
-        "created_at": "2026-02-02T06:33:34.294339Z",
-        "name": "My Custom Theme",
-        "theme_id": 1062574402
-      }
-    ]
+    "themes": []
   }
 }

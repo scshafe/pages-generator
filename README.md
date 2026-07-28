@@ -114,6 +114,17 @@ The **Site** tab in Settings persists metadata used for SEO and rich link previe
 
 Header/Footer items can reference views directly. If a nav item stores a `view_node_id`, the label and href are resolved at runtime from the current view configuration.
 
+## Projects Section
+
+`/projects` renders one card per markdown file in `projects/` (isolated files,
+auto-discovered — no shared index). Point coding agents at
+`projects/AGENT_GUIDE.md` to have them add or update their own entry, and
+validate with:
+
+```bash
+npm run projects:validate
+```
+
 ## Useful Commands
 
 ```bash
@@ -123,6 +134,7 @@ npm run build:timestamp # insert build timestamp text
 npm run publish:timestamp # timestamp + build + export + commit + push
 npm run push-static     # timestamp + build + export + commit + push
 npm run preview       # serve static output from .static-out/
+npm run projects:validate # validate projects/*.md entries
 npm run smoke:author  # author mode smoke test
 npm run smoke:views   # view resolution smoke test
 npm run data:hard-reset   # clear all data and settings

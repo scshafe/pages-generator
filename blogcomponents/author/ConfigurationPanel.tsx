@@ -173,8 +173,8 @@ export function ConfigurationPanel() {
         if (resolved.component.type === "PlainTextUnit") {
           return config.text || null;
         }
-        if (resolved.component.type === "DividorUnit") {
-          return "Dividor";
+        if (resolved.component.type === "DividerUnit") {
+          return "Divider";
         }
         if (resolved.component.type === "LinkUnit" || resolved.component.type === "ButtonUnit") {
           return config.label || null;
@@ -198,7 +198,7 @@ export function ConfigurationPanel() {
           >
             <InfoIcon size={16} strokeWidth={2} aria-hidden />
             <span className="config-tooltip-text">
-              Click text to edit. Use shortcuts to add components. Use the group marker to add new text. Press Enter in text to add a dividor and a new text unit.
+              Click text to edit. Use shortcuts to add components. Use the group marker to add new text. Press Enter in text to add a divider and a new text unit.
             </span>
           </span>
         </div>

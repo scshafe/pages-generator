@@ -1,9 +1,37 @@
+import type { Metadata } from "next";
 import { getResolvedViewByPath } from "@/lib/content/views.server";
 import { loadMetadataSnapshot } from "@/lib/content/metadata";
 import { isViewContainer } from "@/lib/content/containers";
+import { isReservedViewPath, viewPathSegments } from "@/lib/content/paths";
+import { buildPageMetadata } from "@/lib/content/pageMetadata";
+import { getSiteSettings } from "@/lib/content/site";
 import { ViewRenderer } from "@/blogcomponents/views/ViewRenderer";
 import { NotFoundView } from "@/blogcomponents/views/NotFoundView";
 import { buildVocabSegments, loadTerminology } from "@/lib/content/terminology";
+
+export async function generateMetadata({
+  params
+}: {
+  params: { viewPath?: string[] };
+}): Promise<Metadata> {
+  const segments = params.viewPath ?? [];
+  const resolved = await getResolvedViewByPath(segments);
+  if (!resolved) return {};
+
+  const site = await getSiteSettings();
+  const config = resolved.config as {
+    browser_title?: string;
+    title?: string;
+    name?: string;
+    description?: string;
+  };
+
+  return buildPageMetadata(site, {
+    pageTitle: config.browser_title || config.title || config.name,
+    description: config.description,
+    pathname: segments.length ? `/${segments.join("/")}` : "/"
+  });
+}
 
 export default async function ViewPage({
   params
@@ -53,15 +81,19 @@ export async function generateStaticParams() {
     })
     .filter(Boolean) as { path?: string }[];
 
-  const params = views.map((view) => {
-    const path = view.path ?? "/";
-    const segments = path === "/" ? [] : path.replace(/^\//, "").split("/");
-    return { viewPath: segments };
-  });
+  const seen = new Set<string>();
+  const params: { viewPath: string[] }[] = [];
+  for (const view of views) {
+    if (isReservedViewPath(view.path)) continue;
+    const segments = viewPathSegments(view.path);
+    const key = segments.join("/");
+    if (seen.has(key)) continue;
+    seen.add(key);
+    params.push({ viewPath: segments });
+  }
 
   const home = metadata.settings?.home as { root_view_node_id?: number | null } | undefined;
-  const hasRoot = views.some((view) => view.path === "/");
-  if (home?.root_view_node_id && !hasRoot) {
+  if (home?.root_view_node_id && !seen.has("")) {
     params.push({ viewPath: [] });
   }
 

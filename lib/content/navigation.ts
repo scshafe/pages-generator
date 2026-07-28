@@ -1,6 +1,7 @@
 import { apiFetch } from "@/lib/api/client";
 import { loadMetadataSnapshot } from "@/lib/content/metadata";
 import { isViewContainer } from "@/lib/content/containers";
+import { normalizeViewPath } from "@/lib/content/paths";
 import type {
   ComponentRecord,
   FooterItem,
@@ -23,7 +24,7 @@ function resolveViewLabel(config: { title?: string; name?: string; path?: string
 }
 
 function resolveViewHref(config: { path?: string }) {
-  return config.path ?? "/";
+  return normalizeViewPath(config.path);
 }
 
 function applyViewRefs<T extends MenuItem | FooterItem>(

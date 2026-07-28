@@ -1,5 +1,5 @@
 import "./globals.css";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Source_Serif_4 } from "next/font/google";
 import { SiteHeader } from "@/blogcomponents/ui/SiteHeader";
 import { AuthorHeader } from "@/blogcomponents/ui/AuthorHeader";
@@ -29,7 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const favicon = site.favicon_src || undefined;
 
   return {
-    title,
+    title: { default: title, template: `%s · ${title}` },
     description,
     metadataBase: url,
     icons: favicon ? { icon: favicon } : undefined,
@@ -48,9 +48,13 @@ export async function generateMetadata(): Promise<Metadata> {
       images: site.social_image_url ? [site.social_image_url] : undefined
     },
     keywords: site.keywords || undefined,
-    authors: site.author ? [{ name: site.author }] : undefined,
-    themeColor: site.theme_color || undefined
+    authors: site.author ? [{ name: site.author }] : undefined
   };
+}
+
+export async function generateViewport(): Promise<Viewport> {
+  const site = await getSiteSettings();
+  return { themeColor: site.theme_color || undefined };
 }
 
 export default async function RootLayout({

@@ -98,7 +98,7 @@ classDiagram
     class Group
     class UnitComponent
     class PlainTextUnit
-    class DividorUnit
+    class DividerUnit
     class CodeUnit
     class CodeBlockUnit
     class AlertUnit
@@ -189,7 +189,7 @@ classDiagram
     }
 
     UnitComponent <|-- PlainTextUnit
-    UnitComponent <|-- DividorUnit
+    UnitComponent <|-- DividerUnit
     UnitComponent <|-- CodeUnit
     UnitComponent <|-- CodeBlockUnit
     UnitComponent <|-- AlertUnit
@@ -202,9 +202,9 @@ classDiagram
 
     PlainTextUnit : +text string
 
-    %% ============ DIVIDOR UNIT ============
+    %% ============ DIVIDER UNIT ============
 
-    DividorUnit : +config {}?
+    DividerUnit : +config {}?
 
     %% ============ CODE UNIT ============
 
@@ -435,7 +435,7 @@ All IDs are unsigned 32-bit integers generated randomly.
 // Component type discriminator
 type ComponentType =
   | 'Container' | 'Group'  // Containers
-  | 'PlainTextUnit' | 'DividorUnit' | 'CodeUnit' | 'CodeBlockUnit' | 'AlertUnit' | 'MarkdownUnit' | 'LinkUnit' | 'ButtonUnit'  // Units
+  | 'PlainTextUnit' | 'DividerUnit' | 'CodeUnit' | 'CodeBlockUnit' | 'AlertUnit' | 'MarkdownUnit' | 'LinkUnit' | 'ButtonUnit'  // Units
   | 'ImageMedia' | 'VideoMedia' | 'PDFMedia'  // Media
   | 'ExperienceComponent'  // Leaf
   | 'HtmlComponent' | 'JsComponent';  // Future

@@ -12,7 +12,7 @@ import { siteConfig } from "@/site.config";
 
 const componentOptions = [
   { value: "PlainTextUnit", label: "Text" },
-  { value: "DividorUnit", label: "Dividor" },
+  { value: "DividerUnit", label: "Divider" },
   { value: "CodeUnit", label: "Code" },
   { value: "CodeBlockUnit", label: "Code Block" },
   { value: "LinkUnit", label: "Link" },
@@ -36,7 +36,7 @@ function buildConfig(type: ComponentType, values: Record<string, string>) {
     case "PlainTextUnit":
       config = { text: values.text ?? "" };
       break;
-    case "DividorUnit":
+    case "DividerUnit":
       config = {};
       break;
     case "CodeUnit":
@@ -147,7 +147,7 @@ export function AddComponentForm({
     switch (type) {
       case "PlainTextUnit":
         return [{ key: "text", label: "Text", placeholder: "Content" }];
-      case "DividorUnit":
+      case "DividerUnit":
         return [];
       case "MarkdownUnit":
       case "AlertUnit":
@@ -192,8 +192,8 @@ export function AddComponentForm({
     switch (componentType) {
       case "PlainTextUnit":
         return String(config.text ?? "Text");
-      case "DividorUnit":
-        return "Dividor";
+      case "DividerUnit":
+        return "Divider";
       case "MarkdownUnit":
         return String(config.content ?? "Markdown").slice(0, 60);
       case "AlertUnit":
@@ -282,8 +282,8 @@ export function AddComponentForm({
     switch (componentType) {
       case "PlainTextUnit":
         return String(config.text ?? "Text");
-      case "DividorUnit":
-        return "Dividor";
+      case "DividerUnit":
+        return "Divider";
       case "CodeUnit":
         return String(config.code ?? "Code").slice(0, 60);
       case "CodeBlockUnit":
@@ -315,8 +315,8 @@ export function AddComponentForm({
       switch (componentType) {
         case "PlainTextUnit":
           return String(config.text ?? "").slice(0, 120);
-        case "DividorUnit":
-          return "Dividor";
+        case "DividerUnit":
+          return "Divider";
         case "MarkdownUnit":
         case "AlertUnit":
           return String(config.content ?? "").slice(0, 120);

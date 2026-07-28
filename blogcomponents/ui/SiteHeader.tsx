@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getNavigation } from "@/lib/content/navigation";
 import { getHomeSettings } from "@/lib/content/navigation";
+import { normalizeViewPath } from "@/lib/content/paths";
 import { HomeIcon } from "@/blogcomponents/ui/icons";
 import {
   NavigationMenu,
@@ -11,7 +12,12 @@ import {
 
 export async function SiteHeader() {
   const [navigation, home] = await Promise.all([getNavigation(), getHomeSettings()]);
-  const navItems = navigation.menu.filter((item) => item.label !== "Settings");
+  // Projects is a code-defined section (app/projects reads projects/*.md), so
+  // its nav item is code-defined too — it must survive content resets. Drop
+  // any CMS menu item pointing at /projects to avoid a duplicate.
+  const navItems = navigation.menu.filter(
+    (item) => item.label !== "Settings" && normalizeViewPath(item.href) !== "/projects"
+  );
 
   return (
     <header className="header" data-nav-scope="header">
@@ -39,6 +45,17 @@ export async function SiteHeader() {
                   </NavigationMenuLink>
                 </NavigationMenuItem>
               ))}
+              <NavigationMenuItem key="projects">
+                <NavigationMenuLink asChild>
+                  <Link
+                    className="nav-link nav-menu-link"
+                    href="/projects/"
+                    data-nav-id="menu-projects"
+                  >
+                    <span>Projects</span>
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
         </div>

@@ -67,7 +67,7 @@ The current implementation uses icon-only edit/delete controls, card-based drag-
 - Newly created views start empty and use view edge markers to add the first unit.
 - View edge markers appear at the start and end of the view; groups have start/end markers for adding text.
 - Empty text deletes the unit automatically.
-- Press Enter in a text unit to insert a Dividor and a new text unit.
+- Press Enter in a text unit to insert a Divider and a new text unit.
 - Hyper+G creates a sub group; Hyper+U opens the unit menu; Hyper+P inserts at the caret; Hyper+T toggles the configuration panel.
 - The Configuration panel supports a compact mode that shows only the focused type and name.
 - All configuration inputs live in the Configuration panel (no inline config controls on the canvas).

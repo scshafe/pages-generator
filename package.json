@@ -16,6 +16,7 @@
     "preview": "serve -s .static-out",
     "export:metadata": "python3 -m backend.export_metadata",
     "export:copy": "node scripts/export-build.mjs",
+    "projects:validate": "node scripts/validate-projects.mjs",
     "smoke:author": "node scripts/smoke-author.mjs",
     "smoke:export": "node scripts/smoke-export.mjs",
     "smoke:views": "node scripts/smoke-views.mjs",
@@ -67,6 +68,7 @@
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.18",
     "@types/node": "^22.10.2",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",

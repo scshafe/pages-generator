@@ -13,7 +13,7 @@ const unitTypes = new Set([
   "CodeBlockUnit",
   "LinkUnit",
   "ButtonUnit",
-  "DividorUnit",
+  "DividerUnit",
   "SectionUnit",
   "AlertUnit",
   "MarkdownUnit"

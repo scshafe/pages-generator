@@ -44,6 +44,16 @@ export function AuthorShortcuts() {
 
   const openMenu = useCallback(
     (menuType: MenuTrigger) => {
+      const active = document.activeElement as HTMLElement | null;
+      const edgeMarker = active?.closest("[data-edge-marker]") as HTMLElement | null;
+      if (edgeMarker) {
+        window.dispatchEvent(
+          new CustomEvent("author-menu-open", {
+            detail: { edgeMarker: true, menuType }
+          })
+        );
+        return;
+      }
       const target = resolveTargetTextUnit();
       if (!target) {
         toast.push("No text unit available to open menu", "error");
@@ -60,6 +70,16 @@ export function AuthorShortcuts() {
   );
 
   const createGroup = useCallback(() => {
+    const active = document.activeElement as HTMLElement | null;
+    const edgeMarker = active?.closest("[data-edge-marker]") as HTMLElement | null;
+    if (edgeMarker) {
+      window.dispatchEvent(
+        new CustomEvent("author-group-create", {
+          detail: { edgeMarker: true }
+        })
+      );
+      return;
+    }
     const target = resolveTargetTextUnit();
     if (!target) {
       toast.push("No text unit available to create a group", "error");

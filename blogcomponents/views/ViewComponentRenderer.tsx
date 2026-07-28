@@ -82,7 +82,7 @@ function InlineBlockContainer({
 }
 
 function isInlineBlockItem(componentType: string) {
-  return !isScopeComponent(componentType) && componentType !== "DividorUnit";
+  return !isScopeComponent(componentType) && componentType !== "DividerUnit";
 }
 
 function groupInlineBlocks(nodes: ResolvedNode[]) {
@@ -234,9 +234,9 @@ const unitOptions: MenuOption[] = [
     buildConfig: (text) => ({ src: text, autoplay: false })
   },
   {
-    id: "dividor",
-    label: "Dividor",
-    componentType: "DividorUnit",
+    id: "divider",
+    label: "Divider",
+    componentType: "DividerUnit",
     buildConfig: () => ({})
   }
 ];
@@ -553,11 +553,11 @@ export function SortableChildren({
     const isGroupScope = child.component.type === "Group";
     const showDownArrow = isActiveScope && isContainer;
     const showDownOutline = isActiveScope && isContainer && isDragging;
-    const isDividor = child.component.type === "DividorUnit";
+    const isDivider = child.component.type === "DividerUnit";
     return (
       <div
         key={child.node.node_id}
-        className={`draggable-item${isDividor ? " draggable-item--break" : ""}${isContainer ? " draggable-item--scope" : ""}${isGroupScope ? " draggable-item--group" : ""}${draggingId === child.node.node_id ? " dragging" : ""}${dropTargetId === child.node.node_id ? " drag-over" : ""}${dropTargetId === child.node.node_id && dropPosition === "after" ? " drag-over-after" : ""}${showDownOutline ? " scope-down" : ""}`}
+        className={`draggable-item${isDivider ? " draggable-item--break" : ""}${isContainer ? " draggable-item--scope" : ""}${isGroupScope ? " draggable-item--group" : ""}${draggingId === child.node.node_id ? " dragging" : ""}${dropTargetId === child.node.node_id ? " drag-over" : ""}${dropTargetId === child.node.node_id && dropPosition === "after" ? " drag-over-after" : ""}${showDownOutline ? " scope-down" : ""}`}
         draggable={enabled}
         onDragStart={(event) => {
           if (!enabled) return;
@@ -653,7 +653,7 @@ export function ViewComponentRenderer({
   const isCodeBlockUnit = component.type === "CodeBlockUnit";
   const isLinkUnit = component.type === "LinkUnit";
   const isButtonUnit = component.type === "ButtonUnit";
-  const isDividorUnit = component.type === "DividorUnit";
+  const isDividerUnit = component.type === "DividerUnit";
   const isSectionUnit = component.type === "SectionUnit";
   const isAlertUnit = component.type === "AlertUnit";
   const isMarkdownUnit = component.type === "MarkdownUnit";
@@ -664,7 +664,7 @@ export function ViewComponentRenderer({
     isCodeBlockUnit ||
     isLinkUnit ||
     isButtonUnit ||
-    isDividorUnit ||
+    isDividerUnit ||
     isSectionUnit ||
     isAlertUnit ||
     isMarkdownUnit;
@@ -1120,7 +1120,7 @@ export function ViewComponentRenderer({
     [inlineSaving, node.node.node_id, router, toast]
   );
 
-  const insertDividorAndTextAfter = useCallback(
+  const insertDividerAndTextAfter = useCallback(
     async (currentValue: string, saveField: "text" | "code" | "label", currentSaved: string) => {
       const parentId = node.node.parent_node_id;
       if (!parentId || inlineSaving || isInsertingRef.current) return;
@@ -1145,8 +1145,8 @@ export function ViewComponentRenderer({
         }
 
         const nextSiblingId = node.node.next_node_id;
-        const dividorNode = await createChildNode(parentId, "DividorUnit", {});
-        await reparentNode(dividorNode.node_id, parentId, nextSiblingId, { skipIfMissing: true });
+        const dividerNode = await createChildNode(parentId, "DividerUnit", {});
+        await reparentNode(dividerNode.node_id, parentId, nextSiblingId, { skipIfMissing: true });
 
         const textNode = await createChildNode(parentId, "PlainTextUnit", { text: "" });
         await reparentNode(textNode.node_id, parentId, nextSiblingId, { skipIfMissing: true });
@@ -1154,7 +1154,7 @@ export function ViewComponentRenderer({
         setPendingInlineFocusId(textNode.node_id);
         router.refresh();
       } catch {
-        toast.push("Failed to add dividor", "error");
+        toast.push("Failed to add divider", "error");
       } finally {
         isInsertingRef.current = false;
         setInlineSaving(false);
@@ -1550,7 +1550,7 @@ export function ViewComponentRenderer({
                   deleteInlineText();
                   return;
                 }
-                insertDividorAndTextAfter(nextValue, saveField, currentValue);
+                insertDividerAndTextAfter(nextValue, saveField, currentValue);
               }
             }}
           >
@@ -1600,10 +1600,10 @@ export function ViewComponentRenderer({
         saveField: "text",
         renderStatic: () => <p>{highlightedText}</p>
       });
-    case "DividorUnit":
+    case "DividerUnit":
       return (
         <div
-          className={`dividor-unit${isAuthor ? " component-card" : ""}`}
+          className={`divider-unit${isAuthor ? " component-card" : ""}`}
           onClick={handleComponentFocus}
           id={unitAnchorId}
           data-node-id={node.node.node_id}
@@ -1611,7 +1611,7 @@ export function ViewComponentRenderer({
           data-component-type={component.type}
           data-navigable="true"
         >
-          <div className="dividor" role="separator" />
+          <div className="divider" role="separator" />
         </div>
       );
     case "CodeUnit":
