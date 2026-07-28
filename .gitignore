@@ -18,8 +18,9 @@ bun-debug.log*
 .env.*
 !.env.example
 
-# Content (author data + snapshots)
-content/
+# Content (author data + snapshots) — anchored to repo root so it does NOT
+# swallow source directories like lib/content/
+/content/
 
 # NOTE: public/uploads/ and public/og/ are intentionally tracked — assets
 # referenced by content must be in git for the CI deploy build to include them.
