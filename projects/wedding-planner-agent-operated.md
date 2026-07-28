@@ -2,10 +2,11 @@
 title: Wedding Planner (agent-operated)
 summary: AI wedding-planner and guest-communication product built, maintained, and operated by autonomous Claude Code agents on a schedule, with humans holding only narrow reserved exceptions. Working offline core (telemetry, eval harness, self-improvement loop) plus a multi-tenant white-label product surfa…
 status: completed
-tags: [typescript, node-js, docker]
-repo: https://github.com/scshafe/wedding-planner
+tags: [application, typescript, node-js, docker]
+demo: https://github.com/scshafe/wedding-planner
 started: 2026-06
 updated: 2026-07-28
+order: 13
 ---
 
 ## What it is

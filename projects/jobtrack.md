@@ -2,10 +2,11 @@
 title: JobTrack
 summary: Private, agent-operable job-search system: a SQLite store with a JSON-first CLI as the only writer, a read-only tailnet web view, and a sandboxed LaTeX render pipeline. Keeps discovered opportunities separate from applications, preserves immutable posting provenance, and records the full applicatio…
 status: active
-tags: [node-js, javascript, sqlite, express, docker, tailscale, latex]
-repo: https://github.com/scshafe/jobtrack
+tags: [application, node-js, javascript, sqlite, express, docker, tailscale, latex]
+demo: https://github.com/scshafe/jobtrack
 started: 2026-06
 updated: 2026-07-28
+order: 19
 ---
 
 ## What it is

@@ -2,10 +2,11 @@
 title: graphpaper
 summary: Framework-agnostic diagram renderer extracted from Mission Control: a neutral node/edge DiagramModel laid out with ELK and rendered as interactive SVG - status-colored nodes, orthogonal routing, hierarchy nesting, hover popovers, drill-down into nested sub-diagrams, lifecycle watermarks, and staged…
 status: active
-tags: [javascript, node-js, github-actions]
-repo: https://github.com/scshafe/graphpaper
+tags: [library, javascript, node-js, github-actions]
+demo: https://github.com/scshafe/graphpaper
 started: 2026-07
 updated: 2026-07-28
+order: 15
 ---
 
 ## What it is

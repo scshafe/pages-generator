@@ -2,9 +2,10 @@
 title: Voice Journey
 summary: Longitudinal analysis groundwork over five years of personal Apple Voice Memos - 2,433 recordings - building corpus access, rebuildable indexing, and a DSP classification pass separating singing from non-singing and flagging noise/music contamination. Audio bytes are never committed; the repo holds…
 status: completed
-tags: [node-js, ffmpeg, whisper-cpp, tailscale]
+tags: [experiment, node-js, ffmpeg, whisper-cpp, tailscale]
 started: 2026-07
 updated: 2026-07-28
+order: 14
 ---
 
 ## What it is

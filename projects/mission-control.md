@@ -2,10 +2,11 @@
 title: Mission Control
 summary: Local-first, single-operator console that is the durable home for every project: status, implementation plans, architecture graphs, notes, chats, approvals, execution evidence, and deployments. Composes separately versioned orchestration kernels (pipeline, execution abstraction, swarm/authority, CI…
 status: active
-tags: [typescript, node-js, postgresql, react, redux-toolkit, docker, tailscale, github-actions]
-repo: https://github.com/scshafe/mission-control
+tags: [application, typescript, node-js, postgresql, react, redux-toolkit, docker, tailscale]
+demo: https://github.com/scshafe/mission-control
 started: 2026-05
 updated: 2026-07-28
+order: 20
 ---
 
 ## What it is
@@ -19,6 +20,15 @@ Local-first, single-operator console that is the durable home for every project:
 - 3,246 test cases across 306 node:test files, CI-gated against a pinned PostgreSQL 18.4 container.
 - React 19 + Redux Toolkit operator console (13 component domains, ~30 state managers) under a hard no-useState rule and a two-way CLI-web parity contract.
 - Ships reusable infrastructure of its own: an error-reporting SDK other codebases import, a rollback-safe deploy kernel, and CI/CD host integration with drift watches.
+
+## Built with
+
+- [graphpaper](/projects/graphpaper/)
+- [conductor](/projects/conductor/)
+- [mc-ui](/projects/mc-ui/)
+- [mission-eal](/projects/mission-eal/)
+- [mission-pipeline](/projects/mission-pipeline/)
+- [mission-swarm](/projects/mission-swarm/)
 
 ## Skills
 

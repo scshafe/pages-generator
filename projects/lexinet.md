@@ -2,10 +2,11 @@
 title: Lexinet
 summary: Idea-centric technical lexicon network where the root object is a concept, not a word: canonical names, acronyms, aliases, and localized names all resolve to one idea carrying definitions, examples, topics, and a typed relationship graph. One Go binary serves HTTP and a JSON-first CLI, with a nativ…
 status: completed
-tags: [go, postgresql, swift, swiftui, docker, tailscale]
+tags: [application, go, postgresql, swift, swiftui, docker, tailscale]
 repo: https://github.com/scshafe/lexinet
 started: 2026-05
 updated: 2026-07-28
+order: 16
 ---
 
 ## What it is

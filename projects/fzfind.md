@@ -2,10 +2,11 @@
 title: fzfind
 summary: Dependency-free Go CLI and thin HTTP server for fuzzy file-name search and in-document content search, with a composable required/optional regex query engine, layered configuration, a stable JSON output contract, and remote search over Tailscale hosts via SSH.
 status: completed
-tags: [go, tailscale]
+tags: [tool, go, tailscale]
 repo: https://github.com/scshafe/fzfind
 started: 2026-05
 updated: 2026-07-28
+order: 12
 ---
 
 ## What it is

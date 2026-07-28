@@ -2,9 +2,10 @@
 title: ChloeSpeech
 summary: Deterministic, provider-neutral speech-rendering library and CLI: an application-neutral cue sheet plus versioned voice manifests become mastered audio, immutable render evidence, and checksum-bound QC reports. Shared substrate consumed by two downstream applications via pinned commits.
 status: completed
-tags: [python, ffmpeg, latex]
+tags: [library, python, ffmpeg, latex]
 started: 2026-07
 updated: 2026-07-28
+order: 10
 ---
 
 ## What it is

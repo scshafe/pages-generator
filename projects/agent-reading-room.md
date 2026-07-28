@@ -2,9 +2,10 @@
 title: Agent Reading Room
 summary: Private, self-hosted reading site walking an ordered library of 54 foundational essays on agent design, epistemology, curiosity, failure, and security - each with a preface, questions to carry in, and post-reading analysis. Links to authoritative originals and adds a rights-gated local narration pa…
 status: completed
-tags: [node-js, python, ffmpeg, whisper-cpp, tailscale, macos]
+tags: [site, node-js, python, ffmpeg, whisper-cpp, tailscale, macos]
 started: 2026-07
 updated: 2026-07-28
+order: 9
 ---
 
 ## What it is
@@ -17,6 +18,10 @@ Private, self-hosted reading site walking an ordered library of 54 foundational 
 - A dated rights decision for every source (18 scoped full narration, 20 companion-only, 8 pending, 1 official-audio-only), revalidated on every audio request.
 - Fully local narration path - Kokoro TTS, FFmpeg mastering, Whisper verification against the frozen script, integrity-bound publishing - with pinned model revisions and a documented license inventory.
 - 151 automated checks across the server, progress store, audio pipeline, and vendored player provenance.
+
+## Built with
+
+- [ChloeSpeech](/projects/chloespeech/)
 
 ## Skills
 

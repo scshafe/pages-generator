@@ -2,9 +2,10 @@
 title: Voiceprint
 summary: Local-first personal dictation corpus server in Go: permanently preserves original uploaded audio bytes, runs local Whisper transcription, and keeps raw transcript, rule-based autocorrect proposal, and human correction as three separate linked artifacts - a training corpus, not just a transcript.
 status: completed
-tags: [go, whisper-cpp, macos]
+tags: [tool, go, whisper-cpp, macos]
 started: 2026-06
 updated: 2026-07-28
+order: 8
 ---
 
 ## What it is

@@ -2,10 +2,11 @@
 title: Loose Ends
 summary: CLI-first personal task manager: one Go binary acting as both command-line client and loopback (optionally tailnet-exposed) HTTP service, backed by Postgres, with hierarchical tasks, tags, and tree listing. Built end-to-end as a Mission Control agent-runtime trial across 8 planned phases plus a doc…
 status: completed
-tags: [go, postgresql, docker, tailscale]
+tags: [tool, go, postgresql, docker, tailscale]
 repo: https://github.com/scshafe/loose-ends
 started: 2026-06
 updated: 2026-07-28
+order: 7
 ---
 
 ## What it is

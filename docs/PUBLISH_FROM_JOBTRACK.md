@@ -5,11 +5,22 @@ data. The only sanctioned crossing point between it and this public site is
 the allowlisted export artifact — the site never calls JobTrack at runtime,
 JobTrack never serves public traffic, and Tailscale Funnel stays off
 everywhere. The artifact contract lives in the jobtrack repo at
-`contracts/export/public-profile.v1.schema.json`; the export command
+`contracts/export/public-profile.v2.schema.json`; the export command
 validates against it and fails closed on any redaction violation before a
-byte is written.
+byte is written. v2 carries JobTrack's curation into the site: pinned
+entries arrive first and become `featured`, hidden entries never arrive
+(the ingest deletes their previously generated pages), project kinds
+become leading tags, only PUBLIC-visibility repos produce repo links, and
+`uses` relations render as Built-with cross-links.
 
 ## The publish sequence
+
+**GitHub Actions owns deployment** (`.github/workflows/deploy.yml`): every push
+to `main` builds from the committed content snapshot and pushes the static
+export to `scshafe/scshafe.github.io` as `Deploy from pages-generator@<sha>`.
+Do NOT push to the site repo manually while CI is active — the two will race
+(a manual snapshot commit gets non-fast-forward-rejected or overwritten by the
+next CI deploy).
 
 ```bash
 # 1. Export from JobTrack (validates + redaction-scans; fails closed)
@@ -23,30 +34,21 @@ node scripts/ingest-jobtrack.mjs          # add --dry-run to preview
 # 3. Validate the generated entries
 npm run projects:validate
 
-# 4. Build the fully static site (publish mode)
-#    On the AUTHORING machine (content/nodes etc. present):
-NEXT_PUBLIC_BUILD_MODE=publish PATH="$PWD/env/bin:$PATH" npm run build
-
-#    On a machine WITHOUT the author content graph (content/ is gitignored;
-#    only the committed content/metadata.json snapshot exists): do NOT run
-#    export:metadata or add-build-timestamp — they would regenerate a gutted
-#    metadata.json from the missing graph. Instead build from the committed
-#    snapshot directly:
+# 4. (Optional) local preview build. On a machine WITHOUT the author content
+#    graph (content/ is gitignored; only the committed content/metadata.json
+#    snapshot exists), never run export:metadata or add-build-timestamp — they
+#    would regenerate a gutted metadata.json from the missing graph:
 git checkout -- content/metadata.json   # ensure the authoritative snapshot
-NEXT_PUBLIC_BUILD_MODE=publish npx next build
-node scripts/isolate-static.mjs
-node scripts/export-build.mjs           # copies .static-out into ../scshafe.github.io
+NEXT_PUBLIC_BUILD_MODE=publish npx next build && node scripts/isolate-static.mjs
 
-# 5. Belt-and-suspenders leak scan of the tree that ships (expect: email scan
-#    empty; the digit scan may flag 10-digit CMS entity ids and asset
-#    timestamps — eyeball that every hit is an id, not a phone number)
-grep -rEo "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}" ../scshafe.github.io --include='*.html' --include='*.txt' --exclude-dir=.git
-grep -rEo "([0-9][[:space:]().-]?){10,}" ../scshafe.github.io --include='*.html' --include='*.txt' --exclude-dir=.git
+# 5. Belt-and-suspenders leak scan of the preview (expect: email scan empty;
+#    the digit scan flags 10-digit CMS entity ids — eyeball, not phone numbers)
+grep -rEo "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}" .static-out --include='*.html' --include='*.txt'
 
-# 6. Publish to scshafe.github.io — the only outward-facing step
-#    Authoring machine: npm run push-static
-#    Content-less clone (build already copied by export-build above):
-cd ../scshafe.github.io && git add -A && git commit -m "Update static export $(date -u +%Y-%m-%dT%H:%M:%S.000Z)" && git push
+# 6. Publish: commit the regenerated projects/*.md and push main — CI deploys.
+git add projects docs scripts && git commit -m "content: refresh from JobTrack export" && git push
+# Fallback ONLY if CI is down: node scripts/export-build.mjs, then commit+push
+# ../scshafe.github.io manually.
 ```
 
 ## Ingestion rules
