@@ -3,7 +3,6 @@ title: Bellwether
 summary: Paper-money agent trading platform: a strategy/risk/execution agent team combining a quantitative playbook with LLM-driven qualitative judgment, co-developing strategies with a human and exposing results through a read-only family portal. Paper only - the live-broker path is designed but explicitly…
 status: completed
 tags: [application, typescript, node-js, react, redux-toolkit, postgresql, docker, tailscale]
-demo: https://github.com/scshafe/bellwether
 started: 2026-06
 updated: 2026-07-28
 order: 17

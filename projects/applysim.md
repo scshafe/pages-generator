@@ -3,7 +3,6 @@ title: applysim
 summary: Test-only, zero-dependency end-to-end exerciser for the JobTrack + Inbox job-search pipeline: a deterministic ATS lifecycle-email emitter drives the real pipeline seams through submit/follow-up/interview/reschedule/assessment/rejection/offer paths plus adversarial injection cases. The entire outbou…
 status: active
 tags: [tool, javascript, node-js, terraform, tailscale]
-demo: https://github.com/scshafe/applysim
 started: 2026-07
 updated: 2026-07-28
 order: 11

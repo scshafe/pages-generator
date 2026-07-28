@@ -3,7 +3,6 @@ title: Mission Control
 summary: Local-first, single-operator console that is the durable home for every project: status, implementation plans, architecture graphs, notes, chats, approvals, execution evidence, and deployments. Composes separately versioned orchestration kernels (pipeline, execution abstraction, swarm/authority, CI…
 status: active
 tags: [application, typescript, node-js, postgresql, react, redux-toolkit, docker, tailscale]
-demo: https://github.com/scshafe/mission-control
 started: 2026-05
 updated: 2026-07-28
 order: 20

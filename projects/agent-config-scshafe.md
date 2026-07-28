@@ -3,7 +3,6 @@ title: agent-config-scshafe
 summary: Portable Claude Code configuration: a curated set of 10 subagent specialists, 7 skills, and a shared output-style contract that travel across machines via a bare-repo + work-tree dotfiles setup rooted at ~/.claude. Encodes an engineering-for-emergence, agent-first philosophy in prompt form.
 status: completed
 tags: [tool, python]
-demo: https://github.com/scshafe/agent-config-scshafe
 started: 2026-05
 updated: 2026-07-28
 order: 6
